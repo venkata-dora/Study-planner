@@ -1,5 +1,5 @@
 .reading-workspace { max-width: 1440px; margin: 0 auto; padding: 1.5rem 0 4rem; }
-.reader-navigation { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; }
+.reader-navigation { min-height: 44px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; }
 .reader-navigation a { color: var(--neu-accent); text-decoration: none; font-size: .9rem; }
 .reader-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(1.5rem, 3vw, 3rem); align-items: start; }
 .reader-path { display: none; position: sticky; top: 1rem; max-height: calc(100dvh - 120px); overflow-y: auto; padding-right: 1rem; scrollbar-width: thin; border-right: 1px solid var(--study-line); }
