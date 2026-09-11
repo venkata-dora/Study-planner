@@ -37,3 +37,22 @@
 .library-chapter > summary small { float: right; font-size: .72rem; font-weight: 400; color: var(--neu-text-secondary); margin-left: 1rem; }
 .library-chapter > div { padding-left: 1rem; }
 @media(max-width: 760px) { .library-categories { gap: .4rem; }.library-index .library-categories button { padding: .5rem .75rem; font-size: .8rem; }.library-chapter > div { padding-left: 0; }.library-chapter > summary small { float: none; display: block; margin: .5rem 0 0 1rem; } }
+.library-recent { margin: .5rem 0 2.75rem; min-width: 0; }
+.library-recent-heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.library-recent-heading h2,.library-browse-title { font-size: 1.2rem; margin: 0; font-weight: 600; }
+.library-recent-heading p { font-size: .8rem; color: var(--neu-text-secondary); margin: .4rem 0 0; }
+.library-scroll-controls { display: flex; gap: .5rem; }
+.library-index .library-scroll-controls button { width: 40px; height: 40px; border: 1px solid var(--study-line); background: var(--neu-surface); color: var(--neu-text-primary); box-shadow: none; border-radius: 50%; }
+.library-recent-shelf { display: flex; gap: 1rem; overflow-x: auto; scroll-snap-type: x mandatory; padding: .25rem 0 .8rem; scrollbar-width: thin; }
+.library-recent-card { flex: 0 0 280px; min-width: 0; min-height: 220px; padding: 1.4rem; border: 1px solid var(--study-line); border-top: 3px solid var(--neu-accent); border-radius: 10px; background: var(--neu-surface); color: var(--neu-text-primary); text-decoration: none; display: flex; flex-direction: column; scroll-snap-align: start; transition: background 160ms ease; }
+.library-recent-card:hover { background: var(--neu-accent-soft); }
+.library-recent-card h3 { font-size: 1.1rem; line-height: 1.45; margin: 1rem 0 .65rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.library-recent-card p { font-size: .75rem; color: var(--neu-text-secondary); margin: 0 0 1.5rem; }
+.library-recent-foot { margin-top: auto; display: flex; justify-content: space-between; font-size: .75rem; color: var(--neu-text-secondary); }
+.library-browse-title { margin-bottom: 1rem; }
+.library-section-cards { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .85rem; margin-top: 1rem; }
+.library-section-cards .library-index-article { border: 1px solid var(--study-line); background: var(--neu-surface); border-radius: 8px; padding: .35rem .5rem; }
+.library-section-cards .library-index-article:hover { background: var(--neu-accent-soft); }
+.library-section-cards .library-article-number { display: none; }
+@media(max-width: 760px) { .library-section-cards { grid-template-columns: 1fr; }.library-recent-card { flex-basis: 250px; }.library-recent-heading h2 { font-size: 1.1rem; } }
+@media(prefers-reduced-motion: reduce) { .library-recent-card { transition: none; } }
