@@ -144,7 +144,7 @@ nav.navbar {
 .btn-sm{padding:8px 16px;font-size:.8rem}
 
 /* ─── form elements ─── */
-input[type="text"], input[type="time"], input[type="number"], input[type="date"], textarea, select {
+input[type="text"], input[type="search"], input[type="time"], input[type="number"], input[type="date"], textarea, select {
   background: var(--neu-bg); border: none; border-radius: 14px; padding: 14px 18px; font-size: 14px; color: var(--neu-text-primary); box-shadow: inset 4px 4px 8px var(--neu-shadow-dark), inset -4px -4px 8px var(--neu-shadow-light); outline: none; transition: box-shadow 0.2s; width: 100%; font-family: inherit;
 }
 input:focus, select:focus, textarea:focus { box-shadow: inset 4px 4px 8px var(--neu-shadow-dark), inset -4px -4px 8px var(--neu-shadow-light), 0 0 0 2px var(--neu-accent); }
