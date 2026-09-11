@@ -1,22 +1,35 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import LearningIcon from '../components/LearningIcon'
 import useLearningProgress from '../utils/useLearningProgress'
 
+const shortDate = date => new Date(`${date}T12:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 export default function Stats() {
   const { tracks, activity, customStatus } = useLearningProgress()
+  const [period, setPeriod] = useState(14)
+  const [filter, setFilter] = useState('All roadmaps')
+  const [selectedDay, setSelectedDay] = useState(null)
   const done = tracks.reduce((n, t) => n + t.done, 0)
   const started = tracks.reduce((n, t) => n + t.started, 0)
-  const max = Math.max(1, ...activity.days.map(d => d.count))
-  return <div className="learning-overview">
-    <div className="learning-heading"><span className="learning-eyebrow">YOUR PROGRESS</span><h1>Learning stats</h1><p>Completion across your roadmaps and recent coding activity.</p></div>
-    <div className="learning-metrics">{[[done, 'Items completed'], [started, 'In progress'], [activity.today, 'Problems solved today'], [activity.streak, 'Day coding streak']].map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}</div>
+  const days = activity.days.slice(-period)
+  const totalSolves = days.reduce((n, d) => n + d.count, 0)
+  const activeDays = days.filter(d => d.count > 0).length
+  const max = Math.max(2, Math.ceil(Math.max(0, ...days.map(d => d.count)) / 2) * 2)
+  const selected = days.find(d => d.date === selectedDay)
+  const activeTracks = tracks.filter(t => t.done + t.started > 0 && t.done < t.total)
+  const current = activeTracks[0]
+  const filtered = tracks.filter(t => filter === 'All roadmaps' || (filter === 'In progress' ? t.done + t.started > 0 && t.done < t.total : t.total > 0 && t.done === t.total))
+  return <div className="learning-overview progress-page">
+    <header className="progress-heading"><div><span className="learning-eyebrow">YOUR LEARNING, AT A GLANCE</span><h1>Learning stats</h1><p>See what’s moving forward. Choose where to go next.</p></div><Link className="progress-library-link" to="/">Learning library <LearningIcon name="arrow" size={17} /></Link></header>
+    <div className="progress-totals"><div><span>Items completed</span><strong>{done.toLocaleString()}</strong><small>Across {tracks.length} roadmaps</small></div><div><span>In progress</span><strong>{started.toLocaleString()}</strong><small>{activeTracks.length} active {activeTracks.length === 1 ? 'roadmap' : 'roadmaps'}</small></div><div><span>Coding streak</span><strong>{activity.streak}<em>{activity.streak === 1 ? 'day' : 'days'}</em></strong><small>{activity.today} problems solved today</small></div></div>
     {customStatus !== 'ready' && <p className="learning-note" role="status">{customStatus === 'loading' ? 'Loading custom roadmap progress…' : 'Custom roadmap progress could not be refreshed. Totals may be incomplete.'}</p>}
-    <div className="learning-section-title"><h2>Progress by roadmap</h2></div>
-    <div className="learning-tracks">{tracks.map(t => <Link key={t.to} to={t.to} className="learning-track"><div className="learning-track-copy"><h3>{t.title}</h3><p>{t.done} completed · {t.started} in progress · {t.total - t.done - t.started} remaining</p></div><div className="learning-track-progress"><span>{Math.round(t.done / (t.total || 1) * 100)}% of {t.total} {t.unit}</span><progress value={t.done} max={t.total} aria-label={`${t.title} completion`} /></div><LearningIcon name="chevron" size={15} /></Link>)}</div>
-    {!done && !started && <p className="learning-note">Start any roadmap and mark your progress. Your totals will appear here automatically.</p>}
-    <div className="learning-section-title"><h2>Coding activity</h2><span>Last 14 days</span></div>
-    <p className="learning-note">DSA and Python solve records. Repeat solves count once per problem per day. Your streak stays active if you solved yesterday.</p>
-    <div className="learning-activity">{activity.days.map(d => <div key={d.date} className="learning-day" title={`${d.date}: ${d.count} problems`}><span>{d.count}</span><div className="learning-bar-slot"><div style={{ height: `${Math.max(2, d.count / max * 100)}%` }} /></div><small>{d.date.slice(5)}</small></div>)}</div>
-    <p className="learning-note">Built-in roadmap and Python progress is saved in this browser. DSA also syncs with the database. Custom roadmaps and lessons are saved in the database; a generated lesson counts as in progress until you mark it complete.</p>
+    <div className="progress-main"><section className="progress-activity" aria-label="Coding activity"><div className="progress-panel-heading"><div><h2>Coding activity</h2><p>DSA & Python</p></div><div className="progress-segments" aria-label="Activity period">{[7, 14].map(n => <button key={n} aria-pressed={period === n} onClick={() => { setPeriod(n); setSelectedDay(null) }}>{n} days</button>)}</div></div><div className="progress-chart-summary"><strong>{totalSolves}<span> solves</span></strong><span>{activeDays} active {activeDays === 1 ? 'day' : 'days'} in this period</span></div>
+      <div className="progress-chart" style={{ '--day-count': days.length }}><div className="progress-chart-grid" aria-hidden="true"><span>{max}</span><span>{Math.round(max / 2)}</span><span>0</span></div><div className="progress-chart-bars">{days.map(d => <button key={d.date} className={`progress-chart-day${selectedDay === d.date ? ' selected' : ''}`} aria-label={`${shortDate(d.date)}: ${d.count} problems solved`} aria-pressed={selectedDay === d.date} onClick={() => setSelectedDay(d.date)}><span className="progress-chart-bar" style={{ height: `${d.count / max * 100}%` }} /><span className="progress-chart-dot" /></button>)}</div></div><div className="progress-chart-dates"><span>{shortDate(days[0].date)}</span><span>{shortDate(days[days.length - 1].date)}</span></div><p className="progress-chart-caption" aria-live="polite">{selected ? `${shortDate(selected.date)} · ${selected.count} problems solved` : totalSolves ? 'Select a day to see its solve count.' : 'Your first solve will appear here. Start with one problem.'}</p>
+    </section><aside className="progress-next"><span className="learning-eyebrow">{current ? 'KEEP GOING' : 'YOUR NEXT STEP'}</span><span className="progress-next-icon"><LearningIcon name={current?.icon || (current?.to === '/ai-interview' ? 'interview' : current?.to.slice(1) || 'dsa')} size={28} /></span><h2>{current?.title || 'Start a learning path'}</h2><p>{current ? `${current.done} of ${current.total} ${current.unit} completed. Pick up the next unfinished topic.` : 'Choose a subject and turn it into a path you can follow at your own pace.'}</p>{current && <progress value={current.done} max={current.total} aria-label={`${current.title} completion`} />}<Link to={current?.next || '/roadmaps'}>{current ? 'Continue learning' : 'Explore roadmaps'}<LearningIcon name="arrow" size={18} /></Link></aside></div>
+    <section className="progress-roadmaps"><div className="progress-panel-heading"><div><h2>Progress by roadmap</h2><p>Your built-in and custom learning paths.</p></div><div className="progress-filters" aria-label="Filter roadmaps">{['All roadmaps', 'In progress', 'Completed'].map(label => <button key={label} aria-pressed={filter === label} onClick={() => setFilter(label)}>{label}</button>)}</div></div>
+      <div className="progress-table-heading" aria-hidden="true"><span>Roadmap</span><span>Completion</span><span>Progress</span></div>
+      <div className="progress-track-list">{filtered.map(t => { const percent = Math.round(t.done / (t.total || 1) * 100); return <Link key={t.to} to={t.next || t.to} className="stats-roadmap-row"><span className="progress-track-identity"><span className="progress-track-icon"><LearningIcon name={t.icon || (t.to === '/ai-interview' ? 'interview' : t.to.slice(1))} size={20} /></span><span><strong>{t.title}</strong><small>{t.started ? `${t.started} in progress` : t.done === t.total ? 'Completed' : t.done ? 'Learning in progress' : 'Ready when you are'}</small></span></span><span className="progress-track-count"><strong>{t.done}</strong> / {t.total}<small>{t.unit}</small></span><span className="progress-track-bar"><progress value={t.done} max={t.total || 1} aria-label={`${t.title} completion`} /><span>{percent}%</span></span><LearningIcon name="chevron" size={16} /></Link> })}</div>
+      {!filtered.length && <div className="progress-empty"><h3>{filter === 'Completed' ? 'Room for your first finish.' : 'Your next chapter is waiting.'}</h3><p>{filter === 'Completed' ? 'Roadmaps appear here when every item is complete.' : 'Start a roadmap and mark a topic to see your progress here.'}</p><Link to="/">Browse your learning library →</Link></div>}
+    </section><details className="progress-method"><summary>How your stats are counted</summary><p>Completion includes built-in and custom roadmaps. A generated custom lesson counts as in progress until marked complete. Coding activity counts each DSA or Python problem once per day; your streak stays active if you solved yesterday. Built-in roadmap and Python progress is stored in this browser. DSA syncs with the database; custom roadmaps and lessons are saved there.</p></details>
   </div>
 }

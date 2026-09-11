@@ -15,7 +15,8 @@ for (const route of ['/planner', '/week', '/routine', '/study', '/prep']) assert
 assert.ok(shell.includes('Skip to content'))
 const stats = render(Stats)
 assert.ok(stats.includes('Learning stats'))
-assert.ok(stats.includes('Start any roadmap'))
+assert.ok(stats.includes('Your first solve will appear here'))
+assert.ok(stats.includes('aria-label="Activity period"'))
 assert.ok(!stats.includes('NaN'))
 console.log('Learning page render checks passed')
 

@@ -29,3 +29,9 @@ Ask representative learners to: find a topic, return to an unfinished problem, i
 ## Verification scope
 
 Production build and automated rendering/progress tests are run locally. Native Chrome accessibility inspection is available; screenshot capture in this session returns a blank image, limiting visual review. Existing AI generation and code execution integrations require separate end-to-end validation.
+
+## Stats and light-theme refinement
+
+The light theme now uses a cleaner near-white workspace, restrained sidebar tint, and neutral separators. Stats uses an unboxed summary, an interactive activity chart, a next-learning panel, and compact roadmap rows instead of repeating large card groups. The chart switches between 7 and 14 days; selecting a day exposes its count to pointer and keyboard users. Zero-solve days have no filled bar. Roadmap filters show all, active, or completed paths, with explicit empty states. Counting rules remain available in an expandable disclosure.
+
+Validated the populated activity chart, period controls, daily selection, filters, light/dark rendering, and a 390px phone layout in headless Chrome. Screenshots use isolated sample history; no sample progress was added to the user’s database. Existing progress/render tests and production build pass.
