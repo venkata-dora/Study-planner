@@ -26,6 +26,8 @@ import InterviewPractice from './pages/InterviewPractice'
 import InterviewHistory from './pages/InterviewHistory'
 import './index.css'
 import './styles/apple-learning.css'
+import './styles/focus.css'
+import './styles/learning-styles.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import LearningIcon from './components/LearningIcon'
+import StylePicker, { STYLE_KEY, readLearningStyle, isLearningStyle } from './components/StylePicker'
 
 const groups = [
   { label: 'Your learning', links: [['/', 'Discover', 'library'], ['/roadmaps', 'My learning paths', 'systemdesign'], ['/blogs', 'Reading library', 'blogs'], ['/stats', 'Learning progress', 'stats']] },
@@ -8,6 +9,15 @@ const groups = [
 ]
 export default function App() {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('dp_dark_mode') === '1')
+  const [learningStyle, setLearningStyle] = useState(() => { const saved = readLearningStyle(); return isLearningStyle(saved) ? saved : 'reading-room' })
+  const [stylePickerOpen, setStylePickerOpen] = useState(() => !isLearningStyle(readLearningStyle()))
+  const saveStyle = value => {
+    setLearningStyle(value)
+    document.documentElement.dataset.learningStyle = value
+    try { localStorage.setItem(STYLE_KEY, value) } catch { /* The style still applies for this session. */ }
+    setStylePickerOpen(false)
+  }
+  useEffect(() => { document.documentElement.dataset.learningStyle = learningStyle }, [learningStyle])
   const { pathname } = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
   const sidebarRef = useRef(null)
@@ -50,8 +60,9 @@ export default function App() {
     </aside>
     {menuOpen && <button className="apple-mobile-scrim" onClick={closeMenu} aria-label="Close navigation" tabIndex={-1} />}
     <div className="apple-workspace" inert={menuOpen ? true : undefined}>
-      <header className="apple-toolbar"><button ref={menuRef} className="apple-menu-button" onClick={() => setMenuOpen(true)} aria-label="Open navigation" aria-expanded={menuOpen} aria-controls="study-navigation"><LearningIcon name="menu" /></button><div><span className="apple-toolbar-brand">Learning Lab <span aria-hidden="true">/</span> </span>{current?.[1] || 'Learning'}</div><button className="apple-theme-button" onClick={() => setDarkMode(d => !d)} aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'} title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}><LearningIcon name={darkMode ? 'sun' : 'moon'} /></button></header>
+      <header className="apple-toolbar"><button ref={menuRef} className="apple-menu-button" onClick={() => setMenuOpen(true)} aria-label="Open navigation" aria-expanded={menuOpen} aria-controls="study-navigation"><LearningIcon name="menu" /></button><div><span className="apple-toolbar-brand">Learning Lab <span aria-hidden="true">/</span> </span>{current?.[1] || 'Learning'}</div><div className="appearance-actions"><button className="appearance-button" onClick={() => setStylePickerOpen(true)}>Appearance</button><button className="apple-theme-button" onClick={() => setDarkMode(d => !d)} aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'} title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}><LearningIcon name={darkMode ? 'sun' : 'moon'} /></button></div></header>
       <main id="learning-content" className="main-content" tabIndex={-1}><Outlet /></main>
     </div>
+    {stylePickerOpen && <StylePicker initialStyle={learningStyle} onSave={saveStyle} onDismiss={() => saveStyle(learningStyle)} />}
   </div>
 }

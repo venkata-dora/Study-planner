@@ -1,0 +1,45 @@
+/* Reading Room is the original base design. Focus is an opt-in visual layer. */
+:root[data-learning-style="focus"] {
+  --neu-accent: #365d9d;
+  --neu-accent-soft: #eaf0f9;
+}
+:root[data-learning-style="focus"][data-theme="dark"] { --neu-accent: #a5c5fa; --neu-accent-soft: #25334a; }
+[data-learning-style="focus"] .subject-launcher,
+[data-learning-style="focus"] .universal-library .reading-library-callout { background: var(--neu-surface); color: var(--neu-text-primary); border: 1px solid var(--study-line); border-radius: 12px; }
+[data-learning-style="focus"] .subject-launcher .learning-eyebrow,
+[data-learning-style="focus"] .subject-examples > span,
+[data-learning-style="focus"] .subject-examples button,
+[data-learning-style="focus"] .reading-path-preview small,
+[data-learning-style="focus"] .reading-library-callout .learning-eyebrow,
+[data-learning-style="focus"] .reading-library-callout p { color: var(--neu-text-secondary); }
+[data-learning-style="focus"] .subject-launcher form { border: 1px solid var(--study-line); background: var(--neu-bg); }
+[data-learning-style="focus"] .subject-launcher input { background: var(--neu-bg); color: var(--neu-text-primary); }
+[data-learning-style="focus"] .subject-launcher input::placeholder { color: var(--neu-text-secondary); }
+[data-learning-style="focus"] .subject-launcher form button { background: var(--neu-accent); color: var(--neu-surface); }
+[data-learning-style="focus"] .subject-launcher form button:disabled { background: var(--neu-accent-soft); color: var(--neu-text-secondary); }
+[data-learning-style="focus"] .reading-path-preview { border-color: var(--study-line); }
+[data-learning-style="focus"] .reading-path-preview li > span { border-color: var(--study-line); color: var(--neu-accent); }
+[data-learning-style="focus"] .subject-book,
+[data-learning-style="focus"] .subject-book:nth-child(n) { background: var(--neu-surface); color: var(--neu-text-primary); border: 1px solid var(--study-line); border-radius: 10px; }
+[data-learning-style="focus"] .subject-book > strong,
+[data-learning-style="focus"] .personal-paths-empty h3,
+[data-learning-style="focus"] .reading-library-callout h2 { font-family: inherit; font-weight: 600; }
+[data-learning-style="focus"] .subject-book-number { display: none; }
+[data-learning-style="focus"] .subject-book-category,
+[data-learning-style="focus"] .subject-book p,
+[data-learning-style="focus"] .book-progress > span { color: var(--neu-text-secondary); }
+[data-learning-style="focus"] .subject-book-action,
+[data-learning-style="focus"] .reading-library-action { color: var(--neu-accent); }
+[data-learning-style="focus"] .universal-library .personal-paths-empty { background: var(--neu-surface); color: var(--neu-text-primary); border: 1px dashed var(--study-line); border-radius: 12px; }
+[data-learning-style="focus"] .personal-paths-empty p,
+[data-learning-style="focus"] .personal-paths-empty .learning-eyebrow { color: var(--neu-text-secondary); }
+[data-learning-style="focus"] .personal-paths-empty a,
+[data-learning-style="focus"] .empty-path-mark { color: var(--neu-accent); }
+[data-learning-style="focus"] .reading-library-emblem { border-color: var(--study-line); color: var(--neu-accent); border-radius: 12px; }
+[data-learning-style="focus"] .progress-next { background: var(--neu-accent-soft); color: var(--neu-text-primary); }
+[data-learning-style="focus"] .progress-next .learning-eyebrow,
+[data-learning-style="focus"] .progress-next p,
+[data-learning-style="focus"] .stats-focus-progress em { color: var(--neu-text-secondary); }
+[data-learning-style="focus"] .stats-focus-progress svg { stroke: var(--study-line); }
+[data-learning-style="focus"] .stats-focus-progress circle:last-child { stroke: var(--neu-accent); }
+
