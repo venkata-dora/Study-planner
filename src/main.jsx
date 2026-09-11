@@ -30,6 +30,7 @@ import './styles/reading-room.css'
 import './styles/focus.css'
 import './styles/paper.css'
 import './styles/learning-styles.css'
+import './styles/studio.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

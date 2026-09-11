@@ -1,0 +1,5 @@
+export default function SubjectArtwork({ index = 0 }) {
+  return <svg className="studio-artwork" viewBox="0 0 160 100" fill="none" aria-hidden="true">
+    {index === 0 ? <><path d="M58 85V68C22 38 61 4 88 18c25 10 28 40 8 52v15" fill="currentColor" opacity=".75"/><path d="M69 31c-21 23 32 6 15 33M58 88h46" stroke="currentColor" strokeWidth="4"/></> : index === 1 ? <><circle cx="80" cy="50" r="30" fill="currentColor" opacity=".8"/><ellipse cx="80" cy="50" rx="64" ry="15" transform="rotate(-25 80 50)" stroke="currentColor" strokeWidth="5"/><path d="M128 12v14m-7-7h14M23 72v12m-6-6h12" stroke="currentColor" strokeWidth="2"/></> : index === 2 ? <><path d="M36 81h78M47 70l9-27 49-30 14 21-49 30-23 6Z" fill="currentColor" opacity=".8"/><path d="m58 61 52-37M34 92h63" stroke="currentColor" strokeWidth="3"/></> : <><path d="M29 86V32l51-22 51 22v54H29Z" fill="currentColor" opacity=".25"/><path d="M43 86V50a12 12 0 0 1 24 0v36m26 0V50a12 12 0 0 1 24 0v36M26 32h108M24 87h112" stroke="currentColor" strokeWidth="6"/></>}
+  </svg>
+}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 export const LEARNING_STYLES = [
+  { id: 'studio', name: 'Studio', description: 'Warm paper, illustrated covers, and colorful learning journeys. A space for curious minds.' },
   { id: 'reading-room', name: 'Reading Room', description: 'Soft book covers, expressive titles, and deep green. A warm, editorial workspace.' },
   { id: 'paper', name: 'Paper', description: 'White pages, charcoal text, and minimal color. A simple, document-like workspace.' },
   { id: 'focus', name: 'Focus', description: 'Clean surfaces, simple typography, and a quieter palette for focused reading.' },

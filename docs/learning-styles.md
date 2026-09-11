@@ -30,3 +30,11 @@ Validation: existing Node tests and production build; desktop/mobile route check
 ## Paper and launch research
 
 Paper adds a plain-white/charcoal option and a neutral dark variant. It shares the restrained layout in `focus.css` through scoped selectors; `paper.css` supplies its palette. The chooser now has three choices and preserves existing preferences. See [research and launch plan](theme-research-and-launch-plan.md) for sources, rationale, verified checks, and pending launch criteria.
+
+## Studio and learning journeys
+
+Studio adds warm cream surfaces, terracotta actions, and illustrated pastel subject covers. Select it through Appearance; existing preferences are preserved. The shared palette applies across the app in light and dark mode, with restrained lesson surfaces and reduced-motion support.
+
+The reusable JourneyMap accepts subject-neutral stages, completion counts, and lesson links or selection handlers. Custom roadmaps and the Gen AI, System Design, and AI Interview overviews use it. Four milestones appear per map page; List shows all chapters. Selection reveals real topic groups or lessons, and custom topics retain saved-blog generation and completion controls. All original contents remain available in an expandable outline. DSA and Python retain their problem-sheet navigation with Studio styling.
+
+Validation: render/progress tests and production build passed; nine main routes checked at 1440 and 390 pixels in both modes. Browser interaction checks cover chapter selection, pagination, List/Journey switching, a mocked creative-writing roadmap, saved-lesson reading, and appearance persistence. The pre-existing build chunk-size warning remains.
