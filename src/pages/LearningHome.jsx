@@ -1,26 +1,34 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import LearningIcon from '../components/LearningIcon'
 import useLearningProgress from '../utils/useLearningProgress'
 
+const subjects = [
+  ['Mind & society', 'Psychology', 'Understand how people think, feel, and behave.', '01'],
+  ['Science & nature', 'Astronomy', 'Explore the stars, galaxies, and our place in space.', '02'],
+  ['Arts & ideas', 'Creative writing', 'Learn to shape ideas into stories worth reading.', '03'],
+  ['History & culture', 'World history', 'Connect the people and ideas that shaped our world.', '04'],
+]
 export default function LearningHome() {
   const { tracks, customStatus } = useLearningProgress()
-  const current = tracks.find(t => t.done + t.started > 0 && t.done < t.total)
+  const [subject, setSubject] = useState('')
+  const navigate = useNavigate()
+  const personal = tracks.filter(t => t.to.startsWith('/roadmaps/'))
+  const active = [...personal, ...tracks.filter(t => !t.to.startsWith('/roadmaps/'))].filter(t => t.done + t.started > 0 && t.done < t.total)
+  const current = active[0]
   const completed = tracks.reduce((total, t) => total + t.done, 0)
-  return <div className="learning-overview">
-    <div className="apple-page-heading"><div><span className="learning-eyebrow">YOUR LEARNING WORKSPACE</span><h1>Learning library</h1><p>Choose a roadmap or continue an unfinished topic.</p></div><Link to="/stats" className="apple-completion"><strong>{completed}</strong><span>items completed<LearningIcon name="chevron" size={12} /></span></Link></div>
-    <Link to={current?.next || '/dsa'} className="apple-continue"><span className="apple-course-art" aria-hidden="true"><LearningIcon name={current?.icon || (current?.to === '/ai-interview' ? 'interview' : current ? current.to.slice(1) : 'dsa')} size={42} /></span><div><span className="learning-eyebrow">{current ? 'CONTINUE YOUR ROADMAP' : 'A GOOD PLACE TO START'}</span><h2>{current?.title || 'Data structures & algorithms'}</h2><p>{current ? `${current.done} of ${current.total} ${current.unit} completed` : 'Build your foundations, one problem at a time.'}</p></div><span className="apple-continue-action">{current ? 'Continue' : 'Start learning'}<LearningIcon name="arrow" size={18} /></span></Link>
-    <div className="learning-section-title"><h2>Your roadmaps <span className="apple-count">{tracks.length}</span></h2><Link to="/roadmaps">Create a roadmap ↗</Link></div>
-    {customStatus === 'error' && <p className="learning-note" role="status">Custom roadmap progress could not be refreshed. <Link to="/roadmaps">Open your roadmaps</Link> to try again.</p>}
-    <div className="learning-tracks">{tracks.map(track => <Link className="learning-track" key={track.to} to={track.to}>
-      <span className="apple-track-icon"><LearningIcon name={track.icon || (track.to === '/ai-interview' ? 'interview' : track.to.slice(1))} size={24} /></span><div className="learning-track-copy"><h3>{track.title}</h3><p>{track.description}</p></div>
-      <div className="learning-track-progress"><span>{track.done} / {track.total} {track.unit}</span><progress value={track.done} max={track.total} aria-label={`${track.title} completion`} /></div><LearningIcon name="chevron" size={15} />
-    </Link>)}</div>
-    <div className="learning-section-title"><h2>Practice & reading</h2></div>
-    <div className="learning-resources">{[
-      ['/dsa/practice', 'DSA practice', 'Turn understanding into problem-solving.', 'dsa'],
-      ['/python/practice', 'Python practice', 'Build confidence through focused exercises.', 'python'],
-      ['/practice', 'Interview practice', 'Rehearse answers and review your sessions.', 'interview'],
-      ['/blogs', 'Reading library', 'Read saved explanations and topic guides.', 'blogs'],
-    ].map(([to, title, description, icon]) => <Link key={to} to={to}><LearningIcon name={icon} size={22} /><div><h3>{title}</h3><p>{description}</p></div><LearningIcon name="chevron" size={14} /></Link>)}</div>
+  const start = value => navigate(`/roadmaps?subject=${encodeURIComponent(value.trim())}`)
+  const renderTrack = track => <Link className="learning-track" key={track.to} to={track.to}>
+    <span className="apple-track-icon"><LearningIcon name={track.icon || (track.to === '/ai-interview' ? 'interview' : track.to.slice(1))} size={24} /></span><div className="learning-track-copy"><h3>{track.title}</h3><p>{track.description}</p></div>
+    <div className="learning-track-progress"><span>{track.done} / {track.total} {track.unit}</span><progress value={track.done} max={track.total || 1} aria-label={`${track.title} completion`} /></div><LearningIcon name="chevron" size={15} />
+  </Link>
+  return <div className="learning-overview universal-library">
+    <header className="discovery-heading"><div><span className="learning-eyebrow">LEARNING LAB · YOUR SPACE TO EXPLORE</span><h1>Follow your curiosity.</h1><p>Choose a subject. Find a clear path. Learn through thoughtful, readable lessons.</p></div><Link to="/stats" className="discovery-progress"><strong>{completed}</strong><span>items completed <LearningIcon name="arrow" size={14} /></span></Link></header>
+    <section className="subject-launcher" aria-labelledby="subject-heading"><div className="subject-launcher-copy"><span className="learning-eyebrow">FROM A QUESTION TO A LEARNING PATH</span><h2 id="subject-heading">What would you like to understand?</h2><form onSubmit={e => { e.preventDefault(); start(subject) }}><label className="subject-input-label" htmlFor="learning-subject">What do you want to learn?</label><input id="learning-subject" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Psychology or world history" required minLength={2} maxLength={160} /><button type="submit" disabled={subject.trim().length < 2}>Build my path <LearningIcon name="arrow" size={17} /></button></form><div className="subject-examples"><span>Try</span>{['Psychology', 'World history', 'Photography', 'Artificial intelligence'].map(s => <button key={s} onClick={() => start(s)}>{s}</button>)}</div></div><ol className="reading-path-preview" aria-label="How learning works"><li><span>01</span><div><strong>Find your foundations</strong><small>A roadmap matched to your level</small></div></li><li><span>02</span><div><strong>Read to understand</strong><small>Focused lessons, examples, and ideas</small></div></li><li><span>03</span><div><strong>Make it yours</strong><small>Reflect, review, and track your progress</small></div></li></ol></section>
+    {current && <Link to={current.next || current.to} className="universal-continue"><span className="universal-continue-icon"><LearningIcon name="blogs" size={23} /></span><div><span className="learning-eyebrow">PICK UP WHERE YOU LEFT OFF</span><h2>{current.title}</h2><p>{current.done} of {current.total} {current.unit} completed</p></div><span>Continue learning <LearningIcon name="arrow" size={18} /></span></Link>}
+    <section aria-labelledby="explore-heading"><div className="learning-section-title"><div><h2 id="explore-heading">A world of things to learn</h2><p>Starting points for your next personal roadmap.</p></div><Link to="/roadmaps">Choose your own subject ↗</Link></div><div className="subject-shelf">{subjects.map(([category, title, description, number]) => <Link key={title} to={`/roadmaps?subject=${encodeURIComponent(title)}`} className="subject-book"><span className="subject-book-category">{category}</span><strong>{title}</strong><span className="subject-book-number" aria-hidden="true">{number}</span><p>{description}</p><span className="subject-book-action">Create a path <LearningIcon name="arrow" size={17} /></span></Link>)}</div></section>
+    <section aria-labelledby="personal-paths-heading"><div className="learning-section-title"><h2 id="personal-paths-heading">Your learning paths <span className="apple-count">{personal.length}</span></h2><Link to="/roadmaps">Manage roadmaps ↗</Link></div>{customStatus === 'loading' && <p role="status">Loading your learning paths…</p>}{customStatus === 'error' && <p className="learning-note" role="status">Custom roadmap progress could not be refreshed. <Link to="/roadmaps">Open your roadmaps</Link> to try again.</p>}{personal.length ? <div className="learning-tracks">{personal.map(renderTrack)}</div> : customStatus === 'ready' && <div className="personal-paths-empty"><LearningIcon name="systemdesign" size={28} /><div><h3>A place for everything you want to learn.</h3><p>Create your first path above. Your lessons and progress will live here.</p></div><Link to="/roadmaps">Create a roadmap →</Link></div>}</section>
+    <Link className="reading-library-callout" to="/blogs"><LearningIcon name="blogs" size={30} /><div><h2>Your reading library</h2><p>Return to saved lessons, revisit an idea, or keep reading.</p></div><LearningIcon name="arrow" size={22} /></Link>
+    <section id="starter-paths"><div className="learning-section-title"><div><h2>Explore our technical collection</h2><p>Existing structured paths for coding, AI, and software engineering.</p></div></div><div className="learning-tracks">{tracks.filter(t => !t.to.startsWith('/roadmaps/')).map(renderTrack)}</div><Link className="technical-practice-link" to="/practice">Open interview practice →</Link></section>
   </div>
 }

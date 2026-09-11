@@ -3,9 +3,8 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import LearningIcon from './components/LearningIcon'
 
 const groups = [
-  { label: 'Workspace', links: [['/', 'Library', 'library'], ['/stats', 'Stats', 'stats'], ['/roadmaps', 'My roadmaps', 'systemdesign']] },
-  { label: 'Learn', links: [['/dsa', 'DSA', 'dsa'], ['/python', 'Python', 'python'], ['/genai', 'Gen AI', 'genai'], ['/systemdesign', 'System Design', 'systemdesign'], ['/ai-interview', 'AI Interview', 'interview']] },
-  { label: 'Explore', links: [['/blogs', 'Blogs', 'blogs'], ['/practice', 'Practice', 'practice']] },
+  { label: 'Your learning', links: [['/', 'Discover', 'library'], ['/roadmaps', 'My learning paths', 'systemdesign'], ['/blogs', 'Reading library', 'blogs'], ['/stats', 'Learning progress', 'stats']] },
+  { label: 'Tools', links: [['/practice', 'Interview practice', 'practice']] },
 ]
 export default function App() {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('dp_dark_mode') === '1')
@@ -45,7 +44,7 @@ export default function App() {
     <a className="skip-link" href="#learning-content">Skip to content</a>
     <aside ref={sidebarRef} id="study-navigation" className="apple-sidebar" role={menuOpen ? 'dialog' : undefined} aria-modal={menuOpen || undefined} aria-label="Learning navigation">
       <button className="apple-menu-close btn btn-secondary" onClick={closeMenu}>Close menu</button>
-      <NavLink to="/" className="learning-brand"><span className="apple-brand-mark"><LearningIcon name="library" size={22} /></span><span>Learning Lab<small>Learn. Practice. Review.</small></span></NavLink>
+      <NavLink to="/" className="learning-brand"><span className="apple-brand-mark"><LearningIcon name="library" size={22} /></span><span>Learning Lab<small>Follow your curiosity.</small></span></NavLink>
       <nav className="apple-navigation" aria-label="Learning navigation">{groups.map(group => <div className="apple-nav-group" key={group.label}><span className="apple-nav-label">{group.label}</span>{group.links.map(([to, label, icon]) => <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `apple-nav-item${isActive ? ' active' : ''}`}><LearningIcon name={icon} /><span>{label}</span></NavLink>)}</div>)}</nav>
       <div className="apple-sidebar-footer"><span className="apple-profile">L</span><div>Your learning space<small>Progress at your pace</small></div></div>
     </aside>

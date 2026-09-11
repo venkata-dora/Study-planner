@@ -94,11 +94,12 @@ export default function BlogLibrary() {
         <div style={{ textAlign: 'center', padding: 60 }}>
           <div style={{ fontSize: '3rem', marginBottom: 16 }}>📝</div>
           <div style={{ color: 'var(--neu-text-secondary)', marginBottom: 8 }}>
-            {blogs.length + customBlogs.length === 0 ? 'No blogs yet' : 'No matching blogs'}
+            {blogs.length + customBlogs.length === 0 ? 'Your reading library starts here' : 'No matching lessons'}
           </div>
           <div style={{ fontSize: '.8rem', color: 'var(--neu-text-secondary)' }}>
-            Go to any topic and click the 📝 button to generate a blog
+            Open a topic in your learning path and generate a lesson. Saved lessons appear here.
           </div>
+          <Link to="/roadmaps" style={{ display: 'inline-block', marginTop: 20, color: 'var(--neu-accent)' }}>Explore your learning paths →</Link>
         </div>
       )}
 

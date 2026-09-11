@@ -15,7 +15,8 @@ export default function CustomRoadmaps() {
   const { roadmapId } = useParams()
   const navigate = useNavigate()
   const [maps, setMaps] = useState([])
-  const [subject, setSubject] = useState('')
+  const [searchParams] = useSearchParams()
+  const [subject, setSubject] = useState(() => searchParams.get('subject')?.slice(0, 160) || '')
   const [level, setLevel] = useState('Beginner')
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
@@ -38,9 +39,9 @@ export default function CustomRoadmaps() {
     <header className="apple-page-heading"><div><span className="learning-eyebrow">YOUR LEARNING PATHS</span><h1>What do you want to learn?</h1><p>Start with a subject. Get a path with topics, subtopics, and lessons you can read as you go.</p></div></header>
     <form className="roadmap-create" onSubmit={create} aria-busy={creating}>
       <label htmlFor="roadmap-subject">Subject or concept</label>
-      <div className="roadmap-create-fields"><input id="roadmap-subject" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Machine learning, Java, frontend development" required minLength={2} maxLength={160} disabled={creating} /><label className="roadmap-level">Starting level<select aria-label="Starting level" value={level} onChange={e => setLevel(e.target.value)} disabled={creating}>{['Beginner', 'Intermediate', 'Advanced'].map(l => <option key={l}>{l}</option>)}</select></label><button className="btn btn-primary" disabled={creating || subject.trim().length < 2}>{creating ? 'Building your path…' : 'Create roadmap →'}</button></div>
-      <div className="roadmap-suggestions"><span>Try a subject</span>{['Artificial intelligence', 'Machine learning', 'Frontend development', 'Java'].map(s => <button type="button" key={s} disabled={creating} onClick={() => setSubject(s)}>{s}</button>)}</div>
-      {creating && <p role="status">Organizing prerequisites, topics, and a practical project. This can take a few minutes.</p>}
+      <div className="roadmap-create-fields"><input id="roadmap-subject" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Psychology, world history, creative writing" required minLength={2} maxLength={160} disabled={creating} /><label className="roadmap-level">Starting level<select aria-label="Starting level" value={level} onChange={e => setLevel(e.target.value)} disabled={creating}>{['Beginner', 'Intermediate', 'Advanced'].map(l => <option key={l}>{l}</option>)}</select></label><button className="btn btn-primary" disabled={creating || subject.trim().length < 2}>{creating ? 'Building your path…' : 'Create roadmap →'}</button></div>
+      <div className="roadmap-suggestions"><span>Try a subject</span>{['Psychology', 'World history', 'Creative writing', 'Artificial intelligence'].map(s => <button type="button" key={s} disabled={creating} onClick={() => setSubject(s)}>{s}</button>)}</div>
+      {creating && <p role="status">Organizing foundations, topics, and reading lessons. This can take a few minutes.</p>}
     </form>
     {error && <p role="alert">{error}</p>}
     <div className="learning-section-title"><h2>Your roadmaps</h2><span>{maps.length} saved</span></div>
