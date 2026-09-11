@@ -456,17 +456,17 @@ export default function PythonProblem() {
               onClick={generateExplanation}
               style={{
                 padding: '5px 14px', borderRadius: 999, border: 'none',
-                background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)',
-                color: '#fff', fontSize: '.72rem', fontWeight: 700, cursor: 'pointer',
+                background: 'var(--neu-accent)',
+                color: 'var(--neu-surface)', fontSize: '.72rem', fontWeight: 700, cursor: 'pointer',
                 boxShadow: '0 3px 10px rgba(37,99,235,0.3)',
                 display: 'flex', alignItems: 'center', gap: 5,
               }}
-            >🧠 Generate Blog</button>
+            >Generate lesson</button>
           ) : explainLoading ? (
             <span style={{
               padding: '5px 14px', borderRadius: 999,
-              background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)',
-              color: '#fff', fontSize: '.72rem', fontWeight: 700,
+              background: 'var(--neu-accent)',
+              color: 'var(--neu-surface)', fontSize: '.72rem', fontWeight: 700,
               display: 'flex', alignItems: 'center', gap: 5,
             }}>⏳ Generating…</span>
           ) : (
@@ -475,16 +475,16 @@ export default function PythonProblem() {
               style={{
                 padding: '5px 14px', borderRadius: 999, border: 'none',
                 background: showExplanation
-                  ? 'linear-gradient(135deg, #7c3aed 0%, #2563eb 100%)'
+                  ? 'var(--neu-accent)'
                   : 'var(--neu-bg)',
-                color: showExplanation ? '#fff' : 'var(--neu-accent)',
+                color: showExplanation ? 'var(--neu-surface)' : 'var(--neu-accent)',
                 fontSize: '.72rem', fontWeight: 700, cursor: 'pointer',
                 boxShadow: showExplanation
                   ? '0 3px 10px rgba(124,58,237,0.3)'
                   : '3px 3px 6px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light)',
                 display: 'flex', alignItems: 'center', gap: 5,
               }}
-            >{showExplanation ? '✕ Close Blog' : '📖 Open Blog'}</button>
+            >{showExplanation ? 'Close lesson' : 'Read lesson'}</button>
           )}
 
           <button
@@ -492,16 +492,16 @@ export default function PythonProblem() {
             style={{
               padding: '5px 14px', borderRadius: 999, border: 'none',
               background: showNotes
-                ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                ? 'var(--neu-accent)'
                 : 'var(--neu-bg)',
-              color: showNotes ? '#fff' : 'var(--neu-text-secondary)',
+              color: showNotes ? 'var(--neu-surface)' : 'var(--neu-text-secondary)',
               fontSize: '.72rem', fontWeight: 700, cursor: 'pointer',
               boxShadow: showNotes
                 ? '0 3px 10px rgba(245,158,11,0.3)'
                 : '3px 3px 6px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light)',
               display: 'flex', alignItems: 'center', gap: 5,
             }}
-          >{showNotes ? '✕ Close Notes' : '📝 Notes'}{notes ? ' •' : ''}</button>
+          >{showNotes ? '✕ Close Notes' : 'Notes'}{notes ? ' •' : ''}</button>
 
           <button title={meta.tip} onClick={toggleStatus} style={{
             padding: '4px 12px', borderRadius: 999, border: `2px solid ${meta.color}`,
@@ -517,13 +517,13 @@ export default function PythonProblem() {
       <div style={{
         background: 'var(--neu-bg)', borderRadius: 14, padding: '12px 18px', marginBottom: 10,
         boxShadow: '4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light)',
-        borderLeft: `4px solid ${phase.color}`, flexShrink: 0,
+        borderLeft: '4px solid var(--neu-accent)', flexShrink: 0,
         display: 'flex', alignItems: 'center', gap: 12,
       }}>
-        <span style={{ fontSize: '1.1rem' }}>{phase.icon}</span>
+        <span className="course-ordinal">{String(phase.phase).padStart(2, '0')}</span>
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--neu-text-primary)' }}>{problem.title}</div>
-          <div style={{ fontSize: '.72rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace', marginTop: 2 }}>
+          <div style={{ fontSize: '.8125rem', color: 'var(--neu-text-secondary)', fontFamily: 'inherit', marginTop: 4 }}>
             Phase {phase.phase}: {phase.title} → {topic.label}
           </div>
         </div>
@@ -709,7 +709,7 @@ export default function PythonProblem() {
               {showCustom ? '✎ Custom On' : '✎ Custom Input'}
             </button>
             <button className="btn btn-secondary btn-sm" onClick={saveCode} style={{ fontSize: '.72rem' }}>
-              {saved ? '✓ Saved' : '💾 Save'}
+              {saved ? '✓ Saved' : 'Save'}
             </button>
             {showCustom ? (
               <button className="btn btn-primary btn-sm" onClick={runCustom} disabled={running} style={{ fontSize: '.72rem' }}>

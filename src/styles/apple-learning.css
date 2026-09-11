@@ -303,7 +303,7 @@ button,a,input,select { -webkit-tap-highlight-color: transparent; touch-action: 
 :root:not([data-theme="dark"]) .apple-sidebar { border-right-color: #e9ecf0; }
 :root:not([data-theme="dark"]) .apple-brand-mark { box-shadow: none; border: 1px solid var(--study-line); }
 :root:not([data-theme="dark"]) .apple-nav-item.active { background: #e8f0fc; color: #165fc5; }
-.apple-platform .progress-page { max-width: 1160px; }
+.apple-platform .progress-page { max-width: 1060px; }
 .progress-heading { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; }
 .progress-heading h1 { font-size: clamp(2rem, 3.5vw, 2.8rem); line-height: 1.15; letter-spacing: -.045em; margin: .65rem 0; }
 .progress-heading p { color: var(--neu-text-secondary); margin: 0; font-size: .95rem; }
@@ -372,7 +372,7 @@ button,a,input,select { -webkit-tap-highlight-color: transparent; touch-action: 
 @media (prefers-reduced-motion: reduce) { .progress-chart-bar, .stats-roadmap-row { transition: none; } }
 
 /* Stats: a focused learning workspace with a strong continuation anchor. */
-.apple-platform .progress-page { max-width: 1160px; padding-top: 1.5rem; }
+.apple-platform .progress-page { max-width: 1060px; padding-top: .35rem; }
 .progress-heading { margin-bottom: 1.6rem; }
 .progress-heading h1 { font-size: clamp(2rem, 3vw, 2.6rem); }
 .progress-heading .learning-eyebrow { color: var(--neu-accent); }
@@ -632,3 +632,23 @@ button,a,input,select { -webkit-tap-highlight-color: transparent; touch-action: 
   .apple-platform .coding-history-row span:nth-child(3) { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 }
 .apple-platform .course-ordinal { font-family: inherit; font-size: 1rem; font-weight: 600; line-height: 1.2; color: var(--neu-accent); background: var(--neu-accent-soft) !important; border-radius: 6px !important; box-shadow: none !important; }
+
+/* Detail pages share one layout, including the interview question list. */
+.apple-platform .refined-lesson .study-lesson-header .apple-page-heading { margin: 0 0 1.5rem; }
+.apple-platform .refined-lesson .prep-day-prog span { font-size: .8125rem !important; color: var(--neu-text-secondary) !important; font-variant-numeric: tabular-nums; }
+.apple-platform .interview-topic-row { border: 0 !important; border-bottom: 1px solid var(--study-line) !important; border-radius: 0 !important; padding: .875rem 0 !important; gap: .75rem !important; margin: 0 !important; }
+.apple-platform .interview-topic-row > span { font-size: .9375rem !important; line-height: 1.65; }
+.apple-platform .study-editor > div:first-child { margin-bottom: 1rem !important; }
+.apple-platform .study-editor > div:nth-child(2) { padding: 1rem !important; margin-bottom: 1rem !important; background: var(--neu-surface) !important; border-radius: 8px !important; }
+.apple-platform .study-editor .course-ordinal { padding: .5rem; flex-shrink: 0; }
+.apple-platform .study-editor button { font-family: inherit; box-shadow: none !important; }
+.apple-platform .study-editor > div:first-child button { min-height: 2.75rem; border-radius: 7px !important; }
+.apple-platform .study-editor-split { border: 1px solid var(--study-line); border-radius: 10px; overflow: hidden; }
+@media(max-width:760px) {
+  .apple-platform .refined-lesson .prep-day-header { padding: 1rem; gap: .75rem; }
+  .apple-platform .refined-lesson .prep-day-body { padding: 0 1rem 1rem; }
+  .apple-platform .study-editor > div:first-child > div { margin-left: 0 !important; flex-wrap: wrap; }
+  .apple-platform .interview-topic-row { flex-wrap: wrap; }
+  .apple-platform .interview-topic-row > span { min-width: 0; flex-basis: calc(100% - 4rem) !important; }
+  .apple-platform .interview-topic-row .lesson-blog-action { margin-left: 2.75rem; }
+}

@@ -90,7 +90,7 @@ export default function GenAIDetail() {
 
   // All sections for the sidebar nav
   return (
-    <div className="refined-lesson" style={{ maxWidth: 1000, margin: '0 auto' }}>
+    <div className="refined-lesson" style={{ maxWidth: 1060, margin: '0 auto' }}>
 
       {/* ── Back button ── */}
       <button
@@ -150,7 +150,7 @@ export default function GenAIDetail() {
               onMouseLeave={e => { e.currentTarget.style.color = 'var(--neu-text-secondary)' }}
             >
               {s.icon} {s.title}
-              <span style={{ fontFamily: 'monospace', opacity: .7 }}>{sp}%</span>
+              <span style={{ fontFamily: 'inherit', opacity: .7 }}>{sp}%</span>
             </button>
           )
         })}
@@ -184,14 +184,14 @@ export default function GenAIDetail() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span
                   className="prep-track-label"
-                  style={{ background: section.bg, color: section.color, margin: 0, fontSize: '.8rem' }}
+                  style={{ background: section.bg, color: 'var(--neu-accent)', margin: 0, fontSize: '.8rem' }}
                 >
                   {sub.label}
                 </span>
                 {allSubDone && <span style={{ color: '#4ade80', fontSize: '.75rem' }}>✓ Completed!</span>}
               </div>
               <div className="prep-day-prog">
-                <span style={{ fontFamily: 'monospace', fontSize: '.72rem', color: section.color }}>{subDone}/{sub.items.length}</span>
+                <span style={{ fontFamily: 'inherit', fontSize: '.72rem', color: 'var(--neu-accent)' }}>{subDone}/{sub.items.length}</span>
                 <div style={{
                   width: 52, height: 5, background: 'var(--neu-bg)', borderRadius: 999, overflow: 'hidden',
                   boxShadow: 'inset 2px 2px 3px var(--neu-shadow-dark), inset -2px -2px 3px var(--neu-shadow-light)'
@@ -233,7 +233,7 @@ export default function GenAIDetail() {
                             flexShrink: 0,
                             width: 22, height: 22, borderRadius: '50%',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontFamily: 'monospace', fontSize: '.68rem', fontWeight: 700,
+                            fontFamily: 'inherit', fontSize: '.68rem', fontWeight: 700,
                             background: rank >= 4 ? section.color : 'var(--neu-bg)',
                             color: rank >= 4 ? '#fff' : 'var(--neu-text-secondary)',
                             border: rank >= 4 ? 'none' : '1.5px solid var(--neu-shadow-dark)',

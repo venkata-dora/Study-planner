@@ -224,7 +224,7 @@ export default function PythonBlog() {
   }
 
   return (
-    <div className="python-lessons" style={{ maxWidth: 1000, margin: '0 auto' }}>
+    <div className="python-lessons" style={{ maxWidth: 1060, margin: '0 auto' }}>
       <div className="prep-header">
         <span className="learning-eyebrow">PYTHON · READ & UNDERSTAND</span><h1>Python lessons</h1>
         <p>Explore each topic through focused explanations and examples.</p>
@@ -241,7 +241,7 @@ export default function PythonBlog() {
             boxShadow: '4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light)',
             borderLeft: `4px solid ${phase.color}`,
           }}>
-            <span style={{ fontSize: '1.1rem' }}>{phase.icon}</span>
+            <span className="course-ordinal">{String(phase.phase).padStart(2, '0')}</span>
             <span style={{ fontWeight: 700, fontSize: '.92rem', color: 'var(--neu-text-primary)' }}>
               Phase {phase.phase}: {phase.title}
             </span>
@@ -262,8 +262,8 @@ export default function PythonBlog() {
                   <span style={{ flex: 1, fontSize: '.84rem', color: 'var(--neu-text-primary)', fontWeight: 600 }}>
                     {topic.label}
                   </span>
-                  <span style={{ fontSize: '.7rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace' }}>
-                    {topic.problems.length} problems
+                  <span style={{ fontSize: '.8125rem', color: 'var(--neu-text-secondary)', fontFamily: 'inherit' }}>
+                    {topic.problems.length} {topic.problems.length === 1 ? 'problem' : 'problems'}
                   </span>
 
                   {hasBlog && (
@@ -275,7 +275,7 @@ export default function PythonBlog() {
                   )}
 
                   <button
-                    className="btn btn-primary btn-sm"
+                    className="btn btn-secondary btn-sm"
                     onClick={() => generateBlog(phase, topic)}
                     disabled={isGenerating}
                     style={{ fontSize: '.7rem' }}

@@ -58,7 +58,7 @@ export default function DSASheet() {
   const q = search.toLowerCase()
 
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+    <div style={{ maxWidth: 1060, margin: '0 auto' }}>
       <div className="prep-header"><span className="learning-eyebrow">LEARNING ROADMAP</span><h1>Striver’s A2Z DSA</h1><p>Build your foundations through ordered topics and hands-on problem solving.</p></div>
       <div className="apple-actions"><Link className="btn btn-primary" to="/dsa/practice">Practice DSA →</Link></div>
 

@@ -52,7 +52,7 @@ export default function PythonSheet() {
   const q = search.toLowerCase()
 
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+    <div style={{ maxWidth: 1060, margin: '0 auto' }}>
       <div className="prep-header"><span className="learning-eyebrow">LEARNING ROADMAP</span><h1>Python roadmap</h1><p>Develop Python fluency, from language fundamentals to production patterns.</p></div>
       <div className="apple-actions"><Link className="btn btn-primary" to="/python/practice">Practice Python →</Link><Link className="btn btn-secondary" to="/python/blog">Read topic guides</Link></div>
 

@@ -6,7 +6,6 @@ import {
   problemId, cycleStatus, STATUS_META, DIFFICULTY_COLORS,
   syncFromDB, loadNotes, saveNote,
 } from '../data/dsaData'
-import AffirmationBanner from '../components/AffirmationBanner'
 import DSAVisualizer from '../components/DSAVisualizer'
 
 const DEFAULT_CODE = `# Write your solution here
@@ -295,11 +294,6 @@ export default function DSAProblem() {
       }}
       onKeyDown={handleKeyDown}
     >
-      {/* Affirmation */}
-      <div style={{ flexShrink: 0 }}>
-        <AffirmationBanner context="dsa" />
-      </div>
-
       {/* Top bar */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap', flexShrink: 0,
@@ -323,16 +317,16 @@ export default function DSAProblem() {
             style={{
               padding: '5px 14px', borderRadius: 999, border: 'none',
               background: showNotes
-                ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                ? 'var(--neu-accent)'
                 : 'var(--neu-bg)',
-              color: showNotes ? '#fff' : 'var(--neu-text-secondary)',
+              color: showNotes ? 'var(--neu-surface)' : 'var(--neu-text-secondary)',
               fontSize: '.72rem', fontWeight: 700, cursor: 'pointer',
               boxShadow: showNotes
                 ? '0 3px 10px rgba(245,158,11,0.3)'
                 : '3px 3px 6px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light)',
               display: 'flex', alignItems: 'center', gap: 5,
             }}
-          >{showNotes ? '✕ Close Notes' : '📝 Notes'}{notes ? ' •' : ''}</button>
+          >{showNotes ? '✕ Close Notes' : 'Notes'}{notes ? ' •' : ''}</button>
 
           <button
             title={meta.tip}
@@ -356,15 +350,15 @@ export default function DSAProblem() {
       <div style={{
         background: 'var(--neu-bg)', borderRadius: 14, padding: '8px 14px', marginBottom: 6,
         boxShadow: '4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light)',
-        borderLeft: `4px solid ${step.color}`, flexShrink: 0,
+        borderLeft: '4px solid var(--neu-accent)', flexShrink: 0,
         display: 'flex', alignItems: 'center', gap: 12,
       }}>
-        <span style={{ fontSize: '1.1rem' }}>{step.icon}</span>
+        <span className="course-ordinal">{String(step.step).padStart(2, '0')}</span>
         <div>
           <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--neu-text-primary)' }}>
             {problem.title}
           </div>
-          <div style={{ fontSize: '.72rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace', marginTop: 2 }}>
+          <div style={{ fontSize: '.8125rem', color: 'var(--neu-text-secondary)', fontFamily: 'inherit', marginTop: 4 }}>
             Step {step.step}: {step.title} → {topic.label}
           </div>
         </div>
@@ -465,16 +459,16 @@ export default function DSAProblem() {
                 onClick={() => setLeftTab(tab.key)}
                 style={{
                   flex: 1, padding: '10px 8px', border: 'none',
-                  background: leftTab === tab.key ? `${step.color}12` : 'transparent',
-                  borderBottom: leftTab === tab.key ? `2.5px solid ${step.color}` : '2.5px solid transparent',
-                  color: leftTab === tab.key ? step.color : 'var(--neu-text-secondary)',
+                  background: leftTab === tab.key ? 'var(--neu-accent-soft)' : 'transparent',
+                  borderBottom: leftTab === tab.key ? '2.5px solid var(--neu-accent)' : '2.5px solid transparent',
+                  color: leftTab === tab.key ? 'var(--neu-accent)' : 'var(--neu-text-secondary)',
                   fontSize: '.74rem', fontWeight: leftTab === tab.key ? 700 : 500,
                   cursor: 'pointer', display: 'flex', alignItems: 'center',
                   justifyContent: 'center', gap: 5, transition: 'all .15s',
                   fontFamily: 'inherit',
                 }}
               >
-                {tab.icon} {tab.label}
+                {tab.label}
               </button>
             ))}
             <button
@@ -482,8 +476,8 @@ export default function DSAProblem() {
               title={leftFullscreen ? 'Exit fullscreen (ESC)' : 'Fullscreen'}
               style={{
                 width: 30, height: 30, borderRadius: 8, border: 'none',
-                background: leftFullscreen ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'var(--neu-bg)',
-                color: leftFullscreen ? '#fff' : 'var(--neu-text-secondary)',
+                background: leftFullscreen ? 'var(--neu-accent)' : 'var(--neu-bg)',
+                color: leftFullscreen ? 'var(--neu-surface)' : 'var(--neu-text-secondary)',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: '.8rem', margin: '0 6px', flexShrink: 0,
                 boxShadow: leftFullscreen
@@ -642,7 +636,7 @@ export default function DSAProblem() {
               {showCustom ? '✎ Custom On' : '✎ Custom Input'}
             </button>
             <button className="btn btn-secondary btn-sm" onClick={saveCode} style={{ fontSize: '.72rem' }}>
-              {saved ? '✓ Saved' : '💾 Save'}
+              {saved ? '✓ Saved' : 'Save'}
             </button>
             {showCustom ? (
               <button

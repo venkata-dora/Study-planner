@@ -83,7 +83,7 @@ export default function AIInterviewDetail() {
   const q = search.toLowerCase()
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto' }}>
+    <div className="refined-lesson" style={{ maxWidth: 1060, margin: '0 auto' }}>
       {/* Back button */}
       <button
         className="btn btn-secondary btn-sm"
@@ -193,14 +193,14 @@ export default function AIInterviewDetail() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span
                   className="prep-track-label"
-                  style={{ background: section.bg, color: section.color, margin: 0, fontSize: '.8rem' }}
+                  style={{ background: section.bg, color: 'var(--neu-accent)', margin: 0, fontSize: '.8rem' }}
                 >
                   {sub.label}
                 </span>
                 {allSubDone && <span style={{ color: '#4ade80', fontSize: '.75rem' }}>✓ Completed!</span>}
               </div>
               <div className="prep-day-prog">
-                <span style={{ fontFamily: 'inherit', fontSize: '.72rem', color: section.color }}>{subDone}/{sub.items.length}</span>
+                <span style={{ fontFamily: 'inherit', fontSize: '.72rem', color: 'var(--neu-accent)' }}>{subDone}/{sub.items.length}</span>
                 <div style={{
                   width: 52, height: 5, background: 'var(--neu-bg)', borderRadius: 999, overflow: 'hidden',
                   boxShadow: 'inset 2px 2px 3px var(--neu-shadow-dark), inset -2px -2px 3px var(--neu-shadow-light)'
@@ -221,6 +221,7 @@ export default function AIInterviewDetail() {
                   return (
                     <div
                       key={id}
+                      className="interview-topic-row"
                       style={{
                         display: 'flex', alignItems: 'center', gap: 10,
                         padding: '8px 10px', borderRadius: 10,
@@ -257,29 +258,10 @@ export default function AIInterviewDetail() {
                       >
                         {item}
                       </span>
-                      <button
-                        title={hasBlog ? `Read blog: ${item}` : `Generate blog: ${item}`}
+                      <button className="lesson-blog-action"
+                        aria-label={hasBlog ? `Read blog: ${item}` : `Generate blog: ${item}`}
                         onClick={e => { e.stopPropagation(); setTopicBlog({ topicName: item }) }}
-                        style={{
-                          flexShrink: 0,
-                          width: 28, height: 28, borderRadius: '50%',
-                          background: hasBlog ? `${section.color}18` : 'var(--neu-bg)',
-                          border: hasBlog ? `1.5px solid ${section.color}55` : 'none',
-                          cursor: 'pointer',
-                          color: hasBlog ? section.color : 'var(--neu-text-secondary)',
-                          fontSize: '.7rem',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          boxShadow: hasBlog
-                            ? 'none'
-                            : '2px 2px 4px var(--neu-shadow-dark), -2px -2px 4px var(--neu-shadow-light)',
-                          transition: 'all .15s',
-                          opacity: hasBlog ? 1 : 0.6,
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = section.color }}
-                        onMouseLeave={e => { if (!hasBlog) { e.currentTarget.style.opacity = '0.6'; e.currentTarget.style.color = 'var(--neu-text-secondary)' } }}
-                      >
-                        📝
-                      </button>
+                      >{hasBlog ? 'Read' : 'Blog'} ↗</button>
                     </div>
                   )
                 })}

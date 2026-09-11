@@ -86,7 +86,7 @@ export default function SystemDesignDetail() {
   const q = search.toLowerCase()
 
   return (
-    <div className="refined-lesson" style={{ maxWidth: 1000, margin: '0 auto' }}>
+    <div className="refined-lesson" style={{ maxWidth: 1060, margin: '0 auto' }}>
 
       {/* Back button */}
       <button
@@ -146,7 +146,7 @@ export default function SystemDesignDetail() {
               onMouseLeave={e => { e.currentTarget.style.color = 'var(--neu-text-secondary)' }}
             >
               {s.icon} {s.title}
-              <span style={{ fontFamily: 'monospace', opacity: .7 }}>{sp}%</span>
+              <span style={{ fontFamily: 'inherit', opacity: .7 }}>{sp}%</span>
             </button>
           )
         })}
@@ -179,14 +179,14 @@ export default function SystemDesignDetail() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span
                   className="prep-track-label"
-                  style={{ background: section.bg, color: section.color, margin: 0, fontSize: '.8rem' }}
+                  style={{ background: section.bg, color: 'var(--neu-accent)', margin: 0, fontSize: '.8rem' }}
                 >
                   {sub.label}
                 </span>
                 {allSubDone && <span style={{ color: '#4ade80', fontSize: '.75rem' }}>✓ Completed!</span>}
               </div>
               <div className="prep-day-prog">
-                <span style={{ fontFamily: 'monospace', fontSize: '.72rem', color: section.color }}>{subDone}/{sub.items.length}</span>
+                <span style={{ fontFamily: 'inherit', fontSize: '.72rem', color: 'var(--neu-accent)' }}>{subDone}/{sub.items.length}</span>
                 <div style={{
                   width: 52, height: 5, background: 'var(--neu-bg)', borderRadius: 999, overflow: 'hidden',
                   boxShadow: 'inset 2px 2px 3px var(--neu-shadow-dark), inset -2px -2px 3px var(--neu-shadow-light)'
