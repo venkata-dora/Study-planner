@@ -93,3 +93,14 @@
   .reader-path.is-open { max-height: 60dvh; padding: 1rem; margin-bottom: 1.5rem; border-width: 1px; overflow-y: auto; }
 }
 @media (prefers-reduced-motion: reduce) { .reader-layout, .reader-path { transition: none; } }
+
+/* Center the lesson in the visible space from the chapter rail to the window edge. */
+@media (min-width: 1101px) {
+  .apple-platform .main-content:has(.reading-workspace) {
+    max-width: none;
+    padding-left: max(2rem, calc((100vw - var(--study-sidebar) - 1320px) / 2 + 2rem));
+    padding-right: 2rem;
+  }
+  .reading-workspace { max-width: none; }
+  .reader-layout.path-open { grid-template-columns: calc(var(--path-width) - 112px) minmax(0, 1fr); column-gap: 2rem; }
+}
