@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { SECTIONS } from '../data/genAIData'
 import TopicBlog from './TopicBlog'
 
 export default function BlogLibrary() {
-  const navigate = useNavigate()
   const [blogs, setBlogs] = useState([])
   const [roadmaps, setRoadmaps] = useState([])
   useEffect(() => { fetch('/api/roadmaps').then(r => r.ok ? r.json() : []).then(setRoadmaps).catch(() => {}) }, [])
@@ -48,15 +47,7 @@ export default function BlogLibrary() {
   })
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto' }}>
-      <button
-        className="btn btn-secondary btn-sm"
-        onClick={() => navigate('/genai')}
-        style={{ marginBottom: 20, display: 'inline-flex', alignItems: 'center', gap: 6 }}
-      >
-        ← Back to Roadmap
-      </button>
-
+    <div className="reading-library-page" style={{ maxWidth: 1000, margin: '0 auto' }}>
       <div className="apple-page-heading"><div><span className="learning-eyebrow">READ & EXPLORE</span><h1>Reading library</h1><p>{blogs.length + customBlogs.length} saved {blogs.length + customBlogs.length === 1 ? 'article' : 'articles'}. Take a deeper look at what you’re learning.</p></div></div>
 
       {filterSection === 'all' && customFiltered.length > 0 && <section style={{ marginBottom: 28 }}><div className="learning-section-title"><h2>From your roadmaps</h2></div><div className="learning-tracks">{customFiltered.map(t => <Link className="learning-track" key={`${t.roadmapId}_${t.id}`} to={`/roadmaps/${t.roadmapId}?topic=${t.id}#custom-lesson`}><div className="learning-track-copy"><h3>{t.title}</h3><p>{t.roadmapTitle}</p></div><span>Read →</span></Link>)}</div></section>}
@@ -71,6 +62,7 @@ export default function BlogLibrary() {
           style={{ flex: 1, minWidth: 200 }}
         />
         <select
+          aria-label="Filter articles by section"
           value={filterSection}
           onChange={e => setFilterSection(e.target.value)}
           style={{
@@ -91,8 +83,8 @@ export default function BlogLibrary() {
       )}
 
       {!loading && filtered.length === 0 && (filterSection !== 'all' || customFiltered.length === 0) && (
-        <div style={{ textAlign: 'center', padding: 60 }}>
-          <div style={{ fontSize: '3rem', marginBottom: 16 }}>📝</div>
+        <div className="reading-library-empty">
+          <span className="reading-empty-number" aria-hidden="true">01</span>
           <div style={{ color: 'var(--neu-text-secondary)', marginBottom: 8 }}>
             {blogs.length + customBlogs.length === 0 ? 'Your reading library starts here' : 'No matching lessons'}
           </div>
@@ -121,45 +113,17 @@ export default function BlogLibrary() {
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
+            <div className="reading-article-shelf">
               {secBlogs.map(blog => (
-                <div
-                  key={blog.id}
-                  onClick={() => setActiveBlog(blog)}
-                  style={{
-                    background: 'var(--neu-bg)', borderRadius: 16, padding: '16px 18px',
-                    cursor: 'pointer', position: 'relative',
-                    boxShadow: '4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light)',
-                    borderLeft: `3px solid ${sec?.color || 'var(--neu-accent)'}`,
-                    transition: 'transform .15s, box-shadow .15s',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)' }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)' }}
-                >
-                  <div style={{ fontWeight: 700, fontSize: '.85rem', color: 'var(--neu-text-primary)', marginBottom: 6 }}>
-                    {blog.topic_name}
-                  </div>
-                  <div style={{ fontSize: '.68rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace' }}>
-                    {blog.updated_at
-                      ? `updated ${new Date(blog.updated_at).toLocaleDateString()}`
-                      : `created ${new Date(blog.created_at).toLocaleDateString()}`
-                    }
-                  </div>
-                  <button
-                    title="Delete blog"
-                    onClick={e => deleteBlog(blog.id, e)}
-                    style={{
-                      position: 'absolute', top: 10, right: 10,
-                      width: 22, height: 22, borderRadius: '50%',
-                      background: 'transparent', border: 'none', cursor: 'pointer',
-                      color: 'var(--neu-text-secondary)', fontSize: '.7rem',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      opacity: 0.4, transition: 'opacity .15s',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = '#dc2626' }}
-                    onMouseLeave={e => { e.currentTarget.style.opacity = '0.4'; e.currentTarget.style.color = 'var(--neu-text-secondary)' }}
-                  >✕</button>
-                </div>
+                <article className="reading-article" key={blog.id}>
+                  <button className="reading-article-open" onClick={() => setActiveBlog(blog)}>
+                    <span className="learning-eyebrow">SAVED ARTICLE</span>
+                    <h3>{blog.topic_name}</h3>
+                    <small>{new Date(blog.updated_at || blog.created_at).toLocaleDateString()}</small>
+                    <span className="reading-article-action">Read article <span aria-hidden="true">→</span></span>
+                  </button>
+                  <button className="reading-article-delete" aria-label={`Delete ${blog.topic_name}`} onClick={e => deleteBlog(blog.id, e)}>×</button>
+                </article>
               ))}
             </div>
           </div>

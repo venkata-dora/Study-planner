@@ -382,7 +382,7 @@ export default function GenAIBlog({ section, onClose }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose} style={{ alignItems: 'flex-start', paddingTop: 48 }}>
-      <div
+      <div className="reading-dialog"
         onClick={e => e.stopPropagation()}
         style={{
           background: 'var(--neu-bg)',

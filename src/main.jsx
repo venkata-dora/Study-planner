@@ -26,6 +26,7 @@ import InterviewPractice from './pages/InterviewPractice'
 import InterviewHistory from './pages/InterviewHistory'
 import './index.css'
 import './styles/apple-learning.css'
+import './styles/reading-room.css'
 import './styles/focus.css'
 import './styles/learning-styles.css'
 

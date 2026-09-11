@@ -473,7 +473,7 @@ export default function InterviewPractice() {
           )}
 
           {/* Question card */}
-          <div style={{
+          <div className="reading-question" style={{
             background: 'var(--neu-bg)', borderRadius: 16, padding: '20px 22px',
             boxShadow: '6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light)',
             borderLeft: '4px solid var(--neu-accent)',

@@ -206,7 +206,7 @@ export default function TopicBlog({ topicName, sectionId, sectionTitle, sectionC
 
   return (
     <div className="modal-backdrop" onClick={onClose} style={{ alignItems: 'flex-start', paddingTop: 48 }}>
-      <div
+      <div className="reading-dialog"
         onClick={e => e.stopPropagation()}
         style={{
           background: 'var(--neu-bg)', borderRadius: 24,
