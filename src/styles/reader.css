@@ -104,3 +104,35 @@
   .reading-workspace { max-width: none; }
   .reader-layout.path-open { grid-template-columns: calc(var(--path-width) - var(--reader-shift)) minmax(0, 1fr); column-gap: 2rem; }
 }
+
+/* Multiple lessons share the reader while keeping their own scroll position. */
+.reader-main:has(.has-splits) { max-width: none; }
+.split-reader { position: relative; min-width: 0; }
+.split-reader-tools { display: flex; flex-wrap: wrap; align-items: end; gap: .6rem; margin-bottom: 1rem; }
+.split-reader-tools label { display: grid; gap: .3rem; font-size: .75rem; color: var(--neu-text-secondary); min-width: 0; }
+.split-reader-tools select { max-width: 230px; width: 100%; }
+.split-reader-tools :is(select, button), .split-pane-heading button { min-height: 36px; border: 1px solid var(--study-line); border-radius: 7px; background: var(--neu-surface); color: var(--neu-text-primary); padding: .4rem .65rem; font: inherit; font-size: .8rem; }
+.split-reader-tools button:disabled { opacity: .5; cursor: default; }
+.split-reader-hint { font-size: .75rem; color: var(--neu-text-secondary); align-self: center; }
+.split-reader-status { font-size: .8rem; color: var(--neu-text-secondary); }
+.split-reader-status:empty { display: none; }
+.split-drop-hint { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; pointer-events: none; border: 2px dashed var(--neu-accent); border-radius: 12px; background: var(--neu-accent-soft); color: var(--neu-accent); }
+.split-reader-grid { min-width: 0; }
+.split-reader-pane { min-width: 0; }
+.has-splits .split-reader-grid { display: grid; gap: 1rem; height: max(280px, calc(100dvh - var(--split-top, 20rem) - 1rem)); grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr); }
+.has-splits .layout-rows.panes-2 { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.has-splits :is(.panes-3, .panes-4) { grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.has-splits .panes-3 > :last-child { grid-column: 1 / -1; }
+.has-splits .split-reader-pane { overflow: auto; overscroll-behavior: contain; border: 1px solid var(--study-line); border-radius: 10px; padding: 0 1rem 1rem; scrollbar-width: thin; }
+.split-pane-heading { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: .5rem; background: var(--neu-surface); border-bottom: 1px solid var(--study-line); padding: .5rem 0; margin-bottom: 1rem; min-height: 48px; font-size: .8rem; }
+.split-pane-heading span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.split-pane-heading button { cursor: pointer; font-size: 1.1rem; }
+.has-splits .reader-location :is(h1,h2) { font-size: 1.25rem; line-height: 1.4; overflow-wrap: anywhere; }
+.has-splits .reader-toolbar { flex-wrap: wrap; }
+.has-splits .reader-content { padding: 1rem 0; }
+.has-splits .study-reading { width: 100%; overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .has-splits .split-reader-grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-auto-rows: 65dvh; height: auto; }
+  .has-splits .layout-rows.panes-2, .has-splits :is(.panes-3,.panes-4) { grid-template-rows: none; }
+  .split-reader-tools select { max-width: 100%; }
+}
