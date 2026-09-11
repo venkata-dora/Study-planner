@@ -21,7 +21,7 @@ export default function ReadingWorkspace() {
   const course = courses.find(c => c.data.SECTIONS.some(s => s.id === sectionId))
   const text = item => course?.data.itemTopic ? course.data.itemTopic(item) : String(item)
   const [saved, setSaved] = useState([])
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 761px)').matches)
   const heading = useRef(null)
   useEffect(() => {
     if (course) return
@@ -29,7 +29,7 @@ export default function ReadingWorkspace() {
     fetch('/api/genai/topic-blogs', { signal: abort.signal }).then(r => r.ok ? r.json() : []).then(setSaved).catch(() => {})
     return () => abort.abort()
   }, [course])
-  useEffect(() => { setOpen(false); heading.current?.focus({ preventScroll: true }); heading.current?.scrollIntoView({ block: 'start' }) }, [sectionId, topic])
+  useEffect(() => { if (window.matchMedia('(max-width: 760px)').matches) setOpen(false); heading.current?.focus({ preventScroll: true }); heading.current?.scrollIntoView({ block: 'start' }) }, [sectionId, topic])
   const sections = course?.data.SECTIONS || [...new Set(saved.map(b => b.section_id))].map(id => ({ id, title: saved.find(b => b.section_id === id)?.section_title || id, subsections: [{ label: 'Saved lessons', items: saved.filter(b => b.section_id === id).map(b => b.topic_name) }] }))
   const section = sections.find(s => s.id === sectionId)
   const lessons = sections.flatMap(s => s.subsections.flatMap(sub => sub.items.map(item => ({ section: s.id, title: text(item) }))))

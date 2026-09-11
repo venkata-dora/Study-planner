@@ -46,3 +46,11 @@
 .reader-chapter-select { display: block; font-size: .75rem; color: var(--neu-text-secondary); margin-bottom: 1rem; }
 .reader-chapter-select select { display: block; width: 100%; min-height: 44px; margin-top: .4rem; font: inherit; color: var(--neu-text-primary); background: var(--neu-surface); border: 1px solid var(--study-line); border-radius: 8px; padding: .6rem; }
 .reader-status { padding: 2rem 0; color: var(--neu-text-secondary); }
+
+/* Let the path use the space beside the app navigation instead of centering both columns. */
+@media (min-width: 761px) {
+  .apple-platform .main-content:has(.reading-workspace) { max-width: none; padding-inline: 1.5rem; }
+  .reading-workspace { max-width: none; margin-inline: 0; }
+  .reader-layout.path-open { gap: 2rem; }
+  .reader-layout.path-open .reader-main { margin-inline: 0; }
+}
