@@ -1,5 +1,4 @@
 const paths = {
-  sidebar: 'M4 4h16v16H4z M9 4v16 M6 8h1 M6 12h1',
   menu: 'M4 6h16 M4 12h16 M4 18h16',
   library: 'M4 5h6v15H4z M14 5h6v15h-6z M7 8v4 M17 8v4',
   dsa: 'M5 5h4v4H5z M15 15h4v4h-4z M5 15h4v4H5z M7 9v6 M9 7h8v8',

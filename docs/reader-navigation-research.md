@@ -29,3 +29,9 @@ Reviewed Carbon's UI shell left panel (https://carbondesignsystem.com/components
 Removed the shifting duplicate menu button and brand from the reader's platform panel. The original navigation links and theme surfaces remain. Desktop switching does not dim or shift the article; the header button switches back to the learning path. On mobile, the original modal behavior remains with a matching close icon. Reduced article gutters, softened utility actions, tightened section spacing, and added an automatically generated section index on wide screens. Saved blog content is unchanged.
 
 Validation: build and existing tests; browser checks for light/dark across all four themes at 1909, 1024, 390, and 320px, stable desktop article position, no horizontal overflow, Escape closing, and panel switching. Article samples in browser checks are mocked, not generated or saved to user data.
+
+### Restored layout — user preference
+
+The user requested restoring the reader from `559b9b6`, the final 16px-left adjustment, instead of the subsequent shell redesign. The original universal sidebar and separate chapter rail are restored, including the chapter rail's -64px desktop offset. The chapter rail now uses an interruptible 260ms opening/closing transition, with hidden links inert and reduced-motion support. The later single-slot navigation and section index are removed. Existing duplicate-title/preamble cleanup remains presentation-only.
+
+Validation: test suite and production build pass; browser checks at 1909px, 1024px, and 390px confirm restored rail position after open/close and rapid reversal, no horizontal overflow, hidden-navigation inertness, and reduced-motion behavior.
