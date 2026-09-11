@@ -61,6 +61,6 @@
 }
 
 @media (min-width: 1101px) {
-  .reader-path { transform: translateX(-16px); }
-  .reader-sidebar-control { transform: translateX(-16px); }
+  .reader-path { transform: translateX(-32px); }
+  .reader-sidebar-control { transform: translateX(-32px); }
 }
