@@ -31,7 +31,7 @@ const { default: AIInterview } = require('../src/pages/AIInterview')
 for (const [Component, route] of [[GenAI, '/genai/'], [SystemDesign, '/systemdesign/'], [AIInterview, '/ai-interview/']]) {
   const html = render(Component)
   assert.ok(html.includes(`href="${route}`))
-  assert.ok(html.includes('Course contents'))
+  assert.ok(html.includes('>List</button>'), 'The original contents are available through List view')
   assert.ok(html.includes('aria-label='))
 }
 console.log('Roadmap navigation render checks passed')
