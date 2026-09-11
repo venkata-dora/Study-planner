@@ -64,11 +64,11 @@ export default function PythonSheet() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
           <div>
             <span style={{ fontWeight: 700, fontSize: '.9rem', color: 'var(--neu-text-primary)' }}>Overall Progress</span>
-            <span style={{ fontSize: '.75rem', color: 'var(--neu-text-secondary)', marginLeft: 12, fontFamily: 'monospace' }}>
+            <span style={{ fontSize: '.75rem', color: 'var(--neu-text-secondary)', marginLeft: 12, fontFamily: 'inherit' }}>
               {totalProblems} problems · {PHASES.length} phases
             </span>
           </div>
-          <div style={{ display: 'flex', gap: 16, fontSize: '.78rem', fontFamily: 'monospace' }}>
+          <div style={{ display: 'flex', gap: 16, fontSize: '.78rem', fontFamily: 'inherit' }}>
             <span style={{ color: '#22c55e' }}>✓ {solved} solved</span>
             <span style={{ color: '#f59e0b' }}>~ {attempted} attempted</span>
             <span style={{ color: '#94a3b8' }}>○ {totalProblems - solved - attempted} todo</span>
@@ -77,7 +77,7 @@ export default function PythonSheet() {
         <div className="prep-progress-track">
           <div className="prep-progress-fill" style={{ width: `${overallPct}%` }} />
         </div>
-        <div style={{ fontSize: '.72rem', color: 'var(--neu-text-secondary)', marginTop: 6, fontFamily: 'monospace', textAlign: 'right' }}>
+        <div style={{ fontSize: '.72rem', color: 'var(--neu-text-secondary)', marginTop: 6, fontFamily: 'inherit', textAlign: 'right' }}>
           {overallPct}% complete
         </div>
       </div>
@@ -137,7 +137,7 @@ export default function PythonSheet() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem',
                 background: 'var(--neu-bg)',
                 boxShadow: 'inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light)',
-              }}>{phase.icon}</div>
+              }} className="course-ordinal">{String(phase.phase).padStart(2, '0')}</div>
 
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -153,9 +153,9 @@ export default function PythonSheet() {
                     flex: 1, maxWidth: 200, height: 5, background: 'var(--neu-bg)', borderRadius: 999, overflow: 'hidden',
                     boxShadow: 'inset 2px 2px 3px var(--neu-shadow-dark), inset -2px -2px 3px var(--neu-shadow-light)',
                   }}>
-                    <div style={{ width: `${phasePct}%`, height: '100%', background: phase.color, borderRadius: 999, transition: 'width .3s' }} />
+                    <div style={{ width: `${phasePct}%`, height: '100%', background: 'var(--neu-accent)', borderRadius: 999, transition: 'width .3s' }} />
                   </div>
-                  <span style={{ fontSize: '.7rem', fontFamily: 'monospace', color: phase.color, fontWeight: 600 }}>
+                  <span style={{ fontSize: '.7rem', fontFamily: 'inherit', color: 'var(--neu-accent)', fontWeight: 600 }}>
                     {phaseSolved}/{phaseTotal}
                   </span>
                 </div>
@@ -177,12 +177,12 @@ export default function PythonSheet() {
                   return (
                     <div key={ti} style={{ marginBottom: 12 }}>
                       <div style={{
-                        fontSize: '.75rem', fontWeight: 700, color: phase.color,
+                        fontSize: '.75rem', fontWeight: 700, color: 'var(--neu-accent)',
                         padding: '4px 0', marginBottom: 4,
                         display: 'flex', alignItems: 'center', gap: 6,
                       }}>
                         <span style={{ background: `${phase.color}18`, padding: '2px 10px', borderRadius: 999 }}>{topic.label}</span>
-                        <span style={{ fontSize: '.68rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace' }}>
+                        <span style={{ fontSize: '.68rem', color: 'var(--neu-text-secondary)', fontFamily: 'inherit' }}>
                           {filteredProblems.length} problems
                         </span>
                       </div>
@@ -234,7 +234,7 @@ export default function PythonSheet() {
                             <span style={{
                               fontSize: '.64rem', fontWeight: 700, padding: '2px 8px',
                               borderRadius: 999, background: diff.bg, color: diff.color,
-                              flexShrink: 0, fontFamily: 'monospace',
+                              flexShrink: 0, fontFamily: 'inherit',
                             }}>{p.difficulty}</span>
 
                             <button

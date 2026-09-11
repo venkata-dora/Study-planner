@@ -238,12 +238,12 @@ export default function DSAPractice() {
 
   if (showHistory) {
     return (
-      <div style={{ maxWidth: 800, margin: '0 auto' }}>
+      <div className="coding-history learning-overview" style={{ margin: '0 auto' }}>
         <div className="prep-header">
-          <h1>🕐 DSA Practice History</h1>
-          <p>YOUR GENERATED QUESTIONS LOG</p>
+          <span className="learning-eyebrow">PRACTICE JOURNAL</span><h1>DSA practice history</h1>
+          <p>Review the challenges you’ve generated.</p>
         </div>
-        <button className="btn btn-secondary btn-sm" onClick={() => setShowHistory(false)} style={{ marginBottom: 16 }}>← Back</button>
+        <button className="btn btn-secondary btn-sm" onClick={() => setShowHistory(false)} style={{ marginBottom: 16 }}>← DSA practice</button>
 
         {history.length === 0 ? (
           <div style={{ textAlign: 'center', padding: 40, color: 'var(--neu-text-secondary)', fontSize: '.9rem' }}>
@@ -254,7 +254,7 @@ export default function DSAPractice() {
             {history.map((h, idx) => {
               const dc = DIFF_COLORS[h.difficulty] || DIFF_COLORS.Medium
               return (
-                <div key={idx} style={{
+                <div className="coding-history-row" key={idx} style={{
                   background: 'var(--neu-bg)', borderRadius: 14, padding: '12px 16px',
                   boxShadow: '3px 3px 6px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light)',
                   display: 'flex', alignItems: 'center', gap: 12,
@@ -404,10 +404,10 @@ export default function DSAPractice() {
                 className="btn btn-sm"
                 onClick={() => generateQuestion()}
                 style={{
-                  background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
-                  color: '#fff', border: 'none',
+                  background: 'var(--neu-accent)',
+                  color: 'var(--neu-surface)', border: 'none',
                 }}
-              >🔀 Skip / Next</button>
+              >Next question →</button>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>

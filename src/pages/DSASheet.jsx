@@ -70,11 +70,11 @@ export default function DSASheet() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
           <div>
             <span style={{ fontWeight: 700, fontSize: '.9rem', color: 'var(--neu-text-primary)' }}>Overall Progress</span>
-            <span style={{ fontSize: '.75rem', color: 'var(--neu-text-secondary)', marginLeft: 12, fontFamily: 'monospace' }}>
+            <span style={{ fontSize: '.75rem', color: 'var(--neu-text-secondary)', marginLeft: 12, fontFamily: 'inherit' }}>
               {totalProblems} problems · {STEPS.length} steps
             </span>
           </div>
-          <div style={{ display: 'flex', gap: 16, fontSize: '.78rem', fontFamily: 'monospace' }}>
+          <div style={{ display: 'flex', gap: 16, fontSize: '.78rem', fontFamily: 'inherit' }}>
             <span style={{ color: '#22c55e' }}>✓ {solved} solved</span>
             <span style={{ color: '#f59e0b' }}>~ {attempted} attempted</span>
             <span style={{ color: '#94a3b8' }}>○ {totalProblems - solved - attempted} todo</span>
@@ -99,7 +99,7 @@ export default function DSASheet() {
             <span style={{ transition: 'transform .2s', transform: showDashboard ? 'rotate(0)' : 'rotate(-90deg)', display: 'inline-block' }}>▾</span>
             {showDashboard ? 'Hide Dashboard' : 'Show Dashboard'}
           </button>
-          <span style={{ fontSize: '.72rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace' }}>
+          <span style={{ fontSize: '.72rem', color: 'var(--neu-text-secondary)', fontFamily: 'inherit' }}>
             {overallPct}% complete
           </span>
         </div>
@@ -170,7 +170,7 @@ export default function DSASheet() {
                     textAlign: 'center',
                   }}>
                     <div style={{ fontSize: '1.1rem', marginBottom: 4 }}>{s.icon}</div>
-                    <div style={{ fontSize: '1.2rem', fontWeight: 800, color: s.color, fontFamily: 'monospace' }}>{s.value}</div>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 800, color: s.color, fontFamily: 'inherit' }}>{s.value}</div>
                     <div style={{ fontSize: '.68rem', fontWeight: 700, color: 'var(--neu-text-primary)', marginTop: 2 }}>{s.label}</div>
                     <div style={{ fontSize: '.6rem', color: 'var(--neu-text-secondary)', marginTop: 2 }}>{s.sub}</div>
                   </div>
@@ -184,7 +184,7 @@ export default function DSASheet() {
                   flex: 1, background: 'var(--neu-bg)', borderRadius: 14, padding: '12px 16px',
                   boxShadow: 'inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light)',
                 }}>
-                  <div style={{ fontSize: '.68rem', fontWeight: 700, color: 'var(--neu-text-secondary)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 10, fontFamily: 'monospace' }}>
+                  <div style={{ fontSize: '.68rem', fontWeight: 700, color: 'var(--neu-text-secondary)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 10, fontFamily: 'inherit' }}>
                     Last 14 Days
                   </div>
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 60 }}>
@@ -201,7 +201,7 @@ export default function DSASheet() {
                             transition: 'height .3s',
                           }}
                         />
-                        <span style={{ fontSize: '.5rem', color: d.date === today ? 'var(--neu-accent)' : 'var(--neu-text-secondary)', fontFamily: 'monospace', fontWeight: d.date === today ? 700 : 400 }}>
+                        <span style={{ fontSize: '.5rem', color: d.date === today ? 'var(--neu-accent)' : 'var(--neu-text-secondary)', fontFamily: 'inherit', fontWeight: d.date === today ? 700 : 400 }}>
                           {d.day}
                         </span>
                       </div>
@@ -214,7 +214,7 @@ export default function DSASheet() {
                   width: 180, flexShrink: 0, background: 'var(--neu-bg)', borderRadius: 14, padding: '12px 16px',
                   boxShadow: 'inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light)',
                 }}>
-                  <div style={{ fontSize: '.68rem', fontWeight: 700, color: 'var(--neu-text-secondary)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 10, fontFamily: 'monospace' }}>
+                  <div style={{ fontSize: '.68rem', fontWeight: 700, color: 'var(--neu-text-secondary)', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: 10, fontFamily: 'inherit' }}>
                     Difficulty Split
                   </div>
                   {[
@@ -225,7 +225,7 @@ export default function DSASheet() {
                     <div key={i} style={{ marginBottom: 8 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
                         <span style={{ fontSize: '.68rem', fontWeight: 600, color: d.color }}>{d.label}</span>
-                        <span style={{ fontSize: '.68rem', fontFamily: 'monospace', color: 'var(--neu-text-secondary)' }}>{d.count}</span>
+                        <span style={{ fontSize: '.68rem', fontFamily: 'inherit', color: 'var(--neu-text-secondary)' }}>{d.count}</span>
                       </div>
                       <div style={{ height: 5, background: 'rgba(163,177,198,0.15)', borderRadius: 999, overflow: 'hidden' }}>
                         <div style={{ height: '100%', width: `${solved > 0 ? (d.count / solved) * 100 : 0}%`, background: d.color, borderRadius: 999, transition: 'width .3s' }} />
@@ -296,7 +296,7 @@ export default function DSASheet() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem',
                 background: 'var(--neu-bg)',
                 boxShadow: 'inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light)',
-              }}>{step.icon}</div>
+              }} className="course-ordinal">{String(step.step).padStart(2, '0')}</div>
 
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -312,9 +312,9 @@ export default function DSASheet() {
                     flex: 1, maxWidth: 200, height: 5, background: 'var(--neu-bg)', borderRadius: 999, overflow: 'hidden',
                     boxShadow: 'inset 2px 2px 3px var(--neu-shadow-dark), inset -2px -2px 3px var(--neu-shadow-light)',
                   }}>
-                    <div style={{ width: `${stepPct}%`, height: '100%', background: step.color, borderRadius: 999, transition: 'width .3s' }} />
+                    <div style={{ width: `${stepPct}%`, height: '100%', background: 'var(--neu-accent)', borderRadius: 999, transition: 'width .3s' }} />
                   </div>
-                  <span style={{ fontSize: '.7rem', fontFamily: 'monospace', color: step.color, fontWeight: 600 }}>
+                  <span style={{ fontSize: '.7rem', fontFamily: 'inherit', color: 'var(--neu-accent)', fontWeight: 600 }}>
                     {stepSolved}/{stepTotal}
                   </span>
                 </div>
@@ -337,12 +337,12 @@ export default function DSASheet() {
                     <div key={ti} style={{ marginBottom: 12 }}>
                       {/* Topic label */}
                       <div style={{
-                        fontSize: '.75rem', fontWeight: 700, color: step.color,
+                        fontSize: '.75rem', fontWeight: 700, color: 'var(--neu-accent)',
                         padding: '4px 0', marginBottom: 4,
                         display: 'flex', alignItems: 'center', gap: 6,
                       }}>
                         <span style={{ background: `${step.color}18`, padding: '2px 10px', borderRadius: 999 }}>{topic.label}</span>
-                        <span style={{ fontSize: '.68rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace' }}>
+                        <span style={{ fontSize: '.68rem', color: 'var(--neu-text-secondary)', fontFamily: 'inherit' }}>
                           {filteredProblems.length} problems
                         </span>
                       </div>
@@ -398,7 +398,7 @@ export default function DSASheet() {
                             <span style={{
                               fontSize: '.64rem', fontWeight: 700, padding: '2px 8px',
                               borderRadius: 999, background: diff.bg, color: diff.color,
-                              flexShrink: 0, fontFamily: 'monospace',
+                              flexShrink: 0, fontFamily: 'inherit',
                             }}>{p.difficulty}</span>
 
                             {/* Generate problem if no description */}

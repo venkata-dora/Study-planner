@@ -130,3 +130,4 @@
 [data-learning-style="reading-room"] :is(.reference-heading,.reference-section-heading) { background: var(--reading-cover) !important; border-left-color: var(--reading-spine) !important; }
 [data-learning-style="reading-room"] .reference-section-heading > span:first-child { color: var(--neu-text-primary) !important; }
 [data-learning-style="reading-room"] .reference-reader-body [role=button] > span:first-child { color: var(--neu-accent) !important; background: var(--neu-accent-soft) !important; }
+[data-learning-style="reading-room"] .apple-platform .course-ordinal { font: italic 1.4rem/1.2 Georgia, serif; }

@@ -160,7 +160,7 @@ export default function AIInterviewDetail() {
               onMouseLeave={e => { e.currentTarget.style.color = 'var(--neu-text-secondary)' }}
             >
               {s.icon} {s.title}
-              <span style={{ fontFamily: 'monospace', opacity: .7 }}>{sp}%</span>
+              <span style={{ fontFamily: 'inherit', opacity: .7 }}>{sp}%</span>
             </button>
           )
         })}
@@ -200,7 +200,7 @@ export default function AIInterviewDetail() {
                 {allSubDone && <span style={{ color: '#4ade80', fontSize: '.75rem' }}>✓ Completed!</span>}
               </div>
               <div className="prep-day-prog">
-                <span style={{ fontFamily: 'monospace', fontSize: '.72rem', color: section.color }}>{subDone}/{sub.items.length}</span>
+                <span style={{ fontFamily: 'inherit', fontSize: '.72rem', color: section.color }}>{subDone}/{sub.items.length}</span>
                 <div style={{
                   width: 52, height: 5, background: 'var(--neu-bg)', borderRadius: 999, overflow: 'hidden',
                   boxShadow: 'inset 2px 2px 3px var(--neu-shadow-dark), inset -2px -2px 3px var(--neu-shadow-light)'

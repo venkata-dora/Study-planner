@@ -612,3 +612,23 @@ button,a,input,select { -webkit-tap-highlight-color: transparent; touch-action: 
 .roadmap-subject-field input { font-size: 1rem; font-weight: 400; letter-spacing: normal; }
 .reading-dialog:focus { outline: none; }
 @media(max-width:760px) { .modal-backdrop:has(.reading-dialog) { padding: 1rem 0 !important; } }
+
+/* Shared rhythm for course, library, and practice headings. */
+.apple-platform :is(.prep-header,.apple-page-heading) { margin-top: .35rem; margin-bottom: 2rem; }
+.apple-platform :is(.prep-header,.apple-page-heading) p { margin: .75rem 0 0; font-size: 1rem; line-height: 1.65; letter-spacing: 0; }
+.apple-platform :is(.prep-header,.apple-page-heading) h1 { overflow-wrap: anywhere; }
+.apple-platform .learning-eyebrow { display: inline-block; line-height: 1.5; }
+.apple-platform :is(.apple-sheet-summary,.apple-roadmap-summary,.coding-history-row) { font-variant-numeric: tabular-nums; }
+.apple-platform .coding-history-row { background: var(--neu-surface) !important; border: 1px solid var(--study-line); box-shadow: none !important; padding: 1rem !important; gap: .75rem !important; }
+.apple-platform .coding-history-row span { font-family: inherit !important; font-size: .8125rem !important; line-height: 1.5; }
+.apple-platform .coding-history-row span:nth-child(2) { font-size: .9375rem !important; }
+.apple-platform .coding-practice button { font-family: inherit !important; }
+.apple-platform .interview-preparation button { min-height: 2.5rem; }
+.apple-platform .interview-preparation :is(input,textarea,select) { font-size: 1rem !important; line-height: 1.5; }
+@media(max-width:760px) {
+  .apple-platform :is(.prep-header,.apple-page-heading) { margin-bottom: 1.5rem; }
+  .apple-platform .coding-history-row { flex-wrap: wrap; }
+  .apple-platform .coding-history-row span:nth-child(2) { flex-basis: calc(100% - 6rem) !important; }
+  .apple-platform .coding-history-row span:nth-child(3) { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+}
+.apple-platform .course-ordinal { font-family: inherit; font-size: 1rem; font-weight: 600; line-height: 1.2; color: var(--neu-accent); background: var(--neu-accent-soft) !important; border-radius: 6px !important; box-shadow: none !important; }

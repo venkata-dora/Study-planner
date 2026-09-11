@@ -185,7 +185,7 @@ export default function InterviewPrep() {
         <div style={{
           background: 'var(--neu-bg)', borderRadius: 24, padding: '24px 28px', marginBottom: 20,
           boxShadow: '8px 8px 16px var(--neu-shadow-dark), -8px -8px 16px var(--neu-shadow-light)',
-          borderLeft: '5px solid #7c3aed',
+          borderLeft: '4px solid var(--neu-accent)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
             <div>
@@ -210,10 +210,10 @@ export default function InterviewPrep() {
               <span>{answeredCount}/{totalCount} answered</span>
               <span>{totalCount > 0 ? Math.round((answeredCount / totalCount) * 100) : 0}%</span>
             </div>
-            <div style={{ height: 8, borderRadius: 4, background: 'var(--neu-shadow-dark)', overflow: 'hidden' }}>
+            <div style={{ height: 8, borderRadius: 4, background: 'var(--study-line)', overflow: 'hidden' }}>
               <div style={{
                 height: '100%', borderRadius: 4, width: `${totalCount > 0 ? (answeredCount / totalCount) * 100 : 0}%`,
-                background: 'linear-gradient(90deg, #7c3aed, #2563eb)', transition: 'width .3s',
+                background: 'var(--neu-accent)', transition: 'width .3s',
               }} />
             </div>
           </div>
@@ -224,7 +224,7 @@ export default function InterviewPrep() {
           <div style={{
             background: 'var(--neu-bg)', borderRadius: 16, padding: '16px 20px', marginBottom: 16,
             boxShadow: 'inset 4px 4px 8px var(--neu-shadow-dark), inset -4px -4px 8px var(--neu-shadow-light)',
-            maxHeight: 300, overflow: 'auto', fontSize: '.8rem', whiteSpace: 'pre-wrap', fontFamily: 'monospace',
+            maxHeight: 300, overflow: 'auto', fontSize: '.8rem', whiteSpace: 'pre-wrap', fontFamily: 'inherit',
           }}>
             <strong>Resume:</strong><br />{activeSession.resume_text?.slice(0, 3000)}
             {activeSession.resume_text?.length > 3000 && '...'}
@@ -243,7 +243,7 @@ export default function InterviewPrep() {
                 onClick={() => setCategoryFilter(cat)}
                 style={{
                   padding: '6px 14px', borderRadius: 999, border: 'none', cursor: 'pointer',
-                  fontSize: '.78rem', fontWeight: 600, fontFamily: 'monospace',
+                  fontSize: '.78rem', fontWeight: 600, fontFamily: 'inherit',
                   background: categoryFilter === cat ? (CAT_COLORS[cat] || '#7c3aed') : 'var(--neu-bg)',
                   color: categoryFilter === cat ? '#fff' : 'var(--neu-text-secondary)',
                   boxShadow: categoryFilter === cat
@@ -287,7 +287,7 @@ export default function InterviewPrep() {
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                   <span style={{
                     minWidth: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '.72rem', fontWeight: 700, fontFamily: 'monospace',
+                    fontSize: '.72rem', fontWeight: 700, fontFamily: 'inherit',
                     background: `${catColor}18`, color: catColor, flexShrink: 0,
                   }}>
                     {q.order_index + 1}
@@ -298,7 +298,7 @@ export default function InterviewPrep() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                       <span style={{
-                        padding: '2px 10px', borderRadius: 999, fontSize: '.68rem', fontWeight: 600, fontFamily: 'monospace',
+                        padding: '2px 10px', borderRadius: 999, fontSize: '.68rem', fontWeight: 600, fontFamily: 'inherit',
                         background: `${catColor}18`, color: catColor,
                       }}>
                         {CAT_LABELS[q.category] || q.category}
@@ -331,8 +331,8 @@ export default function InterviewPrep() {
                           disabled={isLoadingAnswer}
                           className="btn btn-sm"
                           style={{
-                            background: `linear-gradient(135deg, ${catColor}, ${catColor}cc)`,
-                            color: '#fff', border: 'none', padding: '4px 14px', borderRadius: 999,
+                            background: 'var(--neu-accent)',
+                            color: 'var(--neu-surface)', border: 'none', padding: '4px 14px', borderRadius: 999,
                             fontSize: '.72rem', fontWeight: 600, cursor: 'pointer',
                           }}
                         >
@@ -452,8 +452,8 @@ export default function InterviewPrep() {
             disabled={!uploadFile || loading}
             className="btn btn-primary"
             style={{
-              background: loading ? '#999' : 'linear-gradient(135deg, #7c3aed, #2563eb)',
-              color: '#fff', border: 'none', padding: '10px 28px', borderRadius: 12,
+              background: loading ? '#999' : 'var(--neu-accent)',
+              color: 'var(--neu-surface)', border: 'none', padding: '10px 28px', borderRadius: 12,
               fontSize: '.9rem', fontWeight: 700, cursor: loading ? 'wait' : 'pointer',
             }}
           >
@@ -492,14 +492,14 @@ export default function InterviewPrep() {
                       </div>
                       {/* Progress bar */}
                       <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'var(--neu-shadow-dark)', overflow: 'hidden' }}>
+                        <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'var(--study-line)', overflow: 'hidden' }}>
                           <div style={{
                             height: '100%', borderRadius: 3, width: `${pct}%`,
-                            background: pct === 100 ? '#059669' : 'linear-gradient(90deg, #7c3aed, #2563eb)',
+                            background: pct === 100 ? '#059669' : 'var(--neu-accent)',
                             transition: 'width .3s',
                           }} />
                         </div>
-                        <span style={{ fontSize: '.7rem', fontWeight: 600, color: 'var(--neu-text-secondary)', fontFamily: 'monospace' }}>
+                        <span style={{ fontSize: '.7rem', fontWeight: 600, color: 'var(--neu-text-secondary)', fontFamily: 'inherit' }}>
                           {pct}%
                         </span>
                       </div>
@@ -573,7 +573,7 @@ export default function InterviewPrep() {
                 <span key={tag} style={{
                   background: doc.bg, color: doc.color,
                   padding: '3px 10px', borderRadius: 999,
-                  fontSize: '.68rem', fontWeight: 600, fontFamily: 'monospace',
+                  fontSize: '.68rem', fontWeight: 600, fontFamily: 'inherit',
                 }}>
                   {tag}
                 </span>
