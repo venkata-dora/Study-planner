@@ -87,7 +87,7 @@
 
 /* Restore the familiar platform navigation on demand without moving the lesson. */
 .reader-mode .apple-menu-button { display: grid !important; place-items: center; flex-shrink: 0; }
-.reader-mode.menu-open .apple-sidebar { display: flex !important; width: min(280px, 88vw); visibility: visible; transform: none; background: var(--neu-surface); backdrop-filter: none; }
+.reader-mode.menu-open .apple-sidebar { display: flex !important; width: min(var(--study-sidebar), 88vw); visibility: visible; transform: none; }
 .reader-mode.menu-open .apple-menu-close { display: inline-flex !important; align-self: flex-end; margin-bottom: 1rem; }
 .reader-mode .apple-mobile-scrim { display: block; position: fixed; inset: 0; background: #00000030; border: 0; z-index: 105; }
 .reader-mode .reader-path { background: color-mix(in srgb, var(--neu-surface) 94%, var(--neu-accent) 6%); scrollbar-color: var(--study-line) transparent; }
