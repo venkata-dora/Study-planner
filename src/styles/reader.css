@@ -59,3 +59,8 @@
 @media (min-width: 761px) {
   .reader-path { top: 8rem; max-height: calc(100dvh - 9rem); }
 }
+
+@media (min-width: 1101px) {
+  .reader-path { transform: translateX(-16px); }
+  .reader-sidebar-control { transform: translateX(-16px); }
+}
