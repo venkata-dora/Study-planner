@@ -61,8 +61,8 @@
 }
 
 @media (min-width: 1101px) {
-  .reader-path { transform: translateX(-96px); }
-  .reader-sidebar-control { transform: translateX(-96px); }
+  .reader-path { transform: translateX(-112px); }
+  .reader-sidebar-control { transform: translateX(-112px); }
 }
 
 /* Keep the restored layout while allowing the chapter rail to close smoothly. */
@@ -86,7 +86,7 @@
   transition: transform 260ms cubic-bezier(.22, 1, .36, 1), opacity 180ms ease, clip-path 260ms cubic-bezier(.22, 1, .36, 1), visibility 0s linear 260ms;
 }
 .reader-path.is-open { opacity: 1; visibility: visible; transform: translateX(var(--path-offset)); clip-path: inset(0); transition-delay: 0s; }
-@media (min-width: 1101px) { .reader-path { --path-offset: -96px; } }
+@media (min-width: 1101px) { .reader-path { --path-offset: -112px; } }
 @media (min-width: 761px) and (max-width: 1000px) { .reader-layout { --path-width: 210px; } .reader-layout.path-open { column-gap: 1.5rem; } }
 @media (max-width: 760px) {
   .reader-path { width: 100%; max-height: 0; padding: 0 1rem; margin-bottom: 0; border-width: 0; overflow: hidden; transition: max-height 260ms ease, padding 260ms ease, margin 260ms ease, opacity 180ms ease, visibility 0s linear 260ms; }
