@@ -48,7 +48,7 @@
 .reader-status { padding: 2rem 0; color: var(--neu-text-secondary); }
 
 /* Reader mode: site navigation above, one course sidebar on the left. */
-.reader-mode .apple-sidebar, .reader-mode .apple-menu-button { display: none !important; }
+.reader-mode .apple-menu-button { display: none !important; }
 .reader-mode .apple-workspace { margin-left: 0; }
 .reader-mode .apple-toolbar { padding-inline: 1.5rem; border-bottom: 1px solid var(--study-line); }
 .reader-global-navigation { display: flex; align-items: center; gap: 2rem; }
@@ -87,9 +87,11 @@
 
 /* Restore the familiar platform navigation on demand without moving the lesson. */
 .reader-mode .apple-menu-button { display: grid !important; place-items: center; flex-shrink: 0; }
-.reader-mode.menu-open .apple-sidebar { display: flex !important; width: min(var(--study-sidebar), 88vw); visibility: visible; transform: none; }
-.reader-mode.menu-open .apple-menu-close { display: inline-flex !important; align-self: flex-end; margin-bottom: 1rem; }
-.reader-mode .apple-mobile-scrim { display: block; position: fixed; inset: 0; background: #00000030; border: 0; z-index: 105; }
+.reader-mode .apple-sidebar { display: flex !important; width: min(var(--study-sidebar), 88vw); transform: translateX(-100%); visibility: hidden; transition: transform 260ms cubic-bezier(.22, 1, .36, 1), visibility 0s 260ms; }
+.reader-mode.menu-open .apple-sidebar { visibility: visible; transform: translateX(0); transition-delay: 0s; }
+.reader-mode .apple-menu-close { display: grid !important; place-items: center; width: 44px; height: 44px; padding: 0; align-self: flex-start; margin-bottom: 1rem; }
+.reader-mode .apple-mobile-scrim { display: block; position: fixed; inset: 0; background: #00000030; border: 0; z-index: 105; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 220ms ease, visibility 0s 260ms; }
+.reader-mode.menu-open .apple-mobile-scrim { opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; }
 .reader-mode .reader-path { background: color-mix(in srgb, var(--neu-surface) 94%, var(--neu-accent) 6%); scrollbar-color: var(--study-line) transparent; }
 .reader-mode .reader-path a { padding: .6rem .65rem; }
 .reader-mode .reader-path a[aria-current="page"] { background: var(--neu-accent-soft); font-weight: 600; }
