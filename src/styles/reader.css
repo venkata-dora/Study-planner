@@ -32,9 +32,9 @@
 .reader-next small { display: block; color: var(--neu-accent); margin-bottom: .5rem; }
 .reader-next span { font-size: .875rem; }
 .reader-path-toggle { display: block; padding: .6rem .8rem; min-height: 44px; background: var(--neu-surface); color: var(--neu-accent); border: 1px solid var(--study-line); border-radius: 8px; font: inherit; font-size: .8rem; }
-.reader-layout.path-open { grid-template-columns: 220px minmax(0, 1fr); }
+.reader-layout.path-open { grid-template-columns: 260px minmax(0, 1fr); }
 .reader-path.is-open { display: block; }
-.reader-navigation { position: sticky; top: 0; z-index: 3; background: var(--neu-bg); padding-block: .5rem; }
+
 .reading-workspace :is(a,button,summary):focus-visible { outline: 2px solid var(--neu-accent); outline-offset: 3px; }
 @media (max-width: 1000px) { .reader-layout.path-open { grid-template-columns: 210px minmax(0,1fr); gap: 1.5rem; } }
 @media (max-width: 760px) {
@@ -47,10 +47,7 @@
 .reader-chapter-select select { display: block; width: 100%; min-height: 44px; margin-top: .4rem; font: inherit; color: var(--neu-text-primary); background: var(--neu-surface); border: 1px solid var(--study-line); border-radius: 8px; padding: .6rem; }
 .reader-status { padding: 2rem 0; color: var(--neu-text-secondary); }
 
-/* Let the path use the space beside the app navigation instead of centering both columns. */
-@media (min-width: 761px) {
-  .apple-platform .main-content:has(.reading-workspace) { max-width: none; padding-inline: 1.5rem; }
-  .reading-workspace { max-width: none; margin-inline: 0; }
-  .reader-layout.path-open { gap: 2rem; }
-  .reader-layout.path-open .reader-main { margin-inline: 0; }
+/* Preserve the centered reader; recover only a small amount of left gutter. */
+@media (min-width: 1101px) {
+  .apple-platform .main-content:has(.reading-workspace) { padding-left: 2rem; }
 }
