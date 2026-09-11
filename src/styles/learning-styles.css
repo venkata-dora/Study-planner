@@ -17,7 +17,8 @@
 .style-preview-books > span { min-height: 62px; padding: .5rem .25rem; font: .65rem Georgia, serif; background: #eae5f0; color: #3f3254; border-left: 2px solid #c8b9d8; border-radius: 2px 4px 4px 2px; }
 .style-preview-books > span:nth-child(2) { background: #dfeaec; color: #284a53; border-color: #a9c9d0; }
 .style-preview-books > span:nth-child(3) { background: #f4e8d7; color: #725026; border-color: #dcc49f; }
-.style-preview-focus .style-preview-hero { background: #fff; border: 1px solid #e3e6eb; color: #20242b; }
+.style-preview-focus { background: #f6f5f2; color: #273345; }
+.style-preview-focus .style-preview-hero { background: #e9eef5; border: 1px solid #dedfe2; color: #273345; }
 .style-preview-focus .style-preview-books > span { background: #fff; color: #20242b; border: 1px solid #e3e6eb; border-radius: 4px; font-family: inherit; }
 .style-option-title { display: flex; justify-content: space-between; font-size: .9rem; font-weight: 650; margin: .9rem 0 .4rem; }
 .style-option-description { display: block; color: var(--neu-text-secondary); font-size: .75rem; line-height: 1.6; }

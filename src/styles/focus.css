@@ -1,9 +1,29 @@
 /* Reading Room is the original base design. Focus is an opt-in visual layer. */
 :root[data-learning-style="focus"] {
-  --neu-accent: #365d9d;
-  --neu-accent-soft: #eaf0f9;
+  --neu-bg: #f6f5f2;
+  --neu-surface: #ffffff;
+  --neu-text-primary: #273345;
+  --neu-text-secondary: #626b77;
+  --neu-accent: #344e73;
+  --neu-accent-soft: #e9eef5;
+  --study-line: #dedfe2;
+  --study-hover: #edf0f4;
+  --neu-hover: var(--study-hover);
+  --study-glass: #eeede9f2;
+  --study-toolbar: #f6f5f2ed;
 }
-:root[data-learning-style="focus"][data-theme="dark"] { --neu-accent: #a5c5fa; --neu-accent-soft: #25334a; }
+:root[data-learning-style="focus"][data-theme="dark"] {
+  --neu-bg: #191e26;
+  --neu-surface: #232b36;
+  --neu-text-primary: #eceef2;
+  --neu-text-secondary: #b5bdc9;
+  --neu-accent: #b6cbea;
+  --neu-accent-soft: #303f54;
+  --study-line: #3c4654;
+  --study-hover: #2b3543;
+  --study-glass: #1d242ef2;
+  --study-toolbar: #191e26ed;
+}
 [data-learning-style="focus"] .subject-launcher,
 [data-learning-style="focus"] .universal-library .reading-library-callout { background: var(--neu-surface); color: var(--neu-text-primary); border: 1px solid var(--study-line); border-radius: 12px; }
 [data-learning-style="focus"] .subject-launcher .learning-eyebrow,
@@ -43,3 +63,45 @@
 [data-learning-style="focus"] .stats-focus-progress svg { stroke: var(--study-line); }
 [data-learning-style="focus"] .stats-focus-progress circle:last-child { stroke: var(--neu-accent); }
 
+
+/* Classic Focus: a consistent navy accent and quiet, structured surfaces. */
+[data-learning-style="focus"] .apple-platform :is(.discovery-heading,.apple-page-heading,.learning-heading,.prep-header,.progress-heading) h1 {
+  font-weight: 600;
+  letter-spacing: -.035em;
+  line-height: 1.16;
+  font-size: clamp(1.85rem, 3vw, 2.65rem);
+}
+[data-learning-style="focus"] .apple-sidebar .learning-brand > .apple-brand-mark { background: var(--neu-accent); color: var(--neu-surface); box-shadow: none; border-radius: .5rem; }
+[data-learning-style="focus"] .apple-nav-item { border-radius: .4rem; }
+:root[data-learning-style="focus"] .apple-nav-item.active { background: var(--neu-accent-soft); color: var(--neu-accent); box-shadow: inset 2px 0 var(--neu-accent); }
+[data-learning-style="focus"] .subject-launcher { background: var(--neu-accent-soft); border-color: var(--study-line); border-radius: .75rem; }
+[data-learning-style="focus"] .subject-launcher h2 { font-weight: 600; letter-spacing: -.025em; }
+[data-learning-style="focus"] .subject-launcher form,
+[data-learning-style="focus"] .subject-launcher input { background: var(--neu-surface); }
+[data-learning-style="focus"] .subject-launcher input { font-size: 1rem; }
+[data-learning-style="focus"] .reading-path-preview li > span { background: var(--neu-surface); border-radius: .5rem; }
+[data-learning-style="focus"] .learning-section-title h2 { font-weight: 600; letter-spacing: -.02em; }
+[data-learning-style="focus"] .subject-book,
+[data-learning-style="focus"] .subject-book:nth-child(n) { border-radius: .6rem; padding: 1.25rem; min-height: 230px; box-shadow: 0 2px 3px #15223804; }
+[data-learning-style="focus"] .subject-book > strong { font-size: 1.3rem; line-height: 1.3; letter-spacing: -.02em; margin-top: .875rem; }
+[data-learning-style="focus"] .subject-book-category { font-size: .6875rem; letter-spacing: .04em; }
+[data-learning-style="focus"] .subject-book p { font-size: .8125rem; line-height: 1.65; max-width: 32ch; margin: .75rem 0 1.25rem; }
+[data-learning-style="focus"] .subject-book-action { border-top: 1px solid var(--study-line); padding-top: .875rem; font-size: .8125rem; }
+[data-learning-style="focus"] .subject-book:hover { transform: translateY(-2px); border-color: var(--neu-accent); box-shadow: 0 4px 12px #1522380a; }
+[data-learning-style="focus"] .subject-book:active { transform: none; }
+[data-learning-style="focus"] .universal-library .personal-paths-empty { border-style: solid; background: transparent; }
+[data-learning-style="focus"] .apple-sheet-step { border-radius: .6rem !important; }
+:root[data-learning-style="focus"] .stats-roadmap-row[data-course] { --course-bg: var(--neu-accent-soft); --course-color: var(--neu-accent); }
+@media (max-width: 760px) {
+  [data-learning-style="focus"] .subject-shelf { grid-template-columns: 1fr; gap: .875rem; }
+  [data-learning-style="focus"] .subject-book { min-height: 0; }
+  [data-learning-style="focus"] .subject-book p { max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-learning-style="focus"] .subject-book:hover { transform: none; }
+}
+
+[data-learning-style="focus"] .apple-brand-mark svg { color: inherit; }
+[data-learning-style="focus"] .progress-next > a { background: var(--neu-accent); color: var(--neu-surface); }
+[data-learning-style="focus"] .progress-next > a:hover { box-shadow: none; }
+[data-learning-style="focus"] .subject-examples button { text-decoration-color: var(--neu-text-secondary); }
