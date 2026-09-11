@@ -1,0 +1,31 @@
+/* Paper uses the shared Focus layout with a neutral, document-like palette. */
+:root[data-learning-style="paper"] {
+  --neu-bg: #ffffff;
+  --neu-surface: #ffffff;
+  --neu-text-primary: #242424;
+  --neu-text-secondary: #606060;
+  --neu-accent: #353535;
+  --neu-accent-soft: #efefef;
+  --study-line: #dddddd;
+  --study-hover: #f4f4f4;
+  --study-glass: #f7f7f7f5;
+  --study-toolbar: #ffffffed;
+  --study-shadow: none;
+}
+:root[data-learning-style="paper"][data-theme="dark"] {
+  --neu-bg: #191919;
+  --neu-surface: #242424;
+  --neu-text-primary: #eeeeee;
+  --neu-text-secondary: #b9b9b9;
+  --neu-accent: #dddddd;
+  --neu-accent-soft: #353535;
+  --study-line: #454545;
+  --study-hover: #303030;
+  --study-glass: #202020f5;
+  --study-toolbar: #191919ed;
+}
+[data-learning-style="paper"] .subject-launcher { background: var(--neu-surface); border-top: 3px solid var(--neu-accent); border-radius: .35rem; }
+[data-learning-style="paper"] .subject-book,
+[data-learning-style="paper"] .subject-book:nth-child(n) { border-radius: .35rem; box-shadow: none; }
+[data-learning-style="paper"] .subject-book:hover { box-shadow: none; }
+[data-learning-style="paper"] .reading-library-callout { border-radius: .35rem; }

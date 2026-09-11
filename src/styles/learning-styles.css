@@ -31,3 +31,17 @@
 @media (max-width: 560px) { .style-picker { padding: 1.25rem; } .style-options { grid-template-columns: 1fr; } .style-preview { padding: .75rem; } .style-preview-books > span { min-height: 40px; } .style-picker-footer > div { flex-direction: column-reverse; } .appearance-actions { gap: .35rem; } .appearance-button { padding: .5rem .65rem; font-size: .7rem; } }
 
 .style-option { text-transform: none; letter-spacing: normal; font-weight: 400; }
+
+.style-preview-paper { background: #fff; color: #242424; border: 1px solid #ddd; }
+.style-preview-paper .style-preview-hero { background: #fff; color: #242424; border: 1px solid #ddd; border-top: 2px solid #353535; border-radius: 2px; }
+.style-preview-paper .style-preview-books > span { background: #fff; color: #242424; border: 1px solid #ddd; border-radius: 2px; font-family: inherit; }
+@media (min-width: 561px) {
+  .style-picker { width: min(900px, calc(100vw - 32px)); }
+  .style-options { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Completion controls need an explicit edge on every palette. */
+.apple-platform .prep-task input[type="checkbox"] { border: 1.5px solid var(--neu-text-secondary); border-radius: .3rem; background: var(--neu-surface); box-shadow: none; }
+.apple-platform .prep-task input[type="checkbox"]:checked { background: var(--neu-accent); border-color: var(--neu-accent); box-shadow: none; }
+.apple-platform .prep-task input[type="checkbox"]:checked::after { color: var(--neu-surface); top: -2px; left: 2px; }
+.apple-platform .prep-task input[type="checkbox"]:focus-visible { outline: 2px solid var(--neu-accent); outline-offset: 3px; }

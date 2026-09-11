@@ -26,3 +26,7 @@ Changes from the review:
 - Preserved Reading Room and Focus as independent selectable appearances.
 
 Validation: existing Node tests and production build; desktop/mobile route checks in light and dark modes (no horizontal overflow or uncaught browser errors); Focus mobile checks; keyboard reader dismissal and focus restoration; custom roadmap topic selection and saved lesson reading with a mocked API. No live generation, recording, uploads, deletion, or progress changes were needed for the review. Vite retains the existing large-bundle warning.
+
+## Paper and launch research
+
+Paper adds a plain-white/charcoal option and a neutral dark variant. It shares the restrained layout in `focus.css` through scoped selectors; `paper.css` supplies its palette. The chooser now has three choices and preserves existing preferences. See [research and launch plan](theme-research-and-launch-plan.md) for sources, rationale, verified checks, and pending launch criteria.
