@@ -1,146 +1,64 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { SECTIONS } from '../data/genAIData'
-import TopicBlog from './TopicBlog'
+import './BlogLibrary.css'
 
 export default function BlogLibrary() {
   const [blogs, setBlogs] = useState([])
   const [roadmaps, setRoadmaps] = useState([])
-  useEffect(() => { fetch('/api/roadmaps').then(r => r.ok ? r.json() : []).then(setRoadmaps).catch(() => {}) }, [])
   const [loading, setLoading] = useState(true)
-  const [activeBlog, setActiveBlog] = useState(null)
-  const [filterSection, setFilterSection] = useState('all')
+  const [error, setError] = useState(false)
+  const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
+  const [sort, setSort] = useState('recent')
 
-  const fetchBlogs = () => {
-    fetch('http://localhost:5050/api/genai/topic-blogs')
-      .then(r => r.json())
-      .then(list => { setBlogs(list); setLoading(false) })
-      .catch(() => setLoading(false))
+  useEffect(() => {
+    let cancelled = false
+    Promise.all([
+      fetch('/api/genai/topic-blogs').then(r => { if (!r.ok) throw new Error(); return r.json() }),
+      fetch('/api/roadmaps').then(r => { if (!r.ok) throw new Error(); return r.json() }),
+    ]).then(([articles, paths]) => { if (!cancelled) { setBlogs(articles); setRoadmaps(paths) } })
+      .catch(() => { if (!cancelled) setError(true) })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  const articles = [
+    ...blogs.map(b => ({ id: `blog-${b.id}`, deleteId: b.id, title: b.topic_name, group: b.section_title || b.section_id, groupId: b.section_id, date: b.updated_at || b.created_at, href: `/read/${encodeURIComponent(b.section_id)}?topic=${encodeURIComponent(b.topic_name)}` })),
+    ...roadmaps.flatMap(m => (m.stages || []).flatMap(s => (s.topics || []).filter(t => m.lessons?.[t.id]?.blog).map(t => ({ id: `${m.id}-${t.id}`, title: t.title, group: m.title, groupId: `path-${m.id}`, href: `/roadmaps/${m.id}?topic=${encodeURIComponent(t.id)}#custom-lesson` })))),
+  ]
+  const groups = [...new Map(articles.map(a => [a.groupId, a.group])).entries()]
+  const q = search.trim().toLowerCase()
+  const filtered = articles.filter(a => (filter === 'all' || a.groupId === filter) && `${a.title} ${a.group}`.toLowerCase().includes(q)).sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title) : (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0))
+  const sections = [...new Set(filtered.map(a => a.groupId))]
+
+  async function remove(article) {
+    if (!confirm('Delete this saved article?')) return
+    try {
+      const response = await fetch(`/api/genai/topic-blog/${article.deleteId}`, { method: 'DELETE' })
+      if (!response.ok) throw new Error()
+      setBlogs(previous => previous.filter(b => b.id !== article.deleteId))
+    } catch { alert('The article could not be deleted. Please try again.') }
   }
 
-  useEffect(() => { fetchBlogs() }, [])
-
-  // Refetch when modal closes
-  useEffect(() => { if (!activeBlog) fetchBlogs() }, [activeBlog])
-
-  const deleteBlog = async (id, e) => {
-    e.stopPropagation()
-    if (!confirm('Delete this blog?')) return
-    await fetch(`http://localhost:5050/api/genai/topic-blog/${id}`, { method: 'DELETE' })
-    setBlogs(prev => prev.filter(b => b.id !== id))
-  }
-
-  const sectionMap = Object.fromEntries(SECTIONS.map(s => [s.id, s]))
-  const q = search.toLowerCase()
-  const customBlogs = roadmaps.flatMap(m => m.stages.flatMap(s => s.topics.filter(t => m.lessons[t.id]?.blog).map(t => ({ ...t, roadmapId: m.id, roadmapTitle: m.title }))))
-  const customFiltered = customBlogs.filter(t => !q || `${t.title} ${t.roadmapTitle}`.toLowerCase().includes(q))
-  const filtered = blogs
-    .filter(b => filterSection === 'all' || b.section_id === filterSection)
-    .filter(b => !q || b.topic_name.toLowerCase().includes(q) || b.section_title.toLowerCase().includes(q))
-
-  // Group by section
-  const grouped = {}
-  filtered.forEach(b => {
-    if (!grouped[b.section_id]) grouped[b.section_id] = []
-    grouped[b.section_id].push(b)
-  })
-
-  return (
-    <div className="reading-library-page" style={{ maxWidth: 1000, margin: '0 auto' }}>
-      <div className="apple-page-heading"><div><span className="learning-eyebrow">READ & EXPLORE</span><h1>Reading library</h1><p>{blogs.length + customBlogs.length} saved {blogs.length + customBlogs.length === 1 ? 'article' : 'articles'}. Take a deeper look at what you’re learning.</p></div></div>
-
-      {filterSection === 'all' && customFiltered.length > 0 && <section style={{ marginBottom: 28 }}><div className="learning-section-title"><h2>From your roadmaps</h2></div><div className="learning-tracks">{customFiltered.map(t => <Link className="learning-track" key={`${t.roadmapId}_${t.id}`} to={`/roadmaps/${t.roadmapId}?topic=${t.id}#custom-lesson`}><div className="learning-track-copy"><h3>{t.title}</h3><p>{t.roadmapTitle}</p></div><span>Read →</span></Link>)}</div></section>}
-
-      {/* Filters */}
-      <div className="library-filters flex gap-sm items-center" style={{ marginBottom: 20, flexWrap: 'wrap' }}>
-        <input
-          type="text"
-          aria-label="Search saved articles" placeholder="Search saved articles"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          style={{ flex: 1, minWidth: 200 }}
-        />
-        <select
-          aria-label="Filter articles by section"
-          value={filterSection}
-          onChange={e => setFilterSection(e.target.value)}
-          style={{
-            background: 'var(--neu-bg)', border: 'none', borderRadius: 12, padding: '8px 14px',
-            fontSize: '.8rem', color: 'var(--neu-text-primary)', cursor: 'pointer',
-            boxShadow: '3px 3px 6px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light)',
-          }}
-        >
-          <option value="all">All sections</option>
-          {SECTIONS.map(s => (
-            <option key={s.id} value={s.id}>{s.icon} {s.title}</option>
-          ))}
-        </select>
-      </div>
-
-      {loading && (
-        <div style={{ textAlign: 'center', padding: 60, color: 'var(--neu-text-secondary)' }}>Loading…</div>
-      )}
-
-      {!loading && filtered.length === 0 && (filterSection !== 'all' || customFiltered.length === 0) && (
-        <div className="reading-library-empty">
-          <span className="reading-empty-number" aria-hidden="true">01</span>
-          <div style={{ color: 'var(--neu-text-secondary)', marginBottom: 8 }}>
-            {blogs.length + customBlogs.length === 0 ? 'Your reading library starts here' : 'No matching lessons'}
-          </div>
-          <div style={{ fontSize: '.8rem', color: 'var(--neu-text-secondary)' }}>
-            Open a topic in your learning path and generate a lesson. Saved lessons appear here.
-          </div>
-          <Link to="/roadmaps" style={{ display: 'inline-block', marginTop: 20, color: 'var(--neu-accent)' }}>Explore your learning paths →</Link>
-        </div>
-      )}
-
-      {/* Blog cards grouped by section */}
-      {Object.entries(grouped).map(([secId, secBlogs]) => {
-        const sec = sectionMap[secId]
-        return (
-          <div className="library-section" key={secId} style={{ marginBottom: 24 }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12,
-              padding: '6px 0',
-            }}>
-              <span style={{ fontSize: '1.1rem' }}>{sec?.icon || '📄'}</span>
-              <span style={{ fontWeight: 700, fontSize: '.85rem', color: sec?.color || 'var(--neu-text-primary)' }}>
-                {sec?.title || secId}
-              </span>
-              <span style={{ fontSize: '.72rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace' }}>
-                ({secBlogs.length})
-              </span>
-            </div>
-
-            <div className="reading-article-shelf">
-              {secBlogs.map(blog => (
-                <article className="reading-article" key={blog.id}>
-                  <button className="reading-article-open" onClick={() => setActiveBlog(blog)}>
-                    <span className="learning-eyebrow">SAVED ARTICLE</span>
-                    <h3>{blog.topic_name}</h3>
-                    <small>{new Date(blog.updated_at || blog.created_at).toLocaleDateString()}</small>
-                    <span className="reading-article-action">Read article <span aria-hidden="true">→</span></span>
-                  </button>
-                  <button className="reading-article-delete" aria-label={`Delete ${blog.topic_name}`} onClick={e => deleteBlog(blog.id, e)}>×</button>
-                </article>
-              ))}
-            </div>
-          </div>
-        )
-      })}
-
-      {/* Topic blog modal */}
-      {activeBlog && (
-        <TopicBlog
-          topicName={activeBlog.topic_name}
-          sectionId={activeBlog.section_id}
-          sectionTitle={activeBlog.section_title}
-          sectionColor={sectionMap[activeBlog.section_id]?.color || 'var(--neu-accent)'}
-          sectionIcon={sectionMap[activeBlog.section_id]?.icon || '📄'}
-          onClose={() => setActiveBlog(null)}
-        />
-      )}
+  return <div className="library-index">
+    <header className="library-index-heading">
+      <div><span className="learning-eyebrow">YOUR COLLECTION</span><h1>Reading library</h1><p>Saved lessons from across your learning paths.</p></div>
+      <Link to="/roadmaps" className="library-path-link">Explore learning paths <span aria-hidden="true">↗</span></Link>
+    </header>
+    <div className="library-index-tools">
+      <label className="library-search"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" aria-label="Search saved articles" placeholder="Search your library…" value={search} onChange={e => setSearch(e.target.value)}/></label>
+      <select aria-label="Filter articles by learning path" value={filter} onChange={e => setFilter(e.target.value)}><option value="all">All learning paths</option>{groups.map(([id, title]) => <option key={id} value={id}>{title}</option>)}</select>
+      <select aria-label="Sort articles" value={sort} onChange={e => setSort(e.target.value)}><option value="recent">Recently saved</option><option value="title">Title A–Z</option></select>
     </div>
-  )
+    <div className="library-index-summary" aria-live="polite"><span>{loading ? 'Loading your collection…' : `${filtered.length} ${filtered.length === 1 ? 'article' : 'articles'}`}</span>{(q || filter !== 'all') && <button onClick={() => { setSearch(''); setFilter('all') }}>Clear filters</button>}</div>
+    {error && <p role="alert">Your library couldn’t load. Please refresh to try again.</p>}
+    {!loading && !error && !filtered.length && <div className="library-index-empty"><h2>{articles.length ? 'No articles found' : 'Make room for a new idea.'}</h2><p>{articles.length ? 'Try another topic or learning path.' : 'Generate a lesson in any learning path to save it here.'}</p>{!articles.length && <Link to="/roadmaps">Find a learning path →</Link>}</div>}
+    {sections.map(id => <section className="library-index-section" key={id}>
+      <div className="library-index-section-heading"><h2>{groups.find(([key]) => key === id)?.[1]}</h2><span>{filtered.filter(a => a.groupId === id).length} {filtered.filter(a => a.groupId === id).length === 1 ? 'article' : 'articles'}</span></div>
+      <div>{filtered.filter(a => a.groupId === id).map((a, index) => <article className="library-index-article" key={a.id}>
+        <Link to={a.href}><span className="library-article-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><div><h3>{a.title}</h3><span className="library-article-meta">{a.date && !isNaN(Date.parse(a.date)) ? `Saved ${new Date(a.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}` : 'From your learning path'}</span></div><span className="library-read-arrow" aria-hidden="true">↗</span></Link>
+        {a.deleteId != null && <button className="library-remove" aria-label={`Delete ${a.title}`} title="Delete saved article" onClick={() => remove(a)}><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7m4-7v7"/></svg></button>}
+      </article>)}</div>
+    </section>)}
+  </div>
 }

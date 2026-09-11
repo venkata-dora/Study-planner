@@ -1,0 +1,30 @@
+.library-index { max-width: 1120px; margin: 0 auto; padding: 1rem 0 4rem; color: var(--neu-text-primary); }
+.library-index-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem; padding-bottom: 2rem; }
+.library-index-heading h1 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.045em; line-height: 1.15; margin: .6rem 0 .75rem; }
+.library-index-heading p { margin: 0; color: var(--neu-text-secondary); font-size: .95rem; }
+.library-path-link { display: inline-flex; gap: 1rem; align-items: center; min-height: 44px; font-size: .85rem; color: var(--neu-accent); text-decoration: none; white-space: nowrap; }
+.library-index-tools { display: flex; align-items: center; gap: .75rem; padding: 1rem 0; border-block: 1px solid var(--study-line); }
+.library-search { flex: 1; min-width: 180px; display: flex; align-items: center; gap: .7rem; color: var(--neu-text-secondary); }
+.library-index .library-search input { width: 100%; min-width: 0; padding: .65rem .25rem; background: transparent; border: 0; box-shadow: none; border-radius: 4px; font-size: .95rem; }
+.library-index-tools select { max-width: 240px; min-height: 44px; padding: .6rem 2rem .6rem .8rem; border: 1px solid var(--study-line); border-radius: 8px; box-shadow: none; background: var(--neu-surface); color: var(--neu-text-primary); font: inherit; font-size: .8rem; }
+.library-index-summary { display: flex; align-items: center; justify-content: space-between; min-height: 52px; color: var(--neu-text-secondary); font-size: .78rem; }
+.library-index-summary button { background: transparent; color: var(--neu-accent); border: 0; box-shadow: none; min-height: 44px; }
+.library-index-section { margin: 1.25rem 0 2.5rem; }
+.library-index-section-heading { display: flex; align-items: baseline; gap: 1rem; padding-bottom: .8rem; border-bottom: 1px solid var(--study-line); }
+.library-index-section-heading h2 { font-size: 1.25rem; margin: 0; font-weight: 600; }
+.library-index-section-heading > span { color: var(--neu-text-secondary); font-size: .75rem; white-space: nowrap; }
+.library-index-article { display: flex; align-items: center; border-bottom: 1px solid var(--study-line); transition: background 160ms ease; }
+.library-index-article:hover { background: var(--neu-accent-soft); }
+.library-index-article > a { display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem .5rem; flex: 1; min-width: 0; text-decoration: none; color: inherit; }
+.library-article-number { color: var(--neu-text-secondary); font-size: .75rem; font-variant-numeric: tabular-nums; align-self: flex-start; padding-top: .3rem; }
+.library-index-article h3 { font-size: 1rem; line-height: 1.5; font-weight: 500; margin: 0 0 .35rem; overflow-wrap: anywhere; }
+.library-article-meta { font-size: .75rem; color: var(--neu-text-secondary); }
+.library-read-arrow { margin-left: auto; color: var(--neu-accent); transition: transform 160ms ease; }
+.library-index-article > a:hover .library-read-arrow { transform: translate(2px,-2px); }
+.library-index .library-remove { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; background: transparent; border: 0; box-shadow: none; color: var(--neu-text-secondary); margin: 0 .25rem; }
+.library-index .library-remove:hover { color: var(--neu-text-primary); background: var(--neu-surface); }
+.library-index-empty { padding: 4rem 0; text-align: center; }
+.library-index-empty h2 { font-size: 1.5rem; }.library-index-empty p { color: var(--neu-text-secondary); }.library-index-empty a { color: var(--neu-accent); display: inline-block; padding: 1rem; }
+[data-learning-style="reading-room"] .library-index-heading h1, [data-learning-style="reading-room"] .library-index-section-heading h2 { font-family: Georgia, serif; font-weight: 400; }
+@media(max-width: 760px) { .library-index-heading { align-items: flex-start; flex-direction: column; gap: .75rem; padding-bottom: 1rem; }.library-index-tools { flex-wrap: wrap; }.library-search { flex-basis: 100%; }.library-index-tools select { flex: 1; min-width: 0; max-width: 100%; }.library-index-article > a { gap: .75rem; }.library-index-section-heading { justify-content: space-between; }.library-index-section-heading h2 { font-size: 1.15rem; } }
+@media(prefers-reduced-motion: reduce) { .library-index-article,.library-read-arrow { transition: none; } }
