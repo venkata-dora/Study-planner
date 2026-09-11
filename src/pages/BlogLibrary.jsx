@@ -8,6 +8,14 @@ import { SECTIONS as interview } from '../data/aiInterviewData'
 const courses = [{ id: 'genai', title: 'Generative AI', chapters: genai }, { id: 'systemdesign', title: 'System design', chapters: systemdesign }, { id: 'interview', title: 'AI interview', chapters: interview }]
 const chapterMap = new Map(courses.flatMap(course => course.chapters.map((chapter, index) => [chapter.id, { course, chapter, index }])))
 
+// Stable category accents stay consistent when filtering or sorting the library.
+const categoryColors = ['#628d78', '#738fc0', '#a383b4', '#be9160', '#bd7d83', '#5f9a9c']
+function categoryStyle(id) {
+  const known = chapterMap.get(id)
+  const index = known ? known.index : [...String(id)].reduce((value, char) => value + char.charCodeAt(0), 0)
+  return { '--library-category': categoryColors[index % categoryColors.length] }
+}
+
 export default function BlogLibrary() {
   const recentShelf = useRef(null)
   const [blogs, setBlogs] = useState([])
@@ -55,7 +63,7 @@ export default function BlogLibrary() {
     </header>
     {recent.length > 0 && <section className="library-recent" aria-label="Recently generated articles">
       <div className="library-recent-heading"><div><h2>Recently generated</h2><p>Your latest lessons, ready to revisit.</p></div><div className="library-scroll-controls">{[-1, 1].map(direction => <button key={direction} aria-label={direction < 0 ? 'Scroll recent articles left' : 'Scroll recent articles right'} onClick={() => recentShelf.current?.scrollBy({ left: direction * recentShelf.current.clientWidth * .8, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })}>{direction < 0 ? '←' : '→'}</button>)}</div></div>
-      <div className="library-recent-shelf" ref={recentShelf}>{recent.map(a => <Link className="library-recent-card" key={a.id} to={a.href}><span className="learning-eyebrow">{a.course}</span><h3>{a.title}</h3><p>{a.group}</p><span className="library-recent-foot">{new Date(a.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}<span aria-hidden="true">↗</span></span></Link>)}</div>
+      <div className="library-recent-shelf" ref={recentShelf}>{recent.map(a => <Link className="library-recent-card" style={categoryStyle(a.groupId)} key={a.id} to={a.href}><span className="learning-eyebrow">{a.course}</span><h3>{a.title}</h3><p className="library-category-label">{a.group}</p><span className="library-recent-foot">{new Date(a.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}<span aria-hidden="true">↗</span></span></Link>)}</div>
     </section>}
     <h2 className="library-browse-title">Browse by section</h2>
     <div className="library-index-tools">
@@ -67,7 +75,7 @@ export default function BlogLibrary() {
     <div className="library-index-summary" aria-live="polite"><span>{loading ? 'Loading your collection…' : `${filtered.length} ${filtered.length === 1 ? 'article' : 'articles'}`}</span>{(q || filter !== 'all') && <button onClick={() => { setSearch(''); setFilter('all') }}>Clear filters</button>}</div>
     {error && <p role="alert">Your library couldn’t load. Please refresh to try again.</p>}
     {!loading && !error && !filtered.length && <div className="library-index-empty"><h2>{articles.length ? 'No articles found' : 'Make room for a new idea.'}</h2><p>{articles.length ? 'Try another topic or learning path.' : 'Generate a lesson in any learning path to save it here.'}</p>{!articles.length && <Link to="/roadmaps">Find a learning path →</Link>}</div>}
-    {sections.map(id => <section className="library-index-section" key={id}>
+    {sections.map(id => <section className="library-index-section" style={categoryStyle(id)} key={id}>
       <div className="library-index-section-heading"><h2>{groups.find(([key]) => key === id)?.[1]}</h2><span>{filtered.filter(a => a.groupId === id).length} {filtered.filter(a => a.groupId === id).length === 1 ? 'article' : 'articles'}</span></div>
       <div className="library-section-cards">{filtered.filter(a => a.groupId === id).map((a, index) => <article className="library-index-article" key={a.id}>
         <Link to={a.href}><span className="library-article-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><div><h3>{a.title}</h3><span className="library-article-meta">{a.date && !isNaN(Date.parse(a.date)) ? `Saved ${new Date(a.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}` : 'From your learning path'}</span></div><span className="library-read-arrow" aria-hidden="true">↗</span></Link>

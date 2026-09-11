@@ -56,3 +56,12 @@
 .library-section-cards .library-article-number { display: none; }
 @media(max-width: 760px) { .library-section-cards { grid-template-columns: 1fr; }.library-recent-card { flex-basis: 250px; }.library-recent-heading h2 { font-size: 1.1rem; } }
 @media(prefers-reduced-motion: reduce) { .library-recent-card { transition: none; } }
+/* Category accents are decorative; names remain readable in every theme. */
+.library-recent-card { border-top-color: var(--library-category); background: color-mix(in srgb, var(--library-category) 9%, var(--neu-surface)); }
+.library-recent-card:hover { background: color-mix(in srgb, var(--library-category) 16%, var(--neu-surface)); }
+.library-category-label::before { content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: .45rem; background: var(--library-category); }
+.library-index-section-heading { border-bottom-color: color-mix(in srgb, var(--library-category) 45%, var(--study-line)); }
+.library-index-section-heading h2 { border-left: 4px solid var(--library-category); padding-left: .75rem; }
+.library-index-section-heading > span { background: color-mix(in srgb, var(--library-category) 12%, var(--neu-surface)); padding: .3rem .6rem; border-radius: 6px; color: var(--neu-text-primary); }
+.library-section-cards .library-index-article { border-left: 3px solid var(--library-category); background: color-mix(in srgb, var(--library-category) 5%, var(--neu-surface)); }
+.library-section-cards .library-index-article:hover { background: color-mix(in srgb, var(--library-category) 12%, var(--neu-surface)); }
