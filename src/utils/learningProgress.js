@@ -46,3 +46,17 @@ export function getCodingActivity(now = new Date()) {
   })
   return { days, streak, today: counts[today] || 0 }
 }
+
+export function getCustomLearningTracks(roadmaps) {
+  return roadmaps.map(roadmap => ({
+    title: roadmap.title,
+    to: `/roadmaps/${roadmap.id}`,
+    description: roadmap.description,
+    unit: 'lessons',
+    icon: 'systemdesign',
+    ...summarizeItems(roadmap.stages.flatMap(stage => stage.topics.map(topic => {
+      const lesson = roadmap.lessons?.[topic.id]
+      return { state: lesson?.completed ? 2 : lesson?.blog ? 1 : 0, to: `/roadmaps/${roadmap.id}?topic=${topic.id}` }
+    }))),
+  }))
+}

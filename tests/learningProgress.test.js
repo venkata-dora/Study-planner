@@ -31,3 +31,13 @@ activity = getCodingActivity(new Date(2026, 8, 11, 12))
 assert.equal(activity.today, 30, 'Reading history must not discard busy days')
 assert.equal(activity.streak, 3)
 console.log('Learning progress checks passed')
+
+const { getCustomLearningTracks } = require('../src/utils/learningProgress')
+const custom = getCustomLearningTracks([{ id: 'java', title: 'Java', description: 'Learn Java', stages: [{ topics: [{ id: 'a' }, { id: 'b' }, { id: 'c' }] }], lessons: { a: { completed: true, blog: 'Saved' }, b: { completed: false, blog: 'Started' }, stale: { completed: true } } }])[0]
+assert.equal(custom.done, 1)
+assert.equal(custom.started, 1)
+assert.equal(custom.total, 3)
+assert.equal(custom.next, '/roadmaps/java?topic=b')
+assert.equal(custom.icon, 'systemdesign')
+assert.deepEqual(getCustomLearningTracks([]), [])
+console.log('Custom roadmap statistics checks passed')

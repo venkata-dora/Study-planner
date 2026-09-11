@@ -52,6 +52,12 @@ function CustomPath({ id }) {
   const [params] = useSearchParams()
   const topicId = params.get('topic')
   const [map, setMap] = useState(null)
+  useEffect(() => {
+    if (topicId && window.location.hash === '#custom-lesson') {
+      const frame = requestAnimationFrame(() => document.getElementById('custom-lesson')?.scrollIntoView({ block: 'start' }))
+      return () => cancelAnimationFrame(frame)
+    }
+  }, [topicId, map?.id])
   const inspector = useRef(null)
   const choose = topic => {
     setSelected(topic); setError('')

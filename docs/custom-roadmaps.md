@@ -6,7 +6,7 @@ Open **My roadmaps** (`/roadmaps`), enter a subject and starting level, and crea
 
 The existing AI provider chain generates both paths and lessons. Prompts adapt to the requested subject and level. Generated paths are validated before saving; incomplete provider responses produce a retryable error. There are no prefilled/fake successful roadmaps when generation fails.
 
-Two additive SQLite tables in the existing database hold roadmap content and lesson progress/blogs. They are created on first roadmap API use. Existing roadmap content and progress storage are unchanged. This follows the application's existing shared-workspace model; it does not introduce accounts. Custom progress is shown on each custom path and its library row; the existing Stats page continues to summarize the built-in tracks.
+Two additive SQLite tables in the existing database hold roadmap content and lesson progress/blogs. They are created on first roadmap API use. Existing roadmap content and progress storage are unchanged. This follows the application's existing shared-workspace model; it does not introduce accounts. Custom progress is shown on each custom path, in the main Learning library, and in Stats alongside built-in tracks. Generated lessons count as in progress until marked complete. Coding activity remains based on DSA/Python solve records.
 
 ## Validation
 

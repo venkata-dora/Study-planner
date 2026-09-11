@@ -3,15 +3,16 @@ import LearningIcon from '../components/LearningIcon'
 import useLearningProgress from '../utils/useLearningProgress'
 
 export default function LearningHome() {
-  const { tracks } = useLearningProgress()
+  const { tracks, customStatus } = useLearningProgress()
   const current = tracks.find(t => t.done + t.started > 0 && t.done < t.total)
   const completed = tracks.reduce((total, t) => total + t.done, 0)
   return <div className="learning-overview">
     <div className="apple-page-heading"><div><span className="learning-eyebrow">YOUR LEARNING WORKSPACE</span><h1>Learning library</h1><p>Choose a roadmap or continue an unfinished topic.</p></div><Link to="/stats" className="apple-completion"><strong>{completed}</strong><span>items completed<LearningIcon name="chevron" size={12} /></span></Link></div>
-    <Link to={current?.next || '/dsa'} className="apple-continue"><span className="apple-course-art" aria-hidden="true"><LearningIcon name={current?.to === '/ai-interview' ? 'interview' : current ? current.to.slice(1) : 'dsa'} size={42} /></span><div><span className="learning-eyebrow">{current ? 'CONTINUE YOUR ROADMAP' : 'A GOOD PLACE TO START'}</span><h2>{current?.title || 'Data structures & algorithms'}</h2><p>{current ? `${current.done} of ${current.total} ${current.unit} completed` : 'Build your foundations, one problem at a time.'}</p></div><span className="apple-continue-action">{current ? 'Continue' : 'Start learning'}<LearningIcon name="arrow" size={18} /></span></Link>
-    <div className="learning-section-title"><h2>Your roadmaps <span className="apple-count">{tracks.length}</span></h2><span>Learn at your own pace</span></div>
+    <Link to={current?.next || '/dsa'} className="apple-continue"><span className="apple-course-art" aria-hidden="true"><LearningIcon name={current?.icon || (current?.to === '/ai-interview' ? 'interview' : current ? current.to.slice(1) : 'dsa')} size={42} /></span><div><span className="learning-eyebrow">{current ? 'CONTINUE YOUR ROADMAP' : 'A GOOD PLACE TO START'}</span><h2>{current?.title || 'Data structures & algorithms'}</h2><p>{current ? `${current.done} of ${current.total} ${current.unit} completed` : 'Build your foundations, one problem at a time.'}</p></div><span className="apple-continue-action">{current ? 'Continue' : 'Start learning'}<LearningIcon name="arrow" size={18} /></span></Link>
+    <div className="learning-section-title"><h2>Your roadmaps <span className="apple-count">{tracks.length}</span></h2><Link to="/roadmaps">Create a roadmap ↗</Link></div>
+    {customStatus === 'error' && <p className="learning-note" role="status">Custom roadmap progress could not be refreshed. <Link to="/roadmaps">Open your roadmaps</Link> to try again.</p>}
     <div className="learning-tracks">{tracks.map(track => <Link className="learning-track" key={track.to} to={track.to}>
-      <span className="apple-track-icon"><LearningIcon name={track.to === '/ai-interview' ? 'interview' : track.to.slice(1)} size={24} /></span><div className="learning-track-copy"><h3>{track.title}</h3><p>{track.description}</p></div>
+      <span className="apple-track-icon"><LearningIcon name={track.icon || (track.to === '/ai-interview' ? 'interview' : track.to.slice(1))} size={24} /></span><div className="learning-track-copy"><h3>{track.title}</h3><p>{track.description}</p></div>
       <div className="learning-track-progress"><span>{track.done} / {track.total} {track.unit}</span><progress value={track.done} max={track.total} aria-label={`${track.title} completion`} /></div><LearningIcon name="chevron" size={15} />
     </Link>)}</div>
     <div className="learning-section-title"><h2>Practice & reading</h2></div>
