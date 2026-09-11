@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import './BlogLibrary.css'
+import { SECTIONS as genai } from '../data/genAIData'
+import { SECTIONS as systemdesign } from '../data/systemDesignData'
+import { SECTIONS as interview } from '../data/aiInterviewData'
+
+const courses = [{ id: 'genai', title: 'Generative AI', chapters: genai }, { id: 'systemdesign', title: 'System design', chapters: systemdesign }, { id: 'interview', title: 'AI interview', chapters: interview }]
+const chapterMap = new Map(courses.flatMap(course => course.chapters.map((chapter, index) => [chapter.id, { course, chapter, index }])))
 
 export default function BlogLibrary() {
   const [blogs, setBlogs] = useState([])
@@ -23,12 +29,12 @@ export default function BlogLibrary() {
   }, [])
 
   const articles = [
-    ...blogs.map(b => ({ id: `blog-${b.id}`, deleteId: b.id, title: b.topic_name, group: b.section_title || b.section_id, groupId: b.section_id, date: b.updated_at || b.created_at, href: `/read/${encodeURIComponent(b.section_id)}?topic=${encodeURIComponent(b.topic_name)}` })),
-    ...roadmaps.flatMap(m => (m.stages || []).flatMap(s => (s.topics || []).filter(t => m.lessons?.[t.id]?.blog).map(t => ({ id: `${m.id}-${t.id}`, title: t.title, group: m.title, groupId: `path-${m.id}`, href: `/roadmaps/${m.id}?topic=${encodeURIComponent(t.id)}#custom-lesson` })))),
+    ...blogs.map(b => { const match = chapterMap.get(b.section_id); return ({ id: `blog-${b.id}`, deleteId: b.id, title: b.topic_name, group: match?.course.title || 'Other saved lessons', groupId: match?.course.id || 'other', chapter: match?.chapter.title || b.section_title || b.section_id, chapterId: b.section_id, chapterOrder: match?.index ?? 999, date: b.updated_at || b.created_at, href: `/read/${encodeURIComponent(b.section_id)}?topic=${encodeURIComponent(b.topic_name)}` }) }),
+    ...roadmaps.flatMap(m => (m.stages || []).flatMap((s, stageIndex) => (s.topics || []).filter(t => m.lessons?.[t.id]?.blog).map(t => ({ id: `${m.id}-${t.id}`, title: t.title, group: m.title, groupId: `path-${m.id}`, chapter: s.title || `Stage ${stageIndex + 1}`, chapterId: s.id || String(stageIndex), chapterOrder: stageIndex, href: `/roadmaps/${m.id}?topic=${encodeURIComponent(t.id)}#custom-lesson` })))),
   ]
   const groups = [...new Map(articles.map(a => [a.groupId, a.group])).entries()]
   const q = search.trim().toLowerCase()
-  const filtered = articles.filter(a => (filter === 'all' || a.groupId === filter) && `${a.title} ${a.group}`.toLowerCase().includes(q)).sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title) : (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0))
+  const filtered = articles.filter(a => (filter === 'all' || a.groupId === filter) && `${a.title} ${a.group} ${a.chapter}`.toLowerCase().includes(q)).sort((a, b) => sort === 'title' ? a.title.localeCompare(b.title) : (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0))
   const sections = [...new Set(filtered.map(a => a.groupId))]
 
   async function remove(article) {
@@ -45,9 +51,12 @@ export default function BlogLibrary() {
       <div><span className="learning-eyebrow">YOUR COLLECTION</span><h1>Reading library</h1><p>Saved lessons from across your learning paths.</p></div>
       <Link to="/roadmaps" className="library-path-link">Explore learning paths <span aria-hidden="true">↗</span></Link>
     </header>
+    <nav className="library-categories" aria-label="Learning path categories">
+      {[['all', 'All articles'], ...groups].map(([id, title]) => <button key={id} aria-pressed={filter === id} onClick={() => setFilter(id)}>{title}<span>{id === 'all' ? articles.length : articles.filter(a => a.groupId === id).length}</span></button>)}
+    </nav>
     <div className="library-index-tools">
       <label className="library-search"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" aria-label="Search saved articles" placeholder="Search your library…" value={search} onChange={e => setSearch(e.target.value)}/></label>
-      <select aria-label="Filter articles by learning path" value={filter} onChange={e => setFilter(e.target.value)}><option value="all">All learning paths</option>{groups.map(([id, title]) => <option key={id} value={id}>{title}</option>)}</select>
+
       <select aria-label="Sort articles" value={sort} onChange={e => setSort(e.target.value)}><option value="recent">Recently saved</option><option value="title">Title A–Z</option></select>
     </div>
     <div className="library-index-summary" aria-live="polite"><span>{loading ? 'Loading your collection…' : `${filtered.length} ${filtered.length === 1 ? 'article' : 'articles'}`}</span>{(q || filter !== 'all') && <button onClick={() => { setSearch(''); setFilter('all') }}>Clear filters</button>}</div>
@@ -55,10 +64,12 @@ export default function BlogLibrary() {
     {!loading && !error && !filtered.length && <div className="library-index-empty"><h2>{articles.length ? 'No articles found' : 'Make room for a new idea.'}</h2><p>{articles.length ? 'Try another topic or learning path.' : 'Generate a lesson in any learning path to save it here.'}</p>{!articles.length && <Link to="/roadmaps">Find a learning path →</Link>}</div>}
     {sections.map(id => <section className="library-index-section" key={id}>
       <div className="library-index-section-heading"><h2>{groups.find(([key]) => key === id)?.[1]}</h2><span>{filtered.filter(a => a.groupId === id).length} {filtered.filter(a => a.groupId === id).length === 1 ? 'article' : 'articles'}</span></div>
-      <div>{filtered.filter(a => a.groupId === id).map((a, index) => <article className="library-index-article" key={a.id}>
+      {[...new Map(filtered.filter(a => a.groupId === id).sort((a, b) => a.chapterOrder - b.chapterOrder).map(a => [a.chapterId, a])).values()].map(chapter => <details className="library-chapter" key={chapter.chapterId} open>
+        <summary><span>{chapter.chapter}</span><small>{filtered.filter(a => a.groupId === id && a.chapterId === chapter.chapterId).length} saved</small></summary>
+        <div>{filtered.filter(a => a.groupId === id && a.chapterId === chapter.chapterId).map((a, index) => <article className="library-index-article" key={a.id}>
         <Link to={a.href}><span className="library-article-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><div><h3>{a.title}</h3><span className="library-article-meta">{a.date && !isNaN(Date.parse(a.date)) ? `Saved ${new Date(a.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}` : 'From your learning path'}</span></div><span className="library-read-arrow" aria-hidden="true">↗</span></Link>
         {a.deleteId != null && <button className="library-remove" aria-label={`Delete ${a.title}`} title="Delete saved article" onClick={() => remove(a)}><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7m4-7v7"/></svg></button>}
-      </article>)}</div>
+      </article>)}</div></details>)}
     </section>)}
   </div>
 }

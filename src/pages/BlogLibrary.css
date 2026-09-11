@@ -28,3 +28,12 @@
 [data-learning-style="reading-room"] .library-index-heading h1, [data-learning-style="reading-room"] .library-index-section-heading h2 { font-family: Georgia, serif; font-weight: 400; }
 @media(max-width: 760px) { .library-index-heading { align-items: flex-start; flex-direction: column; gap: .75rem; padding-bottom: 1rem; }.library-index-tools { flex-wrap: wrap; }.library-search { flex-basis: 100%; }.library-index-tools select { flex: 1; min-width: 0; max-width: 100%; }.library-index-article > a { gap: .75rem; }.library-index-section-heading { justify-content: space-between; }.library-index-section-heading h2 { font-size: 1.15rem; } }
 @media(prefers-reduced-motion: reduce) { .library-index-article,.library-read-arrow { transition: none; } }
+.library-categories { display: flex; gap: .5rem; flex-wrap: wrap; padding: .5rem 0 1.5rem; }
+.library-index .library-categories button { display: inline-flex; align-items: center; gap: .75rem; min-height: 44px; padding: .65rem 1rem; border: 1px solid var(--study-line); border-radius: 8px; background: transparent; box-shadow: none; font-size: .85rem; color: var(--neu-text-secondary); }
+.library-index .library-categories button[aria-pressed="true"] { background: var(--neu-accent-soft); color: var(--neu-accent); border-color: var(--neu-accent); }
+.library-categories button span { font-size: .7rem; font-variant-numeric: tabular-nums; }
+.library-chapter { margin-top: 1rem; }
+.library-chapter > summary { cursor: pointer; padding: 1rem .75rem; background: var(--neu-surface); border-radius: 6px; font-size: .9rem; font-weight: 600; }
+.library-chapter > summary small { float: right; font-size: .72rem; font-weight: 400; color: var(--neu-text-secondary); margin-left: 1rem; }
+.library-chapter > div { padding-left: 1rem; }
+@media(max-width: 760px) { .library-categories { gap: .4rem; }.library-index .library-categories button { padding: .5rem .75rem; font-size: .8rem; }.library-chapter > div { padding-left: 0; }.library-chapter > summary small { float: none; display: block; margin: .5rem 0 0 1rem; } }
