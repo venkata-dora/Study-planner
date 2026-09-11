@@ -192,3 +192,13 @@
 .reader-toolbar { padding: .65rem 0; }
 .reader-content { padding: 1.25rem 0; }
 @media (max-width: 1000px) { .reader-path.is-open { max-height: 40dvh; } }
+
+.split-reader-tools { border-bottom: 0; }
+.reader-lesson-picker { position: fixed; inset: 0; margin: auto; box-sizing: border-box; }
+.reader-lesson-picker header { align-items: center; }
+.reader-picker-chapters { max-height: 55dvh; }
+.reader-picker-chapters details { border-bottom: 1px solid var(--study-line); padding: .4rem 0; }
+.reader-picker-chapters summary { cursor: pointer; font-size: .875rem; font-weight: 600; line-height: 1.5; padding: .65rem 0; }
+.reader-picker-chapters summary > span { font-size: .75rem; color: var(--neu-text-secondary); margin-right: .5rem; }
+.reader-picker-chapters button { font-size: .8125rem; line-height: 1.5; padding: .65rem .7rem; }
+.reader-picker-chapters button > span:last-child { flex-shrink: 0; color: var(--neu-text-secondary); }
