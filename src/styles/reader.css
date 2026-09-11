@@ -37,7 +37,7 @@
 
 .reading-workspace :is(a,button,summary):focus-visible { outline: 2px solid var(--neu-accent); outline-offset: 3px; }
 @media (max-width: 1000px) { .reader-layout.path-open { grid-template-columns: 210px minmax(0,1fr); gap: 1.5rem; } }
-@media (max-width: 760px) {
+@media (max-width: 1000px) {
   .reader-layout { display: block; } .reader-path { display: none; position: static; max-height: 60dvh; border: 1px solid var(--study-line); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; }
   .reader-path.is-open { display: block; } .reader-path-toggle { display: block; padding: .6rem .8rem; min-height: 44px; background: var(--neu-surface); color: var(--neu-accent); border: 1px solid var(--study-line); border-radius: 8px; font: inherit; font-size: .8rem; }
   .reader-toolbar { flex-wrap: wrap; } .reader-toolbar > div:last-child { flex-wrap: wrap; } .reader-next { gap: 1rem; } .reading-workspace { padding-top: .5rem; }
@@ -61,8 +61,8 @@
 }
 
 @media (min-width: 1101px) {
-  .reader-path { transform: translateX(-112px); }
-  .reader-sidebar-control { transform: translateX(-112px); }
+  .reading-workspace { --reader-shift: clamp(0px, calc((100vw - var(--study-sidebar) - 1320px) / 2), 112px); }
+  .reader-sidebar-control { transform: translateX(calc(-1 * var(--reader-shift))); }
 }
 
 /* Keep the restored layout while allowing the chapter rail to close smoothly. */
@@ -86,9 +86,9 @@
   transition: transform 260ms cubic-bezier(.22, 1, .36, 1), opacity 180ms ease, clip-path 260ms cubic-bezier(.22, 1, .36, 1), visibility 0s linear 260ms;
 }
 .reader-path.is-open { opacity: 1; visibility: visible; transform: translateX(var(--path-offset)); clip-path: inset(0); transition-delay: 0s; }
-@media (min-width: 1101px) { .reader-path { --path-offset: -112px; } }
+@media (min-width: 1101px) { .reader-path { --path-offset: calc(-1 * var(--reader-shift)); } }
 @media (min-width: 761px) and (max-width: 1000px) { .reader-layout { --path-width: 210px; } .reader-layout.path-open { column-gap: 1.5rem; } }
-@media (max-width: 760px) {
+@media (max-width: 1000px) {
   .reader-path { width: 100%; max-height: 0; padding: 0 1rem; margin-bottom: 0; border-width: 0; overflow: hidden; transition: max-height 260ms ease, padding 260ms ease, margin 260ms ease, opacity 180ms ease, visibility 0s linear 260ms; }
   .reader-path.is-open { max-height: 60dvh; padding: 1rem; margin-bottom: 1.5rem; border-width: 1px; overflow-y: auto; }
 }
@@ -102,5 +102,5 @@
     padding-right: 2rem;
   }
   .reading-workspace { max-width: none; }
-  .reader-layout.path-open { grid-template-columns: calc(var(--path-width) - 112px) minmax(0, 1fr); column-gap: 2rem; }
+  .reader-layout.path-open { grid-template-columns: calc(var(--path-width) - var(--reader-shift)) minmax(0, 1fr); column-gap: 2rem; }
 }
