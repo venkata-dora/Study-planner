@@ -158,3 +158,25 @@
   .split-reader-tools select { min-width: 0; flex: 1; }
   .is-expanded .split-reader-grid { flex: 1; }
 }
+
+.split-reader-tools { gap: .5rem; border-bottom: 1px solid var(--study-line); padding: .5rem 0 .75rem; }
+.split-workspace-label { font-size: .8rem; color: var(--neu-text-secondary); margin-right: auto; }
+.split-reader-tools .split-fullscreen { margin-left: 0; }
+.split-reader-tools :is(button,select) { background: transparent; height: 34px; min-height: 34px; }
+.split-reader-tools button:hover:not(:disabled) { background: var(--study-hover); }
+.split-add-blog span { font-size: 1rem; margin-right: .2rem; }
+.reader-lesson-picker { width: min(540px, calc(100vw - 2rem)); max-height: 80dvh; padding: 1.25rem; border: 1px solid var(--study-line); border-radius: 16px; background: var(--neu-surface); color: var(--neu-text-primary); box-shadow: 0 20px 80px #0002; }
+.reader-lesson-picker::backdrop { background: #0005; }
+.reader-lesson-picker header { display: flex; align-items: start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.reader-lesson-picker h2 { font-size: 1.15rem; margin: 0; }
+.reader-lesson-picker p { font-size: .85rem; color: var(--neu-text-secondary); margin: .5rem 0; }
+.reader-lesson-picker header button { border: none; background: transparent; color: inherit; font-size: 1.4rem; width: 36px; height: 36px; cursor: pointer; }
+.reader-lesson-picker input { width: 100%; box-sizing: border-box; padding: .75rem; border: 1px solid var(--study-line); border-radius: 8px; background: var(--neu-bg); color: inherit; font: inherit; font-size: .9rem; }
+.reader-lesson-results { max-height: 48dvh; overflow: auto; margin-top: .75rem; }
+.reader-lesson-results button { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; text-align: left; padding: .8rem; border: none; border-radius: 8px; background: transparent; color: inherit; cursor: pointer; }
+.reader-lesson-results button:hover:not(:disabled) { background: var(--study-hover); }
+.reader-lesson-results button:disabled { opacity: .5; cursor: default; }
+.reader-lesson-results strong { display: block; font-size: .85rem; font-weight: 500; line-height: 1.5; }
+.reader-lesson-results small { display: block; margin-top: .25rem; color: var(--neu-text-secondary); }
+.reader-lesson-picker footer { margin-top: .75rem; font-size: .75rem; color: var(--neu-text-secondary); }
+@media (max-width:600px) { .split-workspace-label { flex-basis: 100%; } .split-reader-tools label { flex: 0 1 auto; } }

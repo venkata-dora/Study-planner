@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import ReaderLessonPicker from './ReaderLessonPicker'
 import TopicBlog from '../pages/TopicBlog'
 import GenAIBlog from '../pages/GenAIBlog'
 import { readerPath } from '../utils/readerPaths'
@@ -39,7 +40,7 @@ export default function SplitReader({ current, sections, courses, children }) {
   }, [expanded])
   const [panes, setPanes] = useState([])
   const [layout, setLayout] = useState('columns')
-  const [choice, setChoice] = useState('')
+  const [pickerOpen, setPickerOpen] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [message, setMessage] = useState('')
   const currentUrl = readerPath(current.sectionId, current.topic)
@@ -60,7 +61,7 @@ export default function SplitReader({ current, sections, courses, children }) {
     if (!lesson) { setMessage('Drag a lesson link from a learning path into this reader.'); return }
     if (lesson.url === currentUrl || panes.some(p => p.url === lesson.url)) { setMessage('This lesson is already open.'); return }
     if (active.length >= 3) { setMessage('Four blogs are open. Close one before adding another.'); return }
-    setPanes([...active, lesson]); setMessage('Lesson opened alongside.'); setChoice('')
+    setPanes([...active, lesson]); setMessage('Lesson opened alongside.')
   }
   const active = panes.filter(p => p.url !== currentUrl)
   useLayoutEffect(() => {
@@ -78,15 +79,12 @@ export default function SplitReader({ current, sections, courses, children }) {
     add(value || '')
   }}>
     <div className="split-reader-tools">
-      <label>Open alongside<select aria-label="Choose a blog to open alongside" value={choice} onChange={e => setChoice(e.target.value)}><option value="">Choose a lesson…</option>{sections.map(s => <optgroup key={s.id} label={s.title}><option value={readerPath(s.id)}>Chapter guide</option>{s.subsections.flatMap(sub => sub.items).map((item, i) => {
-        const owner = courses.find(c => c.data.SECTIONS.some(section => section.id === s.id))
-        const topic = owner?.data.itemTopic ? owner.data.itemTopic(item) : String(item)
-        return <option key={i} value={readerPath(s.id, topic)}>{topic}</option>
-      })}</optgroup>)}</select></label>
-      <button type="button" disabled={!choice} onClick={() => add(choice)}>Add blog</button>
+      <span className="split-workspace-label">{active.length ? `${active.length + 1} blogs` : 'Reading'}</span>
+      <button type="button" className="split-add-blog" disabled={active.length >= 3} title={active.length >= 3 ? 'Close a blog to add another' : 'Add a blog, or drag a lesson into the reader'} onClick={() => setPickerOpen(true)}><span aria-hidden="true">＋</span> Add blog</button>
       {active.length > 0 && <>{active.length === 1 ? <label>Layout<select aria-label="Split layout" value={layout} onChange={e => setLayout(e.target.value)} ><option value="columns">Side by side</option><option value="rows">Top and bottom</option></select></label> : <span className="split-layout-summary">{active.length === 2 ? '2 above · 1 below' : '2 × 2 grid'}</span>}<button type="button" onClick={() => { setPanes([]); if (expanded) setExpanded('all'); setMessage('Returned to one blog.') }}>Single blog</button></>}
-      <button type="button" className="split-fullscreen" onClick={() => expanded ? exitFullscreen() : expand()}>{expanded ? 'Exit fullscreen' : 'Fullscreen'}</button><span className="split-reader-hint">{expanded && expanded !== 'all' ? `Viewing one blog · ${active.length + 1} blogs remain open` : active.length >= 2 ? `${active.length + 1} blogs open` : 'Drag a lesson here to split the view'}</span>
+      <button type="button" className="split-fullscreen" onClick={() => expanded ? exitFullscreen() : expand()}>{expanded ? 'Exit fullscreen' : 'Fullscreen'}</button>
     </div>
+    {pickerOpen && <ReaderLessonPicker sections={sections} courses={courses} openUrls={[currentUrl, ...active.map(p => p.url)]} onChoose={add} onClose={() => setPickerOpen(false)} />}
     <p className="split-reader-status" role="status">{message}</p>
     {dragging && <div className="split-drop-hint">Drop to open alongside · up to 4 blogs</div>}
     <div ref={grid} className={`split-reader-grid layout-${layout} panes-${active.length + 1}`}>
