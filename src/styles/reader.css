@@ -52,6 +52,10 @@
   .apple-platform .main-content:has(.reading-workspace) { padding-left: 2rem; }
 }
 
-.reader-sidebar-control { display: grid; place-items: center; width: 32px; height: 32px; margin: 0 0 .5rem; padding: 0; border: 1px solid var(--study-line); border-radius: 7px; background: var(--neu-surface); color: var(--neu-text-secondary); cursor: pointer; }
+.reader-sidebar-control { position: sticky; top: 5rem; z-index: 20; display: grid; place-items: center; width: 32px; height: 32px; margin: 0 0 .5rem; padding: 0; border: 1px solid var(--study-line); border-radius: 7px; background: var(--neu-surface); color: var(--neu-text-secondary); cursor: pointer; }
 .reader-sidebar-control:hover { background: var(--study-hover); color: var(--neu-accent); }
 @media (pointer: coarse) { .reader-sidebar-control { width: 44px; height: 44px; } }
+
+@media (min-width: 761px) {
+  .reader-path { top: 8rem; max-height: calc(100dvh - 9rem); }
+}
