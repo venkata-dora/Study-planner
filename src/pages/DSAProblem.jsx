@@ -32,6 +32,7 @@ export default function DSAProblem() {
   const [progress, setProgress] = useState(loadProgress)
   const [code, setCode] = useState('')
   const [leftTab, setLeftTab] = useState('description') // 'description' | 'visualize'
+  const [leftFullscreen, setLeftFullscreen] = useState(false)
   const [output, setOutput] = useState('')
   const [userOutput, setUserOutput] = useState('')
   const [testResults, setTestResults] = useState('')
@@ -40,8 +41,8 @@ export default function DSAProblem() {
   const [customInput, setCustomInput] = useState('')
   const [showCustom, setShowCustom] = useState(false)
   const [theme, setTheme] = useState(() => localStorage.getItem('dp_dark_mode') === '1' ? 'vs-dark' : 'light')
-  const [outputHeight, setOutputHeight] = useState(140)
-  const [outputCollapsed, setOutputCollapsed] = useState(false)
+  const [outputHeight, setOutputHeight] = useState(160)
+  const [outputCollapsed, setOutputCollapsed] = useState(true)
   const [leftPanelPct, setLeftPanelPct] = useState(() => {
     const saved = localStorage.getItem('dp_dsa_left_pct')
     return saved ? Number(saved) : 35
@@ -73,6 +74,14 @@ export default function DSAProblem() {
     setOutput('')
     setShowNotes(false)
   }, [pId]) // eslint-disable-line
+
+  // ESC exits left fullscreen
+  useEffect(() => {
+    if (!leftFullscreen) return
+    const onKey = e => { if (e.key === 'Escape') setLeftFullscreen(false) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [leftFullscreen])
 
   // Sync dark mode
   useEffect(() => {
@@ -115,6 +124,7 @@ export default function DSAProblem() {
 
   const runCode = async () => {
     setRunning(true)
+    setOutputCollapsed(false)
     setOutput('')
     setUserOutput('')
     setTestResults('')
@@ -136,9 +146,26 @@ export default function DSAProblem() {
         setUserOutput(parts[0].trim())
         setTestResults(parts[1].trim())
       } else {
-        // No test harness — everything is user output
-        setUserOutput(raw)
-        setTestResults('')
+        // Try to detect test results even without separator
+        const lines = raw.split('\n')
+        // Match: "Test N: PASSED/FAILED", "PASSED ✅", "FAILED ❌", "❌ FAILED", "✅ All tests"
+        const isTestLine = l => /Test\s+\d+[\s:].*(?:PASS|FAIL|✅|❌)/i.test(l)
+          || /^(?:✅|❌|PASS|FAIL)/i.test(l.trim())
+          || /(?:PASSED\s*✅|FAILED\s*❌)/i.test(l)
+          || /All tests passed/i.test(l)
+
+        const firstTestLine = lines.findIndex(l => isTestLine(l))
+
+        if (firstTestLine > 0) {
+          setUserOutput(lines.slice(0, firstTestLine).join('\n').trim())
+          setTestResults(lines.slice(firstTestLine).join('\n').trim())
+        } else if (firstTestLine === 0) {
+          setUserOutput('')
+          setTestResults(raw)
+        } else {
+          setUserOutput(raw)
+          setTestResults('')
+        }
       }
     } catch (e) {
       const err = `Error: ${e.message}\nIs the Flask server running?`
@@ -151,6 +178,7 @@ export default function DSAProblem() {
   // Run with custom input only — strips test harness
   const runCustom = async () => {
     setRunning(true)
+    setOutputCollapsed(false)
     setOutput('')
     setUserOutput('')
     setTestResults('')
@@ -262,8 +290,8 @@ export default function DSAProblem() {
     <div
       style={{
         width: '100vw', maxWidth: '100vw',
-        marginLeft: 'calc(-50vw + 50%)', padding: '0 32px', boxSizing: 'border-box',
-        display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)',
+        marginLeft: 'calc(-50vw + 50%)', padding: '0 12px', boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)',
       }}
       onKeyDown={handleKeyDown}
     >
@@ -274,7 +302,7 @@ export default function DSAProblem() {
 
       {/* Top bar */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap', flexShrink: 0,
+        display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap', flexShrink: 0,
       }}>
         <button className="btn btn-secondary btn-sm" onClick={() => navigate('/dsa')}>← Sheet</button>
 
@@ -326,7 +354,7 @@ export default function DSAProblem() {
 
       {/* Problem header */}
       <div style={{
-        background: 'var(--neu-bg)', borderRadius: 14, padding: '12px 18px', marginBottom: 10,
+        background: 'var(--neu-bg)', borderRadius: 14, padding: '8px 14px', marginBottom: 6,
         boxShadow: '4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light)',
         borderLeft: `4px solid ${step.color}`, flexShrink: 0,
         display: 'flex', alignItems: 'center', gap: 12,
@@ -346,7 +374,7 @@ export default function DSAProblem() {
       <div style={{ flex: 1, display: 'flex', gap: 0, minHeight: 0 }}>
 
         {/* Notes panel — left side, resizable */}
-        {showNotes && (
+        {showNotes && leftTab !== 'visualize' && (
           <>
             <div style={{
               width: notesWidth, minWidth: 200, maxWidth: 500, flexShrink: 0,
@@ -410,20 +438,23 @@ export default function DSAProblem() {
           </>
         )}
 
-        {/* Problem + Editor container */}
-        <div style={{ flex: 1, display: 'flex', gap: 0, minWidth: 0 }}>
-
-        {/* Left: Problem description / Visualizer (tabbed) */}
+        {/* ── Left panel: Description / Visualize (with fullscreen toggle) ── */}
         <div style={{
-          width: `${leftPanelPct}%`, minWidth: 200, maxWidth: '70%',
-          background: 'var(--neu-bg)', borderRadius: 14,
-          boxShadow: '4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light)',
-          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          ...(leftFullscreen ? {
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            zIndex: 9999, background: 'var(--neu-bg)', borderRadius: 0,
+            padding: 16, display: 'flex', flexDirection: 'column',
+          } : {
+            width: `${leftPanelPct}%`, minWidth: 200, maxWidth: '70%',
+            background: 'var(--neu-bg)', borderRadius: 14,
+            boxShadow: '4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light)',
+            display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          }),
         }}>
-          {/* Tab bar */}
+          {/* Tab bar + fullscreen button */}
           <div style={{
             display: 'flex', borderBottom: '1px solid rgba(163,177,198,0.12)',
-            flexShrink: 0,
+            flexShrink: 0, alignItems: 'center',
           }}>
             {[
               { key: 'description', label: 'Description', icon: '📄' },
@@ -435,9 +466,9 @@ export default function DSAProblem() {
                 style={{
                   flex: 1, padding: '10px 8px', border: 'none',
                   background: leftTab === tab.key ? `${step.color}12` : 'transparent',
-                  borderBottom: leftTab === tab.key ? `2px solid ${step.color}` : '2px solid transparent',
+                  borderBottom: leftTab === tab.key ? `2.5px solid ${step.color}` : '2.5px solid transparent',
                   color: leftTab === tab.key ? step.color : 'var(--neu-text-secondary)',
-                  fontSize: '.72rem', fontWeight: leftTab === tab.key ? 700 : 500,
+                  fontSize: '.74rem', fontWeight: leftTab === tab.key ? 700 : 500,
                   cursor: 'pointer', display: 'flex', alignItems: 'center',
                   justifyContent: 'center', gap: 5, transition: 'all .15s',
                   fontFamily: 'inherit',
@@ -446,6 +477,22 @@ export default function DSAProblem() {
                 {tab.icon} {tab.label}
               </button>
             ))}
+            <button
+              onClick={() => setLeftFullscreen(f => !f)}
+              title={leftFullscreen ? 'Exit fullscreen (ESC)' : 'Fullscreen'}
+              style={{
+                width: 30, height: 30, borderRadius: 8, border: 'none',
+                background: leftFullscreen ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'var(--neu-bg)',
+                color: leftFullscreen ? '#fff' : 'var(--neu-text-secondary)',
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '.8rem', margin: '0 6px', flexShrink: 0,
+                boxShadow: leftFullscreen
+                  ? '0 2px 8px rgba(99,102,241,0.3)'
+                  : '2px 2px 4px var(--neu-shadow-dark), -2px -2px 4px var(--neu-shadow-light)',
+              }}
+            >
+              {leftFullscreen ? '⊟' : '⊞'}
+            </button>
           </div>
 
           {/* Tab content */}
@@ -525,51 +572,54 @@ export default function DSAProblem() {
               </div>
             </div>
           ) : (
-            <div style={{ flex: 1, padding: '12px 16px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-              <DSAVisualizer code={code} stepColor={step.color} />
+            <div style={{ flex: 1, padding: '10px 14px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <DSAVisualizer code={code} stepColor={step.color} isFullscreen={leftFullscreen} />
             </div>
           )}
         </div>
 
-        {/* Drag handle — resize left/right split */}
-        <div
-          onMouseDown={e => {
-            e.preventDefault()
-            const container = e.currentTarget.parentElement
-            const startX = e.clientX
-            const startPct = leftPanelPct
-            const containerW = container.getBoundingClientRect().width
-            const onMove = ev => {
-              const dx = ev.clientX - startX
-              const newPct = Math.min(70, Math.max(15, startPct + (dx / containerW) * 100))
-              setLeftPanelPct(newPct)
-            }
-            const onUp = () => {
-              document.removeEventListener('mousemove', onMove)
-              document.removeEventListener('mouseup', onUp)
-              document.body.style.cursor = ''
-              document.body.style.userSelect = ''
-              localStorage.setItem('dp_dsa_left_pct', String(leftPanelPct))
-            }
-            document.body.style.cursor = 'col-resize'
-            document.body.style.userSelect = 'none'
-            document.addEventListener('mousemove', onMove)
-            document.addEventListener('mouseup', onUp)
-          }}
-          style={{
-            width: 8, flexShrink: 0, cursor: 'col-resize',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}
-        >
+        {/* Drag handle + Editor — hidden when left panel is fullscreen */}
+        {!leftFullscreen && (
+          <>
+          {/* Drag handle — resize left/right split */}
           <div
-            style={{
-              width: 4, height: 48, borderRadius: 4,
-              background: 'rgba(163,177,198,0.25)', transition: 'background .15s',
+            onMouseDown={e => {
+              e.preventDefault()
+              const container = e.currentTarget.parentElement
+              const startX = e.clientX
+              const startPct = leftPanelPct
+              const containerW = container.getBoundingClientRect().width
+              const onMove = ev => {
+                const dx = ev.clientX - startX
+                const newPct = Math.min(70, Math.max(15, startPct + (dx / containerW) * 100))
+                setLeftPanelPct(newPct)
+              }
+              const onUp = () => {
+                document.removeEventListener('mousemove', onMove)
+                document.removeEventListener('mouseup', onUp)
+                document.body.style.cursor = ''
+                document.body.style.userSelect = ''
+                localStorage.setItem('dp_dsa_left_pct', String(leftPanelPct))
+              }
+              document.body.style.cursor = 'col-resize'
+              document.body.style.userSelect = 'none'
+              document.addEventListener('mousemove', onMove)
+              document.addEventListener('mouseup', onUp)
             }}
-            onMouseEnter={e => e.currentTarget.style.background = step.color}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(163,177,198,0.25)'}
-          />
-        </div>
+            style={{
+              width: 8, flexShrink: 0, cursor: 'col-resize',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <div
+              style={{
+                width: 4, height: 48, borderRadius: 4,
+                background: 'rgba(163,177,198,0.25)', transition: 'background .15s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = step.color}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(163,177,198,0.25)'}
+            />
+          </div>
 
         {/* Right: Editor + Output */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10, minWidth: 0 }}>
@@ -673,71 +723,78 @@ export default function DSAProblem() {
             />
           </div>
 
-          {/* Drag handle to resize output */}
-          <div
-            onMouseDown={e => {
-              e.preventDefault()
-              const startY = e.clientY
-              const startH = outputHeight
-              const onMove = ev => {
-                const newH = Math.min(400, Math.max(60, startH - (ev.clientY - startY)))
-                setOutputHeight(newH)
-                setOutputCollapsed(false)
-              }
-              const onUp = () => {
-                document.removeEventListener('mousemove', onMove)
-                document.removeEventListener('mouseup', onUp)
-                document.body.style.cursor = ''
-                document.body.style.userSelect = ''
-              }
-              document.body.style.cursor = 'row-resize'
-              document.body.style.userSelect = 'none'
-              document.addEventListener('mousemove', onMove)
-              document.addEventListener('mouseup', onUp)
-            }}
-            style={{
-              height: 8, flexShrink: 0, cursor: 'row-resize',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
-          >
-            <div style={{
-              width: 40, height: 4, borderRadius: 4,
-              background: 'rgba(163,177,198,0.25)', transition: 'background .15s',
-            }}
-              onMouseEnter={e => e.currentTarget.style.background = 'var(--neu-accent)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(163,177,198,0.25)'}
-            />
-          </div>
-
-          {/* Output panels — collapsible, resizable */}
-          <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
-            {/* Toggle bar */}
+          {/* Drag handle to resize output — only when output is open */}
+          {!outputCollapsed && (
             <div
-              onClick={() => setOutputCollapsed(c => !c)}
+              onMouseDown={e => {
+                e.preventDefault()
+                const startY = e.clientY
+                const startH = outputHeight
+                const onMove = ev => {
+                  const newH = Math.min(400, Math.max(60, startH - (ev.clientY - startY)))
+                  setOutputHeight(newH)
+                }
+                const onUp = () => {
+                  document.removeEventListener('mousemove', onMove)
+                  document.removeEventListener('mouseup', onUp)
+                  document.body.style.cursor = ''
+                  document.body.style.userSelect = ''
+                }
+                document.body.style.cursor = 'row-resize'
+                document.body.style.userSelect = 'none'
+                document.addEventListener('mousemove', onMove)
+                document.addEventListener('mouseup', onUp)
+              }}
               style={{
+                height: 8, flexShrink: 0, cursor: 'row-resize',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              <div style={{
+                width: 40, height: 4, borderRadius: 4,
+                background: 'rgba(163,177,198,0.25)', transition: 'background .15s',
+              }}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--neu-accent)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(163,177,198,0.25)'}
+              />
+            </div>
+          )}
+
+          {/* Output panels — hidden until Run, with close button */}
+          {!outputCollapsed && (
+            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+              {/* Output header bar with close button */}
+              <div style={{
                 display: 'flex', alignItems: 'center', gap: 8, padding: '4px 10px',
-                cursor: 'pointer', fontSize: '.65rem', fontWeight: 700,
+                fontSize: '.65rem', fontWeight: 700,
                 color: 'var(--neu-text-secondary)', fontFamily: 'monospace',
                 textTransform: 'uppercase', letterSpacing: '.04em',
                 userSelect: 'none',
-              }}
-            >
-              <span style={{ fontSize: '.7rem' }}>{outputCollapsed ? '▸' : '▾'}</span>
-              Output
-              {(userOutput || testResults) && (
-                <span style={{
-                  width: 6, height: 6, borderRadius: '50%',
-                  background: testResults.includes('FAILED') || userOutput.includes('Error') ? '#ef4444'
-                    : testResults.includes('PASSED') ? '#22c55e' : '#2979FF',
-                }} />
-              )}
-              <div style={{ flex: 1 }} />
-              <span style={{ fontSize: '.6rem', fontWeight: 400 }}>
-                {outputCollapsed ? 'click to expand' : `drag handle above to resize · ${outputHeight}px`}
-              </span>
-            </div>
+              }}>
+                <span style={{ fontSize: '.7rem' }}>▾</span>
+                Output
+                {(userOutput || testResults) && (
+                  <span style={{
+                    width: 6, height: 6, borderRadius: '50%',
+                    background: testResults.includes('FAILED') || userOutput.includes('Error') ? '#ef4444'
+                      : testResults.includes('PASSED') ? '#22c55e' : '#2979FF',
+                  }} />
+                )}
+                <div style={{ flex: 1 }} />
+                <button
+                  onClick={() => setOutputCollapsed(true)}
+                  style={{
+                    padding: '2px 10px', borderRadius: 999, border: 'none',
+                    background: 'var(--neu-bg)', cursor: 'pointer',
+                    color: 'var(--neu-text-secondary)', fontSize: '.62rem', fontWeight: 700,
+                    boxShadow: '2px 2px 4px var(--neu-shadow-dark), -2px -2px 4px var(--neu-shadow-light)',
+                    display: 'flex', alignItems: 'center', gap: 4,
+                  }}
+                >
+                  ✕ Close
+                </button>
+              </div>
 
-            {!outputCollapsed && (
               <div style={{ height: outputHeight, display: 'flex', gap: 10 }}>
                 {/* Your Output */}
                 <div style={{
@@ -764,7 +821,7 @@ export default function DSAProblem() {
                     color: userOutput.includes('Error') || userOutput.includes('Traceback') ? '#ef4444' : 'var(--neu-text-primary)',
                     overflowY: 'auto', whiteSpace: 'pre-wrap',
                   }}>
-                    {running ? 'Running...' : userOutput || (output ? '(no direct output)' : 'Click "▶ Run" or press ⌘+Enter')}
+                    {running ? 'Running...' : userOutput || (output ? '(no direct output)' : '')}
                   </pre>
                 </div>
 
@@ -793,14 +850,15 @@ export default function DSAProblem() {
                     color: testResults.includes('FAILED') ? '#ef4444' : testResults.includes('PASSED') ? '#22c55e' : 'var(--neu-text-primary)',
                     overflowY: 'auto', whiteSpace: 'pre-wrap',
                   }}>
-                    {running ? 'Running...' : testResults || (output ? '(no test harness found)' : 'Tests will appear here after running')}
+                    {running ? 'Running...' : testResults || (output ? '(no test harness found)' : '')}
                   </pre>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
-        </div>{/* end Problem+Editor container */}
+        </>
+        )}
       </div>
     </div>
   )

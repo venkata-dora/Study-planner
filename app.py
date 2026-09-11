@@ -113,7 +113,59 @@ def run_ai_prompt(prompt, timeout=120, expect_json=False, model=None):
                 pass
         return None
 
-    # --- 1. Try Ollama qwen3.5:4b first (preferred) ---
+    # --- 1. Try Claude CLI first (most capable) ---
+    claude_bin = shutil.which("claude") or "/opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js"
+    if os.path.isfile(claude_bin):
+        try:
+            print(f"[AI] Trying Claude CLI...", flush=True)
+            cmd = [claude_bin, "-p", prompt]
+            if model:
+                cmd += ["--model", model]
+            result = subprocess.run(
+                cmd,
+                capture_output=True, text=True, timeout=timeout,
+                env=clean_env,
+            )
+            if result.returncode == 0 and result.stdout.strip():
+                text = result.stdout.strip()
+                if expect_json:
+                    cleaned = _extract_json(text)
+                    if cleaned:
+                        print(f"[AI] Claude CLI returned valid JSON ({len(cleaned)} chars)", flush=True)
+                        return cleaned, "claude"
+                    print(f"[AI] Claude CLI JSON extraction failed", flush=True)
+                else:
+                    print(f"[AI] Claude CLI returned ({len(text)} chars)", flush=True)
+                    return text, "claude"
+            else:
+                print(f"[AI] Claude CLI returncode={result.returncode}, stderr={result.stderr[:200] if result.stderr else 'none'}", flush=True)
+        except subprocess.TimeoutExpired:
+            print(f"[AI] Claude CLI timed out", flush=True)
+        except Exception as e:
+            print(f"[AI] Claude CLI error: {e}", flush=True)
+
+    # --- 2. Fallback: Groq API ---
+    print(f"[AI] Trying Groq API (key={'set' if os.environ.get('GROQ_API_KEY') else 'MISSING'})...", flush=True)
+    groq_text, groq_source = _try_groq(prompt, timeout=timeout, expect_json=expect_json)
+    if groq_text:
+        if expect_json:
+            cleaned = _extract_json(_clean_thinking(groq_text))
+            if cleaned:
+                print(f"[AI] Groq returned valid JSON ({len(cleaned)} chars)", flush=True)
+                return cleaned, groq_source
+            print(f"[AI] Groq JSON extraction failed, raw length={len(groq_text)}", flush=True)
+            # Retry once
+            groq_text2, _ = _try_groq(prompt, timeout=timeout, expect_json=True)
+            if groq_text2:
+                cleaned2 = _extract_json(_clean_thinking(groq_text2))
+                if cleaned2:
+                    return cleaned2, groq_source
+        else:
+            return _clean_thinking(groq_text), groq_source
+    else:
+        print(f"[AI] Groq failed: {groq_source}", flush=True)
+
+    # --- 3. Fallback: Ollama qwen3.5:4b ---
     if shutil.which("ollama"):
         max_attempts = 2 if expect_json else 1
         for attempt in range(max_attempts):
@@ -131,59 +183,13 @@ def run_ai_prompt(prompt, timeout=120, expect_json=False, model=None):
                         if cleaned:
                             print(f"[AI] Ollama returned valid JSON ({len(cleaned)} chars)", flush=True)
                             return cleaned, "ollama-qwen3.5:4b"
-                        print(f"[AI] Ollama JSON extraction failed, raw length={len(text)}", flush=True)
+                        print(f"[AI] Ollama JSON extraction failed", flush=True)
                         continue
                     return text, "ollama-qwen3.5:4b"
-                else:
-                    print(f"[AI] Ollama returncode={result.returncode}, stdout empty={not result.stdout.strip()}", flush=True)
             except subprocess.TimeoutExpired:
-                print(f"[AI] Ollama timed out after {timeout+60}s", flush=True)
+                print(f"[AI] Ollama timed out", flush=True)
             except Exception as e:
                 print(f"[AI] Ollama error: {e}", flush=True)
-
-    # --- 2. Fallback: Groq API ---
-    print(f"[AI] Trying Groq API (key={'set' if os.environ.get('GROQ_API_KEY') else 'MISSING'})...", flush=True)
-    groq_text, groq_source = _try_groq(prompt, timeout=timeout, expect_json=expect_json)
-    if groq_text:
-        if expect_json:
-            cleaned = _extract_json(_clean_thinking(groq_text))
-            if cleaned:
-                print(f"[AI] Groq returned valid JSON ({len(cleaned)} chars)", flush=True)
-                return cleaned, groq_source
-            print(f"[AI] Groq JSON extraction failed, raw length={len(groq_text)}", flush=True)
-            # Bad JSON from Groq, try once more
-            groq_text2, _ = _try_groq(prompt, timeout=timeout, expect_json=True)
-            if groq_text2:
-                cleaned2 = _extract_json(_clean_thinking(groq_text2))
-                if cleaned2:
-                    return cleaned2, groq_source
-                print(f"[AI] Groq retry also failed JSON extraction", flush=True)
-        else:
-            return _clean_thinking(groq_text), groq_source
-    else:
-        print(f"[AI] Groq failed: {groq_source}", flush=True)
-
-    # --- 3. Fallback: Claude CLI ---
-    if shutil.which("claude"):
-        try:
-            print(f"[AI] Trying Claude CLI...", flush=True)
-            cmd = ["claude", "-p", prompt]
-            if model:
-                cmd += ["--model", model]
-            result = subprocess.run(
-                cmd,
-                capture_output=True, text=True, timeout=timeout,
-                env=clean_env,
-            )
-            if result.returncode == 0 and result.stdout.strip():
-                print(f"[AI] Claude CLI returned ({len(result.stdout)} chars)", flush=True)
-                return result.stdout.strip(), "claude"
-            else:
-                print(f"[AI] Claude CLI returncode={result.returncode}", flush=True)
-        except subprocess.TimeoutExpired:
-            print(f"[AI] Claude CLI timed out", flush=True)
-        except Exception as e:
-            print(f"[AI] Claude CLI error: {e}", flush=True)
 
     print(f"[AI] All backends failed", flush=True)
     return None, "no-ai-backend"
@@ -252,34 +258,50 @@ def stream_ai_prompt(prompt, model=None):
             except Exception:
                 pass
 
-    # --- 1. Try Ollama (preferred) ---
-    if shutil.which("ollama"):
-        streamed_any = False
-        got_done = False
-        for chunk in _stream_from_popen(["ollama", "run", "qwen3.5:4b", prompt]):
-            if chunk == "event: done\ndata: end\n\n":
-                got_done = True
-            streamed_any = True
-            yield chunk
-        if got_done:
+    # If a specific model is requested, skip Ollama/Groq and go straight to Claude CLI
+    if not model:
+        # --- 1. Try Ollama (preferred) ---
+        if shutil.which("ollama"):
+            streamed_any = False
+            got_done = False
+            for chunk in _stream_from_popen(["ollama", "run", "qwen3.5:4b", prompt]):
+                if chunk == "event: done\ndata: end\n\n":
+                    got_done = True
+                streamed_any = True
+                yield chunk
+
+            # If we streamed *any* output from Ollama, don't fall back!
+            if streamed_any:
+                if not got_done:
+                    yield "event: done\ndata: end\n\n"
+                return
+
+        # --- 2. Fallback: Groq API ---
+        groq_text, groq_source = _try_groq(prompt, timeout=120)
+        if groq_text:
+            text = re.sub(r"<think>[\s\S]*?</think>", "", groq_text).strip()
+            yield from _send_chunks(text)
             return
 
-    # --- 2. Fallback: Groq API ---
-    groq_text, groq_source = _try_groq(prompt, timeout=120)
-    if groq_text:
-        text = re.sub(r"<think>[\s\S]*?</think>", "", groq_text).strip()
-        yield from _send_chunks(text)
-        return
-
-    # --- 3. Fallback: Claude CLI ---
-    if shutil.which("claude"):
-        cmd = ["claude", "-p", prompt]
+    # --- 3. Claude CLI (or first choice when model is specified) ---
+    claude_bin = shutil.which("claude") or "/opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js"
+    if os.path.isfile(claude_bin):
+        cmd = [claude_bin, "-p", prompt]
         if model:
             cmd += ["--model", model]
+        streamed_any_claude = False
+        got_done_claude = False
         for chunk in _stream_from_popen(cmd):
-            yield chunk
             if chunk == "event: done\ndata: end\n\n":
-                return
+                got_done_claude = True
+            streamed_any_claude = True
+            yield chunk
+        
+        # If we streamed *any* output from Claude, don't fall back!
+        if streamed_any_claude:
+            if not got_done_claude:
+                yield "event: done\ndata: end\n\n"
+            return
 
     yield f"data: {json_mod.dumps('[Error] No AI backend available. Install Ollama, set GROQ_API_KEY, or install Claude CLI.')}\n\n"
     yield "event: done\ndata: end\n\n"
@@ -697,11 +719,17 @@ def api_history():
         else:
             pct = 30  # just mood or minimal activity
 
+        # Get study tracks for this day
+        study_tracks = [r["track"] for r in conn.execute(
+            "SELECT DISTINCT track FROM study_log WHERE date=?", (d,)
+        ).fetchall()]
+
         day_data[d] = {
             "pct": pct,
             "total": plan_total,
             "done": plan_done,
             "study_hours": round(study_hours, 1),
+            "study_tracks": study_tracks,
         }
     conn.close()
     return jsonify(day_data)
@@ -1374,37 +1402,135 @@ def api_dsa_visualize():
     if not code.strip():
         return jsonify({"error": "No code provided", "snapshots": []})
 
-    # Strip test harness (everything after # --- Test cases)
-    marker = "# --- Test cases"
-    idx = code.find(marker)
-    func_code = code[:idx] if idx != -1 else code
+    # Strip test harness — find where tests begin (must be at top-level indentation)
+    import re as _re_strip
+    idx = -1
+    for pattern in ["# --- Test cases", "# --- Test", "# Test cases"]:
+        idx = code.find(pattern)
+        if idx != -1:
+            break
+    if idx == -1:
+        # Look for top-level if __name__ == "__main__": or bare function calls after function defs
+        m = _re_strip.search(r'^if\s+__name__\s*==', code, _re_strip.MULTILINE)
+        if m:
+            idx = m.start()
+    if idx == -1:
+        # Look for top-level print("Testing ...") which antigravity/AI tools often emit
+        m = _re_strip.search(r'^print\s*\(\s*["\']Testing\s', code, _re_strip.MULTILINE)
+        if m:
+            idx = m.start()
+    if idx == -1:
+        # Look for top-level bare function call lines after all def blocks end
+        # Find last 'def ' at col-0, then first top-level non-def non-comment non-blank line after it
+        lines = code.split('\n')
+        last_def_end = -1
+        in_def = False
+        for li, line in enumerate(lines):
+            stripped = line.rstrip()
+            if _re_strip.match(r'^def\s', stripped):
+                in_def = True
+            elif in_def and stripped and not stripped.startswith(' ') and not stripped.startswith('\t'):
+                # Top-level line after a def block = likely test code
+                if not stripped.startswith('def ') and not stripped.startswith('#') and not stripped.startswith('class '):
+                    idx = sum(len(lines[j]) + 1 for j in range(li))
+                    break
+                in_def = False
 
-    # Try to extract a realistic sample call from test harness
-    test_section = code[idx:] if idx != -1 else ""
+    func_code = code[:idx].rstrip() if idx != -1 else code
+
+    # Safety: verify func_code is valid Python. If not, try harder to find just the function defs.
+    try:
+        compile(func_code, '<check>', 'exec')
+    except SyntaxError:
+        # Last resort: extract only def blocks
+        lines = code.split('\n')
+        func_lines_list = []
+        in_func = False
+        for line in lines:
+            if _re_strip.match(r'^def\s', line):
+                in_func = True
+            elif in_func and line.strip() and not line[0].isspace():
+                in_func = False
+            if in_func:
+                func_lines_list.append(line)
+        if func_lines_list:
+            candidate = '\n'.join(func_lines_list)
+            try:
+                compile(candidate, '<check>', 'exec')
+                func_code = candidate
+            except SyntaxError:
+                func_code = code
+        else:
+            func_code = code
+
+    # Try to extract a realistic sample call from test harness AND from the full code
+    # Search the ENTIRE code for function calls with array args (not just test section)
     extracted_args = None
-    if test_section:
-        call_match = re_viz.search(r'\w+\(\s*(\[[\d,\s\.\-]+\])(?:\s*,\s*([^)]+))?\s*\)', test_section)
-        if call_match:
-            inner = re_viz.search(r'\((.+)\)', call_match.group(0))
+    # First look for test data patterns: lists assigned in tests, tuples like (input, expected)
+    for search_area in [code[idx:] if idx != -1 else "", code]:
+        if extracted_args:
+            break
+        # Pattern: func([...], ...)  or  func([...])
+        for m in re_viz.finditer(r'(?<!\w)(\w+)\(\s*(\[[\d,\s\.\-\[\]]+\])(?:\s*,\s*([^)]*))?\s*\)', search_area):
+            fname = m.group(1)
+            if fname in ('print', 'len', 'range', 'sorted', 'list', 'set', 'min', 'max', 'sum', 'enumerate', 'zip', 'map', 'filter', 'isinstance', 'type'):
+                continue
+            inner = re_viz.search(r'\((.+)\)', m.group(0))
             if inner:
                 extracted_args = inner.group(1)
+                break
+        # Pattern: tests = [([1,2,3], expected), ...] — extract first input
+        if not extracted_args:
+            tuple_match = re_viz.search(r'tests?\s*=\s*\[\s*\(\s*(\[[\d,\s\.\-]+\])\s*,', search_area)
+            if tuple_match:
+                extracted_args = tuple_match.group(1)
 
-    # Names that should never be treated as pointers
-    IGNORE_PTRS = {'n', 'N', 'size', 'length', 'len_', 'count', 'total',
-                   'ans', 'result', 'res', 'ret', 'output', 'sum_', 'max_val',
-                   'min_val', 'target', 'k'}
+    # Candidate pointer names — but we only treat them as pointers if they are
+    # actually used for array indexing (e.g., arr[i]) in the source code.
+    # If `i` is used as `for i in arr` (value iteration), it's NOT a pointer.
+    CANDIDATE_PTR_NAMES = {
+        'i', 'j', 'k', 'l', 'r',
+        'left', 'right', 'lo', 'hi', 'low', 'high', 'mid',
+        'start', 'end', 'begin', 'slow', 'fast',
+        'head', 'tail', 'top', 'bottom',
+        'ptr', 'ptr1', 'ptr2', 'p', 'q',
+        'idx', 'index', 'pos', 'cur', 'curr',
+        'write', 'read', 'front', 'back',
+        'l_ptr', 'r_ptr', 'left_ptr', 'right_ptr',
+        'window_start', 'window_end',
+    }
+
+    # Scan the source code to find which candidates are actually used as array indices.
+    # Look for patterns like: something[varname], something[varname + ...], etc.
+    # Also check for range-based loops: `for i in range(...)` = index, `for i in arr` = value
+    INDEX_PTR_NAMES = set()
+    for name in CANDIDATE_PTR_NAMES:
+        # Check if used as array index: arr[name] or arr[name +/- ...]
+        if re_viz.search(r'\w\[' + re_viz.escape(name) + r'(?:\s*[\+\-\*].*?)?\]', func_code):
+            INDEX_PTR_NAMES.add(name)
+        # Check if used in range-based loop: for name in range(...)
+        elif re_viz.search(r'for\s+' + re_viz.escape(name) + r'\s+in\s+range\s*\(', func_code):
+            INDEX_PTR_NAMES.add(name)
+    # If nothing found from scanning, be conservative — don't mark anything as pointer
+    # (all will show as variables instead)
+
+    # Read the source lines so we can include code context in snapshots
+    func_lines = func_code.split('\n')
 
     wrapper = '''
-import sys, json, copy
+import sys, json, copy, linecache
 
 _viz_snapshots = []
 _viz_prev_arrays = {}
-_viz_prev_pointers = {}
+_viz_prev_vars = {}
 _viz_max_snaps = 300
 _viz_src_file = None
-_viz_ignore_ptrs = ''' + repr(IGNORE_PTRS) + '''
+_viz_index_ptrs = ''' + repr(INDEX_PTR_NAMES) + '''
+_viz_src_lines = ''' + repr(func_lines) + '''
+_viz_line_offset = 0  # set after func is defined
 
 def _viz_trace(frame, event, arg):
+    global _viz_prev_arrays, _viz_prev_vars
     if len(_viz_snapshots) >= _viz_max_snaps:
         sys.settrace(None)
         return None
@@ -1416,34 +1542,40 @@ def _viz_trace(frame, event, arg):
 
     arrays = {}
     pointers = {}
+    vars_dict = {}
     for name, val in frame.f_locals.items():
         if name.startswith('_viz_') or name.startswith('__'):
             continue
         if isinstance(val, list) and len(val) <= 200:
             if all(isinstance(x, (int, float)) for x in val):
-                arrays[name] = list(val)
+                import math
+                arrays[name] = [0 if (isinstance(x, float) and (math.isnan(x) or math.isinf(x))) else x for x in val]
         elif isinstance(val, int) and not isinstance(val, bool):
-            if name not in _viz_ignore_ptrs:
+            if name in _viz_index_ptrs:
                 pointers[name] = val
+            vars_dict[name] = val
+        elif isinstance(val, float):
+            import math
+            if not math.isnan(val) and not math.isinf(val):
+                vars_dict[name] = val
+        elif isinstance(val, (bool, str)) and len(str(val)) < 50:
+            vars_dict[name] = val
 
     if not arrays:
         return _viz_trace
 
     arrays_changed = (arrays != _viz_prev_arrays)
-    pointers_changed = (pointers != _viz_prev_pointers)
-    if not arrays_changed and not pointers_changed:
+    vars_changed = (vars_dict != _viz_prev_vars)
+    if not arrays_changed and not vars_changed:
         return _viz_trace
 
     highlights = {}
     for name, arr in arrays.items():
         prev = _viz_prev_arrays.get(name, [])
-        changed = []
-        for i in range(len(arr)):
-            if i >= len(prev) or arr[i] != prev[i]:
-                changed.append(i)
+        changed = [i for i in range(len(arr)) if i >= len(prev) or arr[i] != prev[i]]
         highlights[name] = changed
 
-    # Only include pointers whose value is a valid index for some array
+    # Only include pointers whose value is a valid index
     relevant_ptrs = {}
     for pname, pval in pointers.items():
         for aname, arr in arrays.items():
@@ -1451,22 +1583,43 @@ def _viz_trace(frame, event, arg):
                 relevant_ptrs[pname] = pval
                 break
 
+    # Track which vars changed from previous snapshot
+    changed_vars = []
+    for vname, vval in vars_dict.items():
+        if vname in relevant_ptrs:
+            continue
+        prev_val = _viz_prev_vars.get(vname)
+        if prev_val is None or prev_val != vval:
+            changed_vars.append(vname)
+
     moved_ptrs = []
+    prev_ptrs = _viz_snapshots[-1]['pointers'] if _viz_snapshots else {}
     for pname, pval in relevant_ptrs.items():
-        prev_val = _viz_prev_pointers.get(pname)
+        prev_val = prev_ptrs.get(pname)
         if prev_val is None or prev_val != pval:
             moved_ptrs.append(pname)
 
+    # Get the source code line
+    line_no = frame.f_lineno
+    src_idx = line_no - _viz_line_offset - 1
+    code_line = _viz_src_lines[src_idx].strip() if 0 <= src_idx < len(_viz_src_lines) else ''
+
+    # Remove vars that are pointers from vars_dict display
+    display_vars = {k: v for k, v in vars_dict.items() if k not in relevant_ptrs}
+
     _viz_snapshots.append({
-        'line': frame.f_lineno,
+        'line': line_no,
+        'codeLine': code_line,
         'arrays': copy.deepcopy(arrays),
         'highlights': highlights,
         'pointers': relevant_ptrs,
+        'vars': copy.deepcopy(display_vars),
         'movedPointers': moved_ptrs,
-        'arrayChanged': arrays_changed,
+        'changedVars': changed_vars,
+        'arrayChanged': bool(highlights and any(v for v in highlights.values())),
     })
-    _viz_prev_arrays.update(copy.deepcopy(arrays))
-    _viz_prev_pointers.update(copy.deepcopy(pointers))
+    _viz_prev_arrays = copy.deepcopy(arrays)
+    _viz_prev_vars = copy.deepcopy(vars_dict)
 
     return _viz_trace
 
@@ -1483,6 +1636,7 @@ if _viz_funcs:
                  if p.default is _insp.Parameter.empty)
 
     _viz_src_file = _fn.__code__.co_filename
+    _viz_line_offset = _fn.__code__.co_firstlineno - 1
     sys.settrace(_viz_trace)
     try:
 '''
@@ -1505,8 +1659,17 @@ if _viz_funcs:
         pass
     sys.settrace(None)
 
+import math as _math
+def _safe_val(v):
+    if isinstance(v, float) and (_math.isnan(v) or _math.isinf(v)):
+        return 0
+    if isinstance(v, dict):
+        return {k: _safe_val(vv) for k, vv in v.items()}
+    if isinstance(v, list):
+        return [_safe_val(x) for x in v]
+    return v
 print("===VIZ_JSON===")
-print(json.dumps(_viz_snapshots))
+print(json.dumps([_safe_val(s) for s in _viz_snapshots]))
 '''
 
     try:
@@ -2295,7 +2458,7 @@ IMPORTANT RULES:
 - Target: 900-1200 words
 - Fill in ALL placeholder text with real content about {section_title} — no placeholder brackets in output"""
 
-    return Response(stream_ai_prompt(prompt), mimetype="text/event-stream",
+    return Response(stream_ai_prompt(prompt, model="claude-haiku-4-5-20251001"), mimetype="text/event-stream",
                     headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
@@ -2418,7 +2581,7 @@ IMPORTANT RULES:
 - Target: 700-1000 words
 - Fill in ALL placeholders with real content about {topic_name}"""
 
-    return Response(stream_ai_prompt(prompt), mimetype="text/event-stream",
+    return Response(stream_ai_prompt(prompt, model="claude-haiku-4-5-20251001"), mimetype="text/event-stream",
                     headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 

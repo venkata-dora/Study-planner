@@ -1,13 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import App from './App'
-import Briefing from './pages/Briefing'
-import Planner from './pages/Planner'
-import Routine from './pages/Routine'
-import Study from './pages/Study'
-import PrepPlan from './pages/PrepPlan'
-import History from './pages/History'
+import LearningHome from './pages/LearningHome'
 import Notes from './pages/Notes'
 import Stats from './pages/Stats'
 import GenAI from './pages/GenAI'
@@ -24,10 +19,10 @@ import PythonBlog from './pages/PythonBlog'
 import PythonPractice from './pages/PythonPractice'
 import SystemDesign from './pages/SystemDesign'
 import SystemDesignDetail from './pages/SystemDesignDetail'
+import AIInterview from './pages/AIInterview'
+import AIInterviewDetail from './pages/AIInterviewDetail'
 import InterviewPractice from './pages/InterviewPractice'
 import InterviewHistory from './pages/InterviewHistory'
-import TodayBriefing from './pages/TodayBriefing'
-import WeekView from './pages/WeekView'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -35,20 +30,17 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <Routes>
         <Route element={<App />}>
-          <Route path="/" element={<Briefing />} />
-          <Route path="/today" element={<TodayBriefing />} />
-          <Route path="/week" element={<WeekView />} />
-          <Route path="/planner" element={<Planner />} />
-          <Route path="/routine" element={<Routine />} />
-          <Route path="/study" element={<Study />} />
-          <Route path="/prep" element={<PrepPlan />} />
-          <Route path="/history" element={<History />} />
+          <Route index element={<LearningHome />} />
+          {["planner", "week", "routine", "study", "prep", "today", "history"].map(path => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}
+          <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/notes" element={<Notes />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/genai" element={<GenAI />} />
           <Route path="/genai/:sectionId" element={<GenAIDetail />} />
           <Route path="/systemdesign" element={<SystemDesign />} />
           <Route path="/systemdesign/:sectionId" element={<SystemDesignDetail />} />
+          <Route path="/ai-interview" element={<AIInterview />} />
+          <Route path="/ai-interview/:sectionId" element={<AIInterviewDetail />} />
           <Route path="/blogs" element={<BlogLibrary />} />
           <Route path="/interview" element={<InterviewPrep />} />
           <Route path="/interview/:docId" element={<DocReader />} />

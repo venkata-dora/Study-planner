@@ -230,7 +230,85 @@ export const STEPS = [
       {
         label: 'Things to Know in C++/Java/Python',
         problems: [
-          { title: 'User Input / Output', difficulty: 'Easy' },
+          {
+            title: 'User Input / Output',
+            difficulty: 'Easy',
+            description: `<h3>Problem</h3><p>Write a function that reads a line of raw input and formats it back as output. Given a string <code>line</code> containing space-separated tokens, parse it and return a formatted summary string.</p><p>Rules, applied in order:</p><ul><li>Split <code>line</code> on whitespace into tokens (any run of spaces/tabs is one separator; leading and trailing whitespace is ignored).</li><li>If there are <b>no</b> tokens, return the exact string <code>"No input"</code>.</li><li>A token is an <b>integer token</b> if it matches an optional leading <code>+</code> or <code>-</code> followed by one or more digits (e.g. <code>42</code>, <code>-7</code>, <code>+0</code>). Everything else is a <b>word token</b>.</li><li>Return <code>"Count: c | Sum: s | Words: w"</code> where <code>c</code> is the total number of tokens, <code>s</code> is the sum of all integer tokens (<code>0</code> if none), and <code>w</code> is the word tokens joined by a single space (or the empty string if none).</li></ul><p>Note that <code>line</code> may be <code>None</code>, which is treated the same as an empty line.</p><h3>Examples</h3><pre>Input:  line = "10 20 hello 30"
+Output: "Count: 4 | Sum: 60 | Words: hello"
+Explanation: 4 tokens. Integers 10 + 20 + 30 = 60. Only word token is "hello".</pre><pre>Input:  line = "  a   b  "
+Output: "Count: 2 | Sum: 0 | Words: a b"
+Explanation: Extra whitespace collapses. No integer tokens, so sum is 0.</pre><pre>Input:  line = ""
+Output: "No input"
+Explanation: Empty line has no tokens.</pre><pre>Input:  line = "-5 +5 3.14"
+Output: "Count: 3 | Sum: 0 | Words: 3.14"
+Explanation: -5 and +5 are integers summing to 0. "3.14" contains a dot, so it is a word token.</pre><h3>Constraints</h3><ul><li><code>line</code> is a string or <code>None</code></li><li><code>0 &lt;= len(line) &lt;= 10^5</code></li><li>Each token has length at most <code>20</code></li><li>Integer tokens fit in the range <code>-10^18</code> to <code>10^18</code></li><li>Tokens contain only printable ASCII characters</li></ul>`,
+            starterCode: `def format_input(line):
+    """
+    Parse a raw input line and return a formatted summary.
+
+    Splits \`line\` on whitespace into tokens. Returns "No input" when there are
+    no tokens (including when \`line\` is None or all whitespace). Otherwise
+    returns "Count: c | Sum: s | Words: w" where c is the token count, s is the
+    sum of integer tokens (optional +/- sign followed by digits, 0 if none),
+    and w is the remaining word tokens joined by a single space.
+
+    Args:
+        line (str | None): The raw input line.
+
+    Returns:
+        str: The formatted summary string.
+    """
+    pass
+
+
+# --- Test cases (do not modify) ---
+print(format_input("10 20 hello 30"))
+print(format_input("  a   b  "))
+print(format_input(""))
+
+print("\\u2550\\u2550\\u2550TEST_RESULTS\\u2550\\u2550\\u2550")
+
+tests = [
+    ("10 20 hello 30", "Count: 4 | Sum: 60 | Words: hello"),
+    ("", "No input"),
+    (None, "No input"),
+    ("     ", "No input"),
+    ("\\t\\n  \\t", "No input"),
+    ("42", "Count: 1 | Sum: 42 | Words: "),
+    ("hi", "Count: 1 | Sum: 0 | Words: hi"),
+    ("1 2", "Count: 2 | Sum: 3 | Words: "),
+    ("  a   b  ", "Count: 2 | Sum: 0 | Words: a b"),
+    ("-5 +5 3.14", "Count: 3 | Sum: 0 | Words: 3.14"),
+    ("7 7 7 7", "Count: 4 | Sum: 28 | Words: "),
+    ("x x x", "Count: 3 | Sum: 0 | Words: x x x"),
+    ("0 -0 +0", "Count: 3 | Sum: 0 | Words: "),
+    ("-1 -2 -3", "Count: 3 | Sum: -6 | Words: "),
+    ("1000000000000000000 -1000000000000000000", "Count: 2 | Sum: 0 | Words: "),
+    ("1000000000000000000", "Count: 1 | Sum: 1000000000000000000 | Words: "),
+    ("1 a 2 b 3 c", "Count: 6 | Sum: 6 | Words: a b c"),
+    ("- + ++ --", "Count: 4 | Sum: 0 | Words: - + ++ --"),
+    ("12a a12 1_2", "Count: 3 | Sum: 0 | Words: 12a a12 1_2"),
+    ("5\\t\\t-5\\n10", "Count: 3 | Sum: 10 | Words: "),
+    (" ".join(["1"] * 1000), "Count: 1000 | Sum: 1000 | Words: "),
+]
+
+all_pass = True
+for i, (arg, expected) in enumerate(tests, 1):
+    try:
+        got = format_input(arg)
+    except Exception as e:
+        got = "EXCEPTION: %r" % (e,)
+    if got == expected:
+        print("Test %d: PASSED \\u2705" % i)
+    else:
+        all_pass = False
+        shown = arg if arg is None or len(arg) <= 40 else arg[:37] + "..."
+        print("Test %d: FAILED \\u274c | input=%r | expected=%r | got=%r" % (i, shown, expected, got))
+
+if all_pass:
+    print("\\n\\U0001F389 All tests passed!")
+`,
+          },
           { title: 'Data Types', difficulty: 'Easy' },
           { title: 'If Else Statements', difficulty: 'Easy' },
           { title: 'Switch Statement', difficulty: 'Easy' },

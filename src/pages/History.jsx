@@ -68,7 +68,16 @@ export default function History() {
                 {c.info && (
                   <div className="cal-pct">
                     {c.info.pct}%
-                    {c.info.study_hours > 0 && <span style={{ fontSize: '.55rem', display: 'block', opacity: .7 }}>{c.info.study_hours}h</span>}
+                    {c.info.study_hours > 0 && (
+                      <div style={{ fontSize: '.55rem', marginTop: 2, lineHeight: 1.3 }}>
+                        <span style={{ fontWeight: 700, color: '#6366f1' }}>📚 {c.info.study_hours}h</span>
+                        {c.info.study_tracks?.length > 0 && (
+                          <div style={{ fontSize: '.48rem', opacity: .85, marginTop: 1 }}>
+                            {c.info.study_tracks.join(' · ')}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

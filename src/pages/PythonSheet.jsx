@@ -215,7 +215,7 @@ export default function PythonSheet() {
               <div style={{ paddingLeft: 20, marginTop: 8 }}>
                 {phase.topics.map((topic, ti) => {
                   const filteredProblems = q
-                    ? topic.problems.map((p, pi) => ({ p, pi })).filter(({ p }) => p.title.toLowerCase().includes(q))
+                    ? topic.problems.map((p, pi) => ({ p, pi })).filter(({ p }) => topic.label.toLowerCase().includes(q) || p.title.toLowerCase().includes(q))
                     : topic.problems.map((p, pi) => ({ p, pi }))
 
                   if (q && filteredProblems.length === 0 && !topic.label.toLowerCase().includes(q)) return null

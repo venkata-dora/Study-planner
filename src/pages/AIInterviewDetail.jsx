@@ -1,19 +1,16 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { SECTIONS, loadChecks, saveChecks, itemId, itemText, itemTopic, itemRank, RANK_LABELS } from '../data/genAIData'
-import GenAIBlog from './GenAIBlog'
+import { SECTIONS, loadChecks, saveChecks, itemId, cycleState, normalizeState, isDone, STATE_COLORS } from '../data/aiInterviewData'
 import TopicBlog from './TopicBlog'
-import AffirmationBanner from '../components/AffirmationBanner'
 
-export default function GenAIDetail() {
+export default function AIInterviewDetail() {
   const { sectionId } = useParams()
   const navigate = useNavigate()
   const section = SECTIONS.find(s => s.id === sectionId)
 
   const [checks, setChecks] = useState(loadChecks)
-  const [showBlog, setShowBlog] = useState(false)
-  const [topicBlog, setTopicBlog] = useState(null) // { topicName } or null
-  const [savedBlogs, setSavedBlogs] = useState(new Set()) // topic names that have saved blogs
+  const [topicBlog, setTopicBlog] = useState(null)
+  const [savedBlogs, setSavedBlogs] = useState(new Set())
   const [openSubs, setOpenSubs] = useState(() => {
     const o = new Set()
     if (section) section.subsections.forEach(sub => o.add(sub.label))
@@ -21,14 +18,12 @@ export default function GenAIDetail() {
   })
   const [search, setSearch] = useState('')
 
-  // Sync checks across tabs / overview page
   useEffect(() => {
     const sync = () => setChecks(loadChecks())
     window.addEventListener('storage', sync)
     return () => window.removeEventListener('storage', sync)
   }, [])
 
-  // Load which topics have saved blogs
   useEffect(() => {
     fetch('http://localhost:5050/api/genai/topic-blogs')
       .then(r => r.json())
@@ -37,11 +32,11 @@ export default function GenAIDetail() {
         setSavedBlogs(names)
       })
       .catch(() => {})
-  }, [sectionId, topicBlog]) // refetch when a blog modal closes (topicBlog changes)
+  }, [sectionId, topicBlog])
 
   const toggle = useCallback((id) => {
     setChecks(prev => {
-      const next = { ...prev, [id]: !prev[id] }
+      const next = { ...prev, [id]: cycleState(prev[id]) }
       saveChecks(next)
       return next
     })
@@ -58,11 +53,11 @@ export default function GenAIDetail() {
   const expandAll = () => setOpenSubs(new Set(section?.subsections.map(s => s.label) ?? []))
   const collapseAll = () => setOpenSubs(new Set())
 
-  const markAllSection = (done) => {
+  const markAllSection = (state) => {
     setChecks(prev => {
       const next = { ...prev }
       section.subsections.forEach(sub =>
-        sub.items.forEach((_, i) => { next[itemId(section.id, sub.label, i)] = done })
+        sub.items.forEach((_, i) => { next[itemId(section.id, sub.label, i)] = state })
       )
       saveChecks(next)
       return next
@@ -74,35 +69,31 @@ export default function GenAIDetail() {
       <div style={{ textAlign: 'center', paddingTop: 80 }}>
         <div style={{ fontSize: '3rem', marginBottom: 16 }}>🤔</div>
         <div style={{ color: 'var(--neu-text-secondary)', marginBottom: 24 }}>Section not found.</div>
-        <button className="btn btn-primary" onClick={() => navigate('/genai')}>← Back to Roadmap</button>
+        <button className="btn btn-primary" onClick={() => navigate('/ai-interview')}>← Back to Interview Prep</button>
       </div>
     )
   }
 
-  // Progress for this section
   let total = 0, done = 0
   section.subsections.forEach(sub => sub.items.forEach((_, i) => {
-    total++; if (checks[itemId(section.id, sub.label, i)]) done++
+    total++; if (isDone(checks[itemId(section.id, sub.label, i)])) done++
   }))
   const pct = total ? Math.round(done / total * 100) : 0
 
   const q = search.toLowerCase()
 
-  // All sections for the sidebar nav
   return (
     <div style={{ maxWidth: 900, margin: '0 auto' }}>
-      <AffirmationBanner context="genai" />
-
-      {/* ── Back button ── */}
+      {/* Back button */}
       <button
         className="btn btn-secondary btn-sm"
-        onClick={() => navigate('/genai')}
+        onClick={() => navigate('/ai-interview')}
         style={{ marginBottom: 20, display: 'inline-flex', alignItems: 'center', gap: 6 }}
       >
-        ← All Topics
+        ← All Rounds
       </button>
 
-      {/* ── Header ── */}
+      {/* Header */}
       <div style={{
         background: 'var(--neu-bg)',
         borderRadius: 24,
@@ -113,21 +104,11 @@ export default function GenAIDetail() {
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* Glow */}
         <div style={{
           position: 'absolute', top: -30, right: -30,
           width: 160, height: 160, borderRadius: '50%',
           background: section.bg, filter: 'blur(40px)', pointerEvents: 'none'
         }} />
-
-        {/* Blog button pinned top-right of header card */}
-        <button
-          className="btn btn-primary btn-sm"
-          onClick={() => setShowBlog(true)}
-          style={{ position: 'absolute', top: 20, right: 20, gap: 6, zIndex: 1 }}
-        >
-          📝 Generate Blog
-        </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
           <div style={{
@@ -143,12 +124,11 @@ export default function GenAIDetail() {
               {section.title}
             </h1>
             <div style={{ fontSize: '.8rem', color: 'var(--neu-text-secondary)', marginTop: 4, fontFamily: 'monospace' }}>
-              {section.subsections.length} sections · {total} topics
+              {section.subsections.length} sections · {total} questions
             </div>
           </div>
         </div>
 
-        {/* Progress bar */}
         <div className="prep-progress-label" style={{ marginBottom: 6 }}>
           <span style={{ color: 'var(--neu-text-secondary)', fontSize: '.8rem' }}>Progress</span>
           <span style={{ color: section.color, fontFamily: 'monospace', fontWeight: 700 }}>{done} / {total} ({pct}%)</span>
@@ -156,35 +136,53 @@ export default function GenAIDetail() {
         <div className="prep-progress-track">
           <div className="prep-progress-fill" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${section.color}90, ${section.color})` }} />
         </div>
+
+        {/* Legend */}
+        <div style={{ display: 'flex', gap: 16, marginTop: 14 }}>
+          {[0, 1, 2].map(st => {
+            const c = STATE_COLORS[st]
+            return (
+              <div key={st} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '.72rem' }}>
+                <span style={{
+                  width: 18, height: 18, borderRadius: 4,
+                  background: c.bg, border: `1.5px solid ${c.border}`,
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  color: c.text, fontWeight: 700, fontSize: '.65rem',
+                }}>{c.label}</span>
+                <span style={{ color: 'var(--neu-text-secondary)' }}>{c.tip}</span>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
-      {/* ── Controls ── */}
+      {/* Controls */}
       <div className="flex gap-sm items-center" style={{ marginBottom: 20, flexWrap: 'wrap' }}>
         <input
           type="text"
-          placeholder="🔍  Search within this topic…"
+          placeholder="🔍  Search questions…"
           value={search}
           onChange={e => setSearch(e.target.value)}
           style={{ flex: 1, minWidth: 200 }}
         />
         <button className="btn btn-secondary btn-sm" onClick={expandAll}>Expand All</button>
         <button className="btn btn-secondary btn-sm" onClick={collapseAll}>Collapse All</button>
-        <button className="btn btn-secondary btn-sm" onClick={() => markAllSection(true)}>✓ Mark all done</button>
-        <button className="btn btn-secondary btn-sm" onClick={() => markAllSection(false)}>↺ Uncheck all</button>
+        <button className="btn btn-secondary btn-sm" onClick={() => markAllSection(2)}>✓ Mark all done</button>
+        <button className="btn btn-secondary btn-sm" onClick={() => markAllSection(0)}>↺ Reset all</button>
       </div>
 
-      {/* ── Other sections quick nav ── */}
+      {/* Other sections quick nav */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
         {SECTIONS.filter(s => s.id !== section.id).map(s => {
           let st = 0, sd = 0
           s.subsections.forEach(sub => sub.items.forEach((_, i) => {
-            st++; if (checks[itemId(s.id, sub.label, i)]) sd++
+            st++; if (isDone(checks[itemId(s.id, sub.label, i)])) sd++
           }))
           const sp = st ? Math.round(sd / st * 100) : 0
           return (
             <button
               key={s.id}
-              onClick={() => navigate(`/genai/${s.id}`)}
+              onClick={() => navigate(`/ai-interview/${s.id}`)}
               style={{
                 background: 'var(--neu-bg)',
                 border: 'none',
@@ -210,17 +208,17 @@ export default function GenAIDetail() {
         })}
       </div>
 
-      {/* ── Subsections ── */}
+      {/* Subsections */}
       {section.subsections.map(sub => {
         const filteredItems = q
-          ? sub.items.map((item, i) => ({ item, i })).filter(({ item }) => itemText(item).toLowerCase().includes(q))
+          ? sub.items.map((item, i) => ({ item, i })).filter(({ item }) => item.toLowerCase().includes(q))
           : sub.items.map((item, i) => ({ item, i }))
 
         if (q && filteredItems.length === 0) return null
 
         const isOpen = openSubs.has(sub.label)
         let subDone = 0
-        sub.items.forEach((_, i) => { if (checks[itemId(section.id, sub.label, i)]) subDone++ })
+        sub.items.forEach((_, i) => { if (isDone(checks[itemId(section.id, sub.label, i)])) subDone++ })
         const subPct = sub.items.length ? Math.round(subDone / sub.items.length * 100) : 0
         const allSubDone = subDone === sub.items.length && sub.items.length > 0
 
@@ -230,7 +228,6 @@ export default function GenAIDetail() {
             className={`prep-day-card${allSubDone ? ' all-done' : ''}`}
             style={{ marginBottom: 14 }}
           >
-            {/* Subsection Header */}
             <div className="prep-day-header" onClick={() => toggleSub(sub.label)}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span
@@ -253,63 +250,62 @@ export default function GenAIDetail() {
               </div>
             </div>
 
-            {/* Items list */}
             {(isOpen || q) && (
               <div className="prep-day-body">
                 {filteredItems.map(({ item, i }) => {
                   const id = itemId(section.id, sub.label, i)
-                  const isDone = !!checks[id]
-                  const text = itemText(item)
-                  const topic = itemTopic(item)
-                  const rank = itemRank(item)
-                  const hasBlog = savedBlogs.has(topic)
+                  const state = normalizeState(checks[id])
+                  const sc = STATE_COLORS[state]
+                  const hasBlog = savedBlogs.has(item)
                   return (
                     <div
                       key={id}
-                      style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        padding: '8px 10px', borderRadius: 10,
+                        background: sc.bg,
+                        border: `1.5px solid ${sc.border}33`,
+                        transition: 'all .15s',
+                        marginBottom: 4,
+                      }}
                     >
-                      <label
-                        className={`prep-task${isDone ? ' done' : ''}`}
-                        onClick={e => { e.preventDefault(); toggle(id) }}
-                        style={{ paddingLeft: 4, flex: 1, marginBottom: 0 }}
+                      {/* State badge */}
+                      <span
+                        title={sc.tip}
+                        onClick={() => toggle(id)}
+                        style={{
+                          width: 24, height: 24, borderRadius: 6, flexShrink: 0,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          background: sc.bg, border: `2px solid ${sc.border}`,
+                          color: sc.text, fontWeight: 800, fontSize: '.72rem',
+                          transition: 'all .15s', cursor: 'pointer',
+                        }}
                       >
-                        <input type="checkbox" checked={isDone} readOnly />
-                        <span className="prep-task-text" style={{ fontSize: '.88rem' }}>
-                          {text}
-                        </span>
-                      </label>
-                      {rank && (
-                        <span
-                          title={`Importance ${rank}/5 — ${RANK_LABELS[rank]}`}
-                          style={{
-                            flexShrink: 0,
-                            width: 22, height: 22, borderRadius: '50%',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontFamily: 'monospace', fontSize: '.68rem', fontWeight: 700,
-                            background: rank >= 4 ? section.color : 'var(--neu-bg)',
-                            color: rank >= 4 ? '#fff' : 'var(--neu-text-secondary)',
-                            border: rank >= 4 ? 'none' : '1.5px solid var(--neu-shadow-dark)',
-                            boxShadow: rank >= 4
-                              ? 'none'
-                              : 'inset 1px 1px 2px var(--neu-shadow-dark), inset -1px -1px 2px var(--neu-shadow-light)',
-                            opacity: rank >= 4 ? 1 : 0.75,
-                            userSelect: 'none',
-                          }}
-                        >
-                          {rank}
-                        </span>
-                      )}
+                        {sc.label}
+                      </span>
+                      <span
+                        onClick={() => toggle(id)}
+                        style={{
+                          fontSize: '.88rem',
+                          color: 'var(--neu-text-primary)',
+                          textDecoration: state === 2 ? 'line-through' : 'none',
+                          opacity: state === 2 ? 0.6 : 1,
+                          flex: 1, cursor: 'pointer',
+                        }}
+                      >
+                        {item}
+                      </span>
                       <button
-                        title={hasBlog ? `Read blog: ${topic}` : `Generate blog: ${topic}`}
-                        onClick={e => { e.stopPropagation(); setTopicBlog({ topicName: topic }) }}
+                        title={hasBlog ? `Read blog: ${item}` : `Generate blog: ${item}`}
+                        onClick={e => { e.stopPropagation(); setTopicBlog({ topicName: item }) }}
                         style={{
                           flexShrink: 0,
-                          width: 30, height: 30, borderRadius: '50%',
+                          width: 28, height: 28, borderRadius: '50%',
                           background: hasBlog ? `${section.color}18` : 'var(--neu-bg)',
                           border: hasBlog ? `1.5px solid ${section.color}55` : 'none',
                           cursor: 'pointer',
                           color: hasBlog ? section.color : 'var(--neu-text-secondary)',
-                          fontSize: '.75rem',
+                          fontSize: '.7rem',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           boxShadow: hasBlog
                             ? 'none'
@@ -331,10 +327,7 @@ export default function GenAIDetail() {
         )
       })}
 
-      {/* ── Section blog modal ── */}
-      {showBlog && <GenAIBlog section={section} onClose={() => setShowBlog(false)} />}
-
-      {/* ── Topic blog modal ── */}
+      {/* Topic blog modal */}
       {topicBlog && (
         <TopicBlog
           topicName={topicBlog.topicName}
@@ -346,7 +339,7 @@ export default function GenAIDetail() {
         />
       )}
 
-      {/* ── Bottom nav ── */}
+      {/* Bottom nav */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 32, flexWrap: 'wrap', gap: 12 }}>
         {(() => {
           const idx = SECTIONS.findIndex(s => s.id === sectionId)
@@ -355,12 +348,12 @@ export default function GenAIDetail() {
           return (
             <>
               {prev ? (
-                <button className="btn btn-secondary btn-sm" onClick={() => navigate(`/genai/${prev.id}`)}>
+                <button className="btn btn-secondary btn-sm" onClick={() => navigate(`/ai-interview/${prev.id}`)}>
                   ← {prev.icon} {prev.title}
                 </button>
               ) : <span />}
               {next ? (
-                <button className="btn btn-secondary btn-sm" onClick={() => navigate(`/genai/${next.id}`)}>
+                <button className="btn btn-secondary btn-sm" onClick={() => navigate(`/ai-interview/${next.id}`)}>
                   {next.icon} {next.title} →
                 </button>
               ) : <span />}

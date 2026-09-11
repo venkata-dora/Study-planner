@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import mermaid from 'mermaid'
 import BlogHighlighter from '../components/BlogHighlighter'
+import { itemText } from '../data/genAIData'
 
 mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' })
 
@@ -333,7 +334,7 @@ export default function GenAIBlog({ section, onClose }) {
     setErrorMsg('')
     try {
       const topicsSample = []
-      section.subsections.forEach(sub => sub.items.slice(0, 4).forEach(item => topicsSample.push(item)))
+      section.subsections.forEach(sub => sub.items.slice(0, 4).forEach(item => topicsSample.push(itemText(item))))
       const res = await fetch('/api/genai/blog/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

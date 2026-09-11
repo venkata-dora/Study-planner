@@ -35,18 +35,6 @@ export function saveProgress(p, changedProbId, newStatus) {
 export function loadDailyHistory() {
   try {
     const daily = JSON.parse(localStorage.getItem(PY_DAILY_KEY)) || {}
-    const cleanupKey = 'dp_python_daily_cleaned_v2'
-    if (!localStorage.getItem(cleanupKey)) {
-      let changed = false
-      for (const date of Object.keys(daily)) {
-        if (daily[date].length > 25) {
-          delete daily[date]
-          changed = true
-        }
-      }
-      if (changed) localStorage.setItem(PY_DAILY_KEY, JSON.stringify(daily))
-      localStorage.setItem(cleanupKey, '1')
-    }
     return daily
   }
   catch { return {} }
