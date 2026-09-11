@@ -1,8 +1,8 @@
 .reading-workspace { max-width: 1440px; margin: 0 auto; padding: 1.5rem 0 4rem; }
 .reader-navigation { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; }
 .reader-navigation a { color: var(--neu-accent); text-decoration: none; font-size: .9rem; }
-.reader-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: clamp(1.5rem, 3vw, 3rem); align-items: start; }
-.reader-path { position: sticky; top: 1rem; max-height: calc(100dvh - 120px); overflow-y: auto; padding-right: 1rem; scrollbar-width: thin; border-right: 1px solid var(--study-line); }
+.reader-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(1.5rem, 3vw, 3rem); align-items: start; }
+.reader-path { display: none; position: sticky; top: 1rem; max-height: calc(100dvh - 120px); overflow-y: auto; padding-right: 1rem; scrollbar-width: thin; border-right: 1px solid var(--study-line); }
 .reader-path h2 { font-size: 1.15rem; margin: .5rem 0 1.5rem; }
 .reader-path details { border-bottom: 1px solid var(--study-line); padding: .5rem 0; }
 .reader-path summary { cursor: pointer; font-size: .875rem; line-height: 1.5; padding: .6rem 0; font-weight: 600; }
@@ -11,7 +11,7 @@
 .reader-path a { display: block; font-size: .8125rem; line-height: 1.5; color: var(--neu-text-primary); text-decoration: none; padding: .65rem .7rem; border-radius: 7px; overflow-wrap: anywhere; }
 .reader-path a:hover { background: var(--study-hover); }
 .reader-path a[aria-current="page"] { background: var(--neu-accent-soft); color: var(--neu-accent); box-shadow: inset 3px 0 var(--neu-accent); }
-.reader-main { min-width: 0; max-width: 850px; }
+.reader-main { min-width: 0; width: 100%; max-width: 850px; margin-inline: auto; }
 .reader-location { outline: none; scroll-margin-top: 1.5rem; }
 .reader-location > span { font-size: .8rem; color: var(--neu-text-secondary); }
 .reader-location h1 { font-size: clamp(1.45rem, 2.5vw, 2.1rem); line-height: 1.3; letter-spacing: -.025em; margin: .6rem 0 1.5rem; overflow-wrap: anywhere; }
@@ -31,9 +31,12 @@
 .reader-next a:last-child { text-align: right; }
 .reader-next small { display: block; color: var(--neu-accent); margin-bottom: .5rem; }
 .reader-next span { font-size: .875rem; }
-.reader-path-toggle { display: none; }
+.reader-path-toggle { display: block; padding: .6rem .8rem; min-height: 44px; background: var(--neu-surface); color: var(--neu-accent); border: 1px solid var(--study-line); border-radius: 8px; font: inherit; font-size: .8rem; }
+.reader-layout.path-open { grid-template-columns: 220px minmax(0, 1fr); }
+.reader-path.is-open { display: block; }
+.reader-navigation { position: sticky; top: 0; z-index: 3; background: var(--neu-bg); padding-block: .5rem; }
 .reading-workspace :is(a,button,summary):focus-visible { outline: 2px solid var(--neu-accent); outline-offset: 3px; }
-@media (max-width: 1000px) { .reader-layout { grid-template-columns: 210px minmax(0,1fr); gap: 1.5rem; } }
+@media (max-width: 1000px) { .reader-layout.path-open { grid-template-columns: 210px minmax(0,1fr); gap: 1.5rem; } }
 @media (max-width: 760px) {
   .reader-layout { display: block; } .reader-path { display: none; position: static; max-height: 60dvh; border: 1px solid var(--study-line); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; }
   .reader-path.is-open { display: block; } .reader-path-toggle { display: block; padding: .6rem .8rem; min-height: 44px; background: var(--neu-surface); color: var(--neu-accent); border: 1px solid var(--study-line); border-radius: 8px; font: inherit; font-size: .8rem; }
