@@ -3,7 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import LearningIcon from './components/LearningIcon'
 
 const groups = [
-  { label: 'Workspace', links: [['/', 'Library', 'library'], ['/stats', 'Stats', 'stats']] },
+  { label: 'Workspace', links: [['/', 'Library', 'library'], ['/stats', 'Stats', 'stats'], ['/roadmaps', 'My roadmaps', 'systemdesign']] },
   { label: 'Learn', links: [['/dsa', 'DSA', 'dsa'], ['/python', 'Python', 'python'], ['/genai', 'Gen AI', 'genai'], ['/systemdesign', 'System Design', 'systemdesign'], ['/ai-interview', 'AI Interview', 'interview']] },
   { label: 'Explore', links: [['/blogs', 'Blogs', 'blogs'], ['/practice', 'Practice', 'practice']] },
 ]

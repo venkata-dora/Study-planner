@@ -2685,6 +2685,9 @@ RULES:
                     headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
+from roadmap_api import register_roadmaps
+register_roadmaps(app, get_db, run_ai_prompt)
+
 # ── init + run ───────────────────────────────────────────────────────────────
 init_db()
 

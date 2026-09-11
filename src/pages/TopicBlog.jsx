@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import mermaid from 'mermaid'
 import BlogHighlighter from '../components/BlogHighlighter'
 
-mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' })
+mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'strict' })
 
 function MermaidDiagram({ code }) {
   const ref = useRef(null)
@@ -13,7 +13,7 @@ function MermaidDiagram({ code }) {
       const { svg } = await mermaid.render(id, code)
       ref.current.innerHTML = svg
     } catch {
-      ref.current.innerHTML = `<pre style="color:#ef4444;font-size:.8rem">${code}</pre>`
+      ref.current.textContent = code
     }
   }, [code])
   useEffect(() => { render() }, [render])
@@ -31,13 +31,13 @@ function MermaidDiagram({ code }) {
    Markdown → JSX renderer (same as GenAIBlog)
 ═══════════════════════════════════════════════ */
 function inlineFormat(text) {
-  return text
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--neu-text-primary)">$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/`(.+?)`/g, '<code style="font-family:monospace;font-size:.8em;background:rgba(41,121,255,0.1);padding:2px 7px;border-radius:5px;color:var(--neu-accent);font-weight:600">$1</code>')
 }
 
-function renderMarkdown(text) {
+export function renderMarkdown(text) {
   if (!text) return null
   const lines = text.split('\n')
   const elements = []
@@ -81,7 +81,7 @@ function renderMarkdown(text) {
         <div key={nextKey()} style={{ overflowX: 'auto', margin: '16px 0' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', background: 'var(--neu-bg)', borderRadius: 12, overflow: 'hidden', boxShadow: '4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light)' }}>
             <thead><tr>{headers.map((h, ci) => <th key={ci} style={{ padding: '10px 14px', textAlign: 'left', fontSize: '.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em', color: 'var(--neu-accent)', background: 'var(--neu-accent-soft)', borderBottom: '2px solid rgba(41,121,255,0.2)' }} dangerouslySetInnerHTML={{ __html: inlineFormat(h) }} />)}</tr></thead>
-            <tbody>{rows.map((row, ri) => <tr key={ri} style={{ borderBottom: '1px solid rgba(163,177,198,0.15)' }}>{row.map((cell, ci) => <td key={ci} style={{ padding: '9px 14px', fontSize: '.82rem', color: '#1a1a1a', fontWeight: ci === 0 ? 600 : 400 }}>{cell.includes('<br/>') || cell.includes('<br />') ? cell.split(/<br\s*\/?>/i).map((part, pi) => <div key={pi} style={{ marginBottom: pi < cell.split(/<br\s*\/?>/i).length - 1 ? 4 : 0, lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: inlineFormat(part) }} />) : <span dangerouslySetInnerHTML={{ __html: inlineFormat(cell) }} />}</td>)}</tr>)}</tbody>
+            <tbody>{rows.map((row, ri) => <tr key={ri} style={{ borderBottom: '1px solid rgba(163,177,198,0.15)' }}>{row.map((cell, ci) => <td key={ci} style={{ padding: '9px 14px', fontSize: '.82rem', color: 'var(--neu-text-primary)', fontWeight: ci === 0 ? 600 : 400 }}>{cell.includes('<br/>') || cell.includes('<br />') ? cell.split(/<br\s*\/?>/i).map((part, pi) => <div key={pi} style={{ marginBottom: pi < cell.split(/<br\s*\/?>/i).length - 1 ? 4 : 0, lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: inlineFormat(part) }} />) : <span dangerouslySetInnerHTML={{ __html: inlineFormat(cell) }} />}</td>)}</tr>)}</tbody>
           </table>
         </div>
       )

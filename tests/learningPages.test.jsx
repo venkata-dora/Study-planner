@@ -51,3 +51,14 @@ for (const [Component, data, route] of [[GenAIDetail, genai, '/genai'], [SystemD
   assert.ok(/<progress[^>]*value="1"/.test(html), `${route}: ${html.match(/<progress[^>]*>/)?.[0]}`)
 }
 console.log('Lesson render and completion checks passed')
+
+const { default: CustomRoadmaps } = require('../src/pages/CustomRoadmaps')
+const { renderMarkdown } = require('../src/pages/TopicBlog')
+const studio = renderToStaticMarkup(<MemoryRouter><CustomRoadmaps /></MemoryRouter>)
+assert.ok(studio.includes('Subject or concept'))
+assert.ok(studio.includes('Starting level'))
+const safeArticle = renderToStaticMarkup(<article>{renderMarkdown('<img src=x onerror=alert(1)>\n\n**A useful lesson**')}</article>)
+assert.ok(!safeArticle.includes('<img'))
+assert.ok(safeArticle.includes('&lt;img'))
+assert.ok(safeArticle.includes('<strong'))
+console.log('Custom roadmap form and safe lesson rendering checks passed')

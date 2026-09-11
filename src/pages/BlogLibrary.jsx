@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { SECTIONS } from '../data/genAIData'
 import TopicBlog from './TopicBlog'
 
 export default function BlogLibrary() {
   const navigate = useNavigate()
   const [blogs, setBlogs] = useState([])
+  const [roadmaps, setRoadmaps] = useState([])
+  useEffect(() => { fetch('/api/roadmaps').then(r => r.ok ? r.json() : []).then(setRoadmaps).catch(() => {}) }, [])
   const [loading, setLoading] = useState(true)
   const [activeBlog, setActiveBlog] = useState(null)
   const [filterSection, setFilterSection] = useState('all')
@@ -32,6 +34,8 @@ export default function BlogLibrary() {
 
   const sectionMap = Object.fromEntries(SECTIONS.map(s => [s.id, s]))
   const q = search.toLowerCase()
+  const customBlogs = roadmaps.flatMap(m => m.stages.flatMap(s => s.topics.filter(t => m.lessons[t.id]?.blog).map(t => ({ ...t, roadmapId: m.id, roadmapTitle: m.title }))))
+  const customFiltered = customBlogs.filter(t => !q || `${t.title} ${t.roadmapTitle}`.toLowerCase().includes(q))
   const filtered = blogs
     .filter(b => filterSection === 'all' || b.section_id === filterSection)
     .filter(b => !q || b.topic_name.toLowerCase().includes(q) || b.section_title.toLowerCase().includes(q))
@@ -53,7 +57,9 @@ export default function BlogLibrary() {
         ← Back to Roadmap
       </button>
 
-      <div className="apple-page-heading"><div><span className="learning-eyebrow">READ & EXPLORE</span><h1>Reading library</h1><p>{blogs.length} saved {blogs.length === 1 ? 'article' : 'articles'}. Take a deeper look at what you’re learning.</p></div></div>
+      <div className="apple-page-heading"><div><span className="learning-eyebrow">READ & EXPLORE</span><h1>Reading library</h1><p>{blogs.length + customBlogs.length} saved {blogs.length + customBlogs.length === 1 ? 'article' : 'articles'}. Take a deeper look at what you’re learning.</p></div></div>
+
+      {filterSection === 'all' && customFiltered.length > 0 && <section style={{ marginBottom: 28 }}><div className="learning-section-title"><h2>From your roadmaps</h2></div><div className="learning-tracks">{customFiltered.map(t => <Link className="learning-track" key={`${t.roadmapId}_${t.id}`} to={`/roadmaps/${t.roadmapId}?topic=${t.id}#custom-lesson`}><div className="learning-track-copy"><h3>{t.title}</h3><p>{t.roadmapTitle}</p></div><span>Read →</span></Link>)}</div></section>}
 
       {/* Filters */}
       <div className="flex gap-sm items-center" style={{ marginBottom: 20, flexWrap: 'wrap' }}>

@@ -31,7 +31,7 @@ export default function GenAIDetail() {
 
   // Load which topics have saved blogs
   useEffect(() => {
-    fetch('http://localhost:5050/api/genai/topic-blogs')
+    fetch('/api/genai/topic-blogs')
       .then(r => r.json())
       .then(list => {
         const names = new Set(list.filter(b => b.section_id === sectionId).map(b => b.topic_name))
@@ -90,7 +90,7 @@ export default function GenAIDetail() {
 
   // All sections for the sidebar nav
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto' }}>
+    <div className="refined-lesson" style={{ maxWidth: 1000, margin: '0 auto' }}>
 
       {/* ── Back button ── */}
       <button
@@ -219,10 +219,9 @@ export default function GenAIDetail() {
                     >
                       <label
                         className={`prep-task${isDone ? ' done' : ''}`}
-                        onClick={e => { e.preventDefault(); toggle(id) }}
                         style={{ paddingLeft: 4, flex: 1, marginBottom: 0 }}
                       >
-                        <input type="checkbox" checked={isDone} readOnly />
+                        <input type="checkbox" checked={isDone} onChange={() => toggle(id)} />
                         <span className="prep-task-text" style={{ fontSize: '.88rem' }}>
                           {text}
                         </span>
@@ -248,29 +247,7 @@ export default function GenAIDetail() {
                           {rank}
                         </span>
                       )}
-                      <button
-                        title={hasBlog ? `Read blog: ${topic}` : `Generate blog: ${topic}`}
-                        onClick={e => { e.stopPropagation(); setTopicBlog({ topicName: topic }) }}
-                        style={{
-                          flexShrink: 0,
-                          width: 30, height: 30, borderRadius: '50%',
-                          background: hasBlog ? `${section.color}18` : 'var(--neu-bg)',
-                          border: hasBlog ? `1.5px solid ${section.color}55` : 'none',
-                          cursor: 'pointer',
-                          color: hasBlog ? section.color : 'var(--neu-text-secondary)',
-                          fontSize: '.75rem',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          boxShadow: hasBlog
-                            ? 'none'
-                            : '2px 2px 4px var(--neu-shadow-dark), -2px -2px 4px var(--neu-shadow-light)',
-                          transition: 'all .15s',
-                          opacity: hasBlog ? 1 : 0.6,
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = section.color }}
-                        onMouseLeave={e => { if (!hasBlog) { e.currentTarget.style.opacity = '0.6'; e.currentTarget.style.color = 'var(--neu-text-secondary)' } }}
-                      >
-                        📝
-                      </button>
+                      <button className="lesson-blog-action" aria-label={hasBlog ? `Read blog: ${topic}` : `Generate blog: ${topic}`} onClick={() => setTopicBlog({ topicName: topic })}>{hasBlog ? 'Read' : 'Blog'} ↗</button>
                     </div>
                   )
                 })}

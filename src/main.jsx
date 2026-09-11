@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import App from './App'
+import CustomRoadmaps from './pages/CustomRoadmaps'
 import LearningHome from './pages/LearningHome'
 import Notes from './pages/Notes'
 import Stats from './pages/Stats'
@@ -34,6 +35,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route index element={<LearningHome />} />
           {["planner", "week", "routine", "study", "prep", "today", "history"].map(path => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/roadmaps" element={<CustomRoadmaps />} />
+          <Route path="/roadmaps/:roadmapId" element={<CustomRoadmaps />} />
           <Route path="/notes" element={<Notes />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/genai" element={<GenAI />} />
