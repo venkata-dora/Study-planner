@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import App from './App'
+import ReadingWorkspace from './pages/ReadingWorkspace'
 import CustomRoadmaps from './pages/CustomRoadmaps'
 import LearningHome from './pages/LearningHome'
 import Notes from './pages/Notes'
@@ -31,6 +32,7 @@ import './styles/focus.css'
 import './styles/paper.css'
 import './styles/learning-styles.css'
 import './styles/studio.css'
+import './styles/reader.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -38,6 +40,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Routes>
         <Route element={<App />}>
           <Route index element={<LearningHome />} />
+          <Route path="/read/:sectionId" element={<ReadingWorkspace />} />
           {["planner", "week", "routine", "study", "prep", "today", "history"].map(path => <Route key={path} path={path} element={<Navigate to="/" replace />} />)}
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/roadmaps" element={<CustomRoadmaps />} />

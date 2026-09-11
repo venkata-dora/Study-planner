@@ -38,3 +38,9 @@ Studio adds warm cream surfaces, terracotta actions, and illustrated pastel subj
 The reusable JourneyMap accepts subject-neutral stages, completion counts, and lesson links or selection handlers. Custom roadmaps and the Gen AI, System Design, and AI Interview overviews use it. Four milestones appear per map page; List shows all chapters. Selection reveals real topic groups or lessons, and custom topics retain saved-blog generation and completion controls. All original contents remain available in an expandable outline. DSA and Python retain their problem-sheet navigation with Studio styling.
 
 Validation: render/progress tests and production build passed; nine main routes checked at 1440 and 390 pixels in both modes. Browser interaction checks cover chapter selection, pagination, List/Journey switching, a mocked creative-writing roadmap, saved-lesson reading, and appearance persistence. The pre-existing build chunk-size warning remains.
+
+## Reading workspace
+
+Curated topic blogs and chapter guides now open at `/read/:sectionId?topic=...`, replacing the blurred modal. The library and existing course buttons enter the same reader. A sticky learning-path outline, chapter selector, active lesson, and previous/next links support navigation. On mobile the outline is collapsible. Existing saved blogs and highlighting keys are preserved; missing lessons require an explicit generation action. Changing lessons aborts in-flight requests.
+
+Validation: 16 browser combinations (four styles, light/dark, desktop/mobile) checked saved reading, sidebar navigation, refresh, no modal, and no horizontal overflow. Separate checks covered System Design and AI Interview entry, chapter switching, and empty lessons without automatic generation. Render tests cover the linkable nonmodal reader. Production build passes with the existing bundle-size warning. Custom-roadmap inline readers retain their existing workflow.

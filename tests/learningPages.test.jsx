@@ -87,3 +87,18 @@ assert.ok(!journey.includes('Writing chapter 1'), 'Long paths should show a boun
 assert.ok(journey.includes('href="/writing/4"'), 'Chapter previews link to their real lessons')
 assert.equal(renderToStaticMarkup(<JourneyMap title="Empty" stages={[]} />), '')
 console.log('Universal journey initial selection and pagination checks passed')
+
+const { default: ReadingWorkspace } = require('../src/pages/ReadingWorkspace')
+const { readerPath } = require('../src/utils/readerPaths')
+
+const genaiReaderData = require('../src/data/genAIData')
+const firstChapter = genaiReaderData.SECTIONS[0]
+const firstTopic = genaiReaderData.itemTopic(firstChapter.subsections[0].items[0])
+const readerMarkup = renderToStaticMarkup(<MemoryRouter initialEntries={[readerPath(firstChapter.id, firstTopic)]}><Routes><Route path="/read/:sectionId" element={<ReadingWorkspace />} /></Routes></MemoryRouter>)
+assert.ok(readerMarkup.includes('aria-label="Chapters and lessons"'))
+assert.ok(readerMarkup.includes('aria-current="page"'))
+assert.ok(readerMarkup.includes('Next lesson'))
+assert.ok(!readerMarkup.includes('aria-modal="true"'))
+assert.ok(!readerMarkup.includes('modal-backdrop'))
+assert.ok(readerPath('chapter', 'Art & design?').includes('topic=Art+%26+design%3F'))
+console.log('Reading workspace navigation and nonmodal rendering checks passed')

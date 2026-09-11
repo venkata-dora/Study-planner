@@ -1,4 +1,5 @@
-import useReadingDialog from '../utils/useReadingDialog'
+import { Navigate, useLocation } from 'react-router-dom'
+import { readerPath } from '../utils/readerPaths'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import mermaid from 'mermaid'
 import BlogHighlighter from '../components/BlogHighlighter'
@@ -132,35 +133,49 @@ export function renderMarkdown(text) {
 /* ═══════════════════════════════════════════════
    TopicBlog — per-topic blog modal
 ═══════════════════════════════════════════════ */
-export default function TopicBlog({ topicName, sectionId, sectionTitle, sectionColor, sectionIcon, onClose }) {
-  const dialogRef = useReadingDialog(onClose)
+export default function TopicBlog(props) {
+  const location = useLocation()
+  if (!props.embedded) return <Navigate to={readerPath(props.sectionId, props.topicName)} state={{ returnTo: location.pathname }} />
+  return <TopicBlogContent {...props} />
+}
+
+function TopicBlogContent({ topicName, sectionId, sectionTitle, sectionColor, sectionIcon, onClose }) {
   const [status, setStatus] = useState('loading')
   const [blog, setBlog] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [copied, setCopied] = useState(false)
+  const request = useRef(null)
+  useEffect(() => () => request.current?.abort(), [])
 
   useEffect(() => {
+    const controller = new AbortController()
+    request.current = controller
     // Try loading saved blog first
-    fetch(`/api/genai/topic-blog/${encodeURIComponent(topicName)}/${encodeURIComponent(sectionId)}`)
-      .then(r => r.json())
+    fetch(`/api/genai/topic-blog/${encodeURIComponent(topicName)}/${encodeURIComponent(sectionId)}`, { signal: controller.signal })
+      .then(r => { if (!r.ok) throw new Error('Load failed'); return r.json() })
       .then(data => {
         if (data && data.blog_content) {
           setBlog(data.blog_content)
           setStatus('done')
         } else {
-          generate()
+          setStatus('idle')
         }
       })
-      .catch(() => generate())
+      .catch(error => { if (error.name === 'AbortError') return; setErrorMsg('Unable to load this lesson. Please try again.'); setStatus('error') })
+    return () => controller.abort()
   }, []) // eslint-disable-line
 
   const generate = async () => {
+    request.current?.abort()
+    const controller = new AbortController()
+    request.current = controller
     setStatus('loading')
     setBlog('')
     setErrorMsg('')
     try {
       const res = await fetch('/api/genai/topic-blog/stream', {
         method: 'POST',
+        signal: controller.signal,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic_name: topicName, section_id: sectionId, section_title: sectionTitle }),
       })
@@ -192,11 +207,13 @@ export default function TopicBlog({ topicName, sectionId, sectionTitle, sectionC
         // Auto-save to database
         fetch('/api/genai/topic-blog/save', {
           method: 'POST',
+        signal: controller.signal,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ topic_name: topicName, section_id: sectionId, section_title: sectionTitle, blog_text: accumulated }),
         }).catch(() => {})
       }
     } catch (e) {
+      if (e.name === 'AbortError') return
       setErrorMsg(`Network error: ${e.message}. Is the Flask server running on port 5050?`)
       setStatus('error')
     }
@@ -207,85 +224,16 @@ export default function TopicBlog({ topicName, sectionId, sectionTitle, sectionC
   }
 
   return (
-    <div className="modal-backdrop" onClick={onClose} style={{ alignItems: 'flex-start', paddingTop: 48 }}>
-      <div className="reading-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-label={topicName} tabIndex={-1}
-        onClick={e => e.stopPropagation()}
-        style={{
-          background: 'var(--neu-bg)', borderRadius: 24,
-          width: '92%', maxWidth: 860, maxHeight: '88vh',
-          display: 'flex', flexDirection: 'column',
-          boxShadow: '16px 16px 32px var(--neu-shadow-dark), -16px -16px 32px var(--neu-shadow-light)',
-          overflow: 'hidden', animation: 'fadeUp .3s ease forwards',
-        }}
-      >
+    <div className="reader-article-shell">
+      <div className="reader-article">
         {/* Header */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '16px 22px', borderBottom: '1px solid rgba(163,177,198,0.2)',
-          flexShrink: 0, background: 'var(--neu-bg)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-            <div style={{
-              width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
-              background: `${sectionColor}18`, display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontSize: '1rem',
-              boxShadow: `0 0 0 2px ${sectionColor}44`,
-            }}>{sectionIcon}</div>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontWeight: 700, fontSize: '.9rem', color: 'var(--neu-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                📝 <span style={{ color: sectionColor }}>{topicName}</span>
-              </div>
-              <div style={{ fontSize: '.67rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace' }}>
-                {sectionTitle} · {status === 'done' ? 'saved' : status === 'streaming' ? 'streaming…' : 'generating…'}
-              </div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-            {status === 'done' && (
-              <button className="btn btn-secondary btn-sm" onClick={copyBlog}>
-                {copied ? '✓ Copied!' : '📋 Copy'}
-              </button>
-            )}
-            <button className="btn btn-secondary btn-sm" onClick={generate} disabled={status === 'loading' || status === 'streaming'}>
-              🔄 {status === 'done' ? 'Regenerate' : 'Retry'}
-            </button>
-            <button
-              onClick={onClose}
-              style={{
-                width: 30, height: 30, borderRadius: '50%',
-                background: 'var(--neu-bg)', border: 'none', cursor: 'pointer',
-                color: 'var(--neu-text-secondary)', fontSize: '.9rem',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '3px 3px 6px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light)',
-              }}
-            >✕</button>
-          </div>
-        </div>
+        <header className="reader-toolbar"><div><span className="learning-eyebrow">READING LESSON</span><p>{sectionTitle}</p></div><div>{status === 'done' && <button className="btn btn-secondary" onClick={copyBlog}>{copied ? 'Copied' : 'Copy'}</button>}<button className="btn btn-secondary" onClick={generate} disabled={status === 'loading' || status === 'streaming'}>{status === 'done' ? 'Regenerate' : 'Generate lesson'}</button></div></header>
 
         {/* Body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px 30px' }}>
-          {status === 'loading' && (
-            <div style={{ textAlign: 'center', paddingTop: 80, paddingBottom: 80 }}>
-              <div style={{ fontSize: '2.8rem', marginBottom: 16 }}>✍️</div>
-              <div style={{ fontWeight: 700, color: 'var(--neu-text-primary)', marginBottom: 6, fontSize: '1rem' }}>
-                Writing blog for "{topicName}"…
-              </div>
-              <div style={{ fontSize: '.78rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace', marginBottom: 28 }}>
-                Deep dive: definition · examples · pitfalls · tips (~20–30s)
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
-                {['🧭', '🔄', '🎯', '💡', '🛠️', '⚡'].map((e, idx) => (
-                  <div key={idx} style={{
-                    width: 38, height: 38, borderRadius: '50%',
-                    background: 'var(--neu-bg)', display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', fontSize: '1rem',
-                    boxShadow: '4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light)',
-                    animation: `pulse 1.4s ease ${idx * 0.18}s infinite`, opacity: 0.6,
-                  }}>{e}</div>
-                ))}
-              </div>
-            </div>
-          )}
+        <div className="reader-content">
+          {status === 'idle' && <div className="reader-empty"><h1>{topicName}</h1><p>This lesson hasn’t been written yet. Generate it when you’re ready, or choose another lesson from the learning path.</p><button className="btn btn-primary" onClick={generate}>Generate lesson</button></div>}
+          {status === 'loading' && <p className="reader-status" role="status">Loading your lesson…</p>}
+          {status === 'streaming' && <p className="reader-status" role="status">Writing your lesson. You can keep reading as it arrives.</p>}
 
           {status === 'error' && (
             <div style={{ background: 'rgba(220,38,38,0.07)', borderRadius: 16, padding: 22, border: '1px solid rgba(220,38,38,0.18)' }}>
@@ -297,17 +245,8 @@ export default function TopicBlog({ topicName, sectionId, sectionTitle, sectionC
 
           {(status === 'done' || status === 'streaming') && (
             <article className="study-reading">
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 7,
-                background: `${sectionColor}18`, borderRadius: 999,
-                padding: '5px 14px', marginBottom: 24,
-                fontSize: '.68rem', color: sectionColor, fontFamily: 'monospace', fontWeight: 700,
-              }}>
-                <span style={{ fontSize: '.9rem' }}>{sectionIcon}</span>
-                {topicName} · {sectionTitle}
-              </div>
               <BlogHighlighter storageKey={`topic_${sectionId}_${topicName}`} topicContext={`${topicName} (${sectionTitle})`}>
-                {renderMarkdown(blog)}
+                {renderMarkdown(blog.replace(/^\s*# [^\n]*\n?/, ''))}
               </BlogHighlighter>
             </article>
           )}

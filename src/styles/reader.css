@@ -1,0 +1,45 @@
+.reading-workspace { max-width: 1440px; margin: 0 auto; padding: 1.5rem 0 4rem; }
+.reader-navigation { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; }
+.reader-navigation a { color: var(--neu-accent); text-decoration: none; font-size: .9rem; }
+.reader-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: clamp(1.5rem, 3vw, 3rem); align-items: start; }
+.reader-path { position: sticky; top: 1rem; max-height: calc(100dvh - 120px); overflow-y: auto; padding-right: 1rem; scrollbar-width: thin; border-right: 1px solid var(--study-line); }
+.reader-path h2 { font-size: 1.15rem; margin: .5rem 0 1.5rem; }
+.reader-path details { border-bottom: 1px solid var(--study-line); padding: .5rem 0; }
+.reader-path summary { cursor: pointer; font-size: .875rem; line-height: 1.5; padding: .6rem 0; font-weight: 600; }
+.reader-path summary > span { color: var(--neu-text-secondary); font-size: .75rem; margin-right: .5rem; }
+.reader-topic-group h3 { font-size: .75rem; line-height: 1.5; color: var(--neu-text-secondary); margin: 1rem .5rem .35rem; }
+.reader-path a { display: block; font-size: .8125rem; line-height: 1.5; color: var(--neu-text-primary); text-decoration: none; padding: .65rem .7rem; border-radius: 7px; overflow-wrap: anywhere; }
+.reader-path a:hover { background: var(--study-hover); }
+.reader-path a[aria-current="page"] { background: var(--neu-accent-soft); color: var(--neu-accent); box-shadow: inset 3px 0 var(--neu-accent); }
+.reader-main { min-width: 0; max-width: 850px; }
+.reader-location { outline: none; scroll-margin-top: 1.5rem; }
+.reader-location > span { font-size: .8rem; color: var(--neu-text-secondary); }
+.reader-location h1 { font-size: clamp(1.45rem, 2.5vw, 2.1rem); line-height: 1.3; letter-spacing: -.025em; margin: .6rem 0 1.5rem; overflow-wrap: anywhere; }
+.reader-article-shell, .reader-article { width: 100%; min-width: 0; }
+.reader-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 0; border-top: 1px solid var(--study-line); border-bottom: 1px solid var(--study-line); }
+.reader-toolbar p { margin: .3rem 0 0; font-size: .75rem; color: var(--neu-text-secondary); }
+.reader-toolbar > div:last-child { display: flex; gap: .5rem; flex-shrink: 0; }
+.reader-toolbar .btn { min-height: 44px; font-size: .8rem; }
+.reader-content { padding: 2rem 0; }
+.reader-content .study-reading { max-width: 72ch; }
+.reader-content .study-reading > div { max-width: 100%; }
+.reader-empty { padding: 2rem 0; }
+.reader-empty h1 { display: none; }
+.reader-empty p { line-height: 1.7; color: var(--neu-text-secondary); max-width: 55ch; }
+.reader-next { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; border-top: 1px solid var(--study-line); padding-top: 1.5rem; }
+.reader-next a { color: var(--neu-text-primary); text-decoration: none; line-height: 1.5; }
+.reader-next a:last-child { text-align: right; }
+.reader-next small { display: block; color: var(--neu-accent); margin-bottom: .5rem; }
+.reader-next span { font-size: .875rem; }
+.reader-path-toggle { display: none; }
+.reading-workspace :is(a,button,summary):focus-visible { outline: 2px solid var(--neu-accent); outline-offset: 3px; }
+@media (max-width: 1000px) { .reader-layout { grid-template-columns: 210px minmax(0,1fr); gap: 1.5rem; } }
+@media (max-width: 760px) {
+  .reader-layout { display: block; } .reader-path { display: none; position: static; max-height: 60dvh; border: 1px solid var(--study-line); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; }
+  .reader-path.is-open { display: block; } .reader-path-toggle { display: block; padding: .6rem .8rem; min-height: 44px; background: var(--neu-surface); color: var(--neu-accent); border: 1px solid var(--study-line); border-radius: 8px; font: inherit; font-size: .8rem; }
+  .reader-toolbar { flex-wrap: wrap; } .reader-toolbar > div:last-child { flex-wrap: wrap; } .reader-next { gap: 1rem; } .reading-workspace { padding-top: .5rem; }
+}
+.apple-platform .reader-location:focus-visible { outline: none; }
+.reader-chapter-select { display: block; font-size: .75rem; color: var(--neu-text-secondary); margin-bottom: 1rem; }
+.reader-chapter-select select { display: block; width: 100%; min-height: 44px; margin-top: .4rem; font: inherit; color: var(--neu-text-primary); background: var(--neu-surface); border: 1px solid var(--study-line); border-radius: 8px; padding: .6rem; }
+.reader-status { padding: 2rem 0; color: var(--neu-text-secondary); }

@@ -45,7 +45,7 @@ export default function App() {
     return () => { document.body.style.overflow = previousOverflow; document.removeEventListener('keydown', onKey); media.removeEventListener('change', onResize) }
   }, [menuOpen])
   const current = groups.flatMap(g => g.links).find(([to]) => to === '/' ? pathname === '/' : pathname.startsWith(to))
-  const pageName = ({ '/practice/history': 'Practice history', '/python/blog': 'Python lessons', '/interview': 'Interview preparation', '/notes': 'Learning notes' })[pathname] || (pathname.startsWith('/interview/') ? 'Interview reference' : [['/genai', 'Generative AI'], ['/systemdesign', 'System design'], ['/ai-interview', 'AI interview'], ['/dsa', 'DSA'], ['/python', 'Python']].find(([path]) => pathname === path || pathname.startsWith(path + '/'))?.[1]) || current?.[1] || 'Learning'
+  const pageName = ({ '/practice/history': 'Practice history', '/python/blog': 'Python lessons', '/interview': 'Interview preparation', '/notes': 'Learning notes' })[pathname] || (pathname.startsWith('/read/') ? 'Reading' : null) || (pathname.startsWith('/interview/') ? 'Interview reference' : [['/genai', 'Generative AI'], ['/systemdesign', 'System design'], ['/ai-interview', 'AI interview'], ['/dsa', 'DSA'], ['/python', 'Python']].find(([path]) => pathname === path || pathname.startsWith(path + '/'))?.[1]) || current?.[1] || 'Learning'
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light')
     localStorage.setItem('dp_dark_mode', darkMode ? '1' : '0')
