@@ -166,7 +166,7 @@ export default function PythonSheet() {
 
             {/* Topics & Problems */}
             {(isOpen || q) && (
-              <div style={{ paddingLeft: 20, marginTop: 8 }}>
+              <div className="learning-topic-list">
                 {phase.topics.map((topic, ti) => {
                   const filteredProblems = q
                     ? topic.problems.map((p, pi) => ({ p, pi })).filter(({ p }) => topic.label.toLowerCase().includes(q) || p.title.toLowerCase().includes(q))
@@ -175,13 +175,13 @@ export default function PythonSheet() {
                   if (q && filteredProblems.length === 0 && !topic.label.toLowerCase().includes(q)) return null
 
                   return (
-                    <div key={ti} style={{ marginBottom: 12 }}>
-                      <div style={{
+                    <section key={ti} className="learning-topic-group">
+                      <div className="learning-topic-heading" style={{
                         fontSize: '.75rem', fontWeight: 700, color: 'var(--neu-accent)',
                         padding: '4px 0', marginBottom: 4,
                         display: 'flex', alignItems: 'center', gap: 6,
                       }}>
-                        <span style={{ background: `${phase.color}18`, padding: '2px 10px', borderRadius: 999 }}>{topic.label}</span>
+                        <h2>{topic.label}</h2>
                         <span style={{ fontSize: '.68rem', color: 'var(--neu-text-secondary)', fontFamily: 'inherit' }}>
                           {filteredProblems.length} problems
                         </span>
@@ -196,7 +196,7 @@ export default function PythonSheet() {
                         return (
                           <div
                             key={pId}
-                            className="apple-problem-row"
+                            className="apple-problem-row learning-item" data-status={status}
                             style={{
                               display: 'flex', alignItems: 'center', gap: 10,
                               padding: '7px 12px', marginBottom: 2,
@@ -208,6 +208,7 @@ export default function PythonSheet() {
                             onMouseLeave={e => { if (status !== 2) e.currentTarget.style.background = 'transparent' }}
                           >
                             <button
+                              className="learning-item-status"
                               title={meta.tip}
                               aria-label={`${p.title}: ${meta.tip}. Change status`}
                               onClick={e => { e.stopPropagation(); toggle(pId) }}
@@ -219,7 +220,7 @@ export default function PythonSheet() {
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 flexShrink: 0, transition: 'all .15s',
                               }}
-                            >{meta.label}</button>
+                            ><span aria-hidden="true">{status === 2 ? '✓' : status === 1 ? '−' : ''}</span></button>
 
                             <Link className="apple-problem-link"
                               to={`/python/${si}/${ti}/${pi}`}
@@ -231,7 +232,7 @@ export default function PythonSheet() {
                               }}
                             >{p.title}</Link>
 
-                            <span style={{
+                            <span className="learning-item-level" style={{
                               fontSize: '.64rem', fontWeight: 700, padding: '2px 8px',
                               borderRadius: 999, background: diff.bg, color: diff.color,
                               flexShrink: 0, fontFamily: 'inherit',
@@ -239,6 +240,8 @@ export default function PythonSheet() {
 
                             <button
                               onClick={() => navigate(`/python/${si}/${ti}/${pi}`)}
+                              className="learning-item-action"
+                              aria-label={`Practice ${p.title}`}
                               title="Open in editor"
                               style={{
                                 width: 26, height: 26, borderRadius: '50%', border: 'none',
@@ -250,11 +253,11 @@ export default function PythonSheet() {
                               }}
                               onMouseEnter={e => { e.currentTarget.style.opacity = '1' }}
                               onMouseLeave={e => { e.currentTarget.style.opacity = '0.6' }}
-                            >{'</>'}</button>
+                            >Practice <span aria-hidden="true">↗</span></button>
                           </div>
                         )
                       })}
-                    </div>
+                    </section>
                   )
                 })}
               </div>
