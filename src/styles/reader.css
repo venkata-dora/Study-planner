@@ -101,3 +101,47 @@
 .reader-mode .apple-toolbar { justify-content: flex-start; gap: 1rem; }
 .reader-mode .reader-global-navigation { margin-right: auto; }
 @media (max-width: 760px) { .reader-mode .apple-toolbar { gap: .5rem; } }
+
+/* Reading shell: a stable header and a single navigation slot. */
+.reader-mode { --reader-rail: 264px; }
+.reader-mode .apple-menu-button { width: 36px; height: 36px; border: 0; border-radius: 7px; background: transparent; }
+.reader-mode .apple-menu-button:hover { background: var(--neu-accent-soft); }
+.reader-mode .reader-global-navigation { gap: 1.25rem; }
+.reader-header-context { border-left: 1px solid var(--study-line); padding-left: 1.25rem; color: var(--neu-text-secondary); font-size: .8rem; }
+.reader-mode .apple-sidebar { top: 4.25rem; width: var(--reader-rail); padding: 1.5rem 1rem; }
+.reader-mode .apple-sidebar .learning-brand { display: none; }
+.reader-mode .apple-sidebar .apple-nav-group:first-child { margin-top: 0; }
+.reader-mode .apple-sidebar .apple-menu-close { display: none !important; }
+.reader-mode .reader-sidebar-control { border: 0; background: transparent; }
+.reader-mode .reader-path { padding-top: 1.75rem; }
+.reader-mode .reader-location { scroll-margin-top: 6rem; }
+.reader-mode .reader-toolbar .btn { border-color: transparent; background: transparent; min-height: 36px; padding: .4rem .65rem; }
+.reader-mode .reader-toolbar .btn:hover { background: var(--neu-accent-soft); }
+.reader-mode .reader-toolbar { padding: .25rem 0 .75rem; }
+.reader-mode .reader-content .study-reading hr { margin: 1.75rem 0 !important; border-color: var(--study-line) !important; }
+.reader-mode .reader-content .study-reading h2 { margin-top: 1.75rem !important; font-size: 1.5rem !important; }
+@media (min-width: 761px) {
+  .reader-mode .apple-mobile-scrim { display: none; }
+  .reader-mode.menu-open .reader-path, .reader-mode.menu-open .reader-sidebar-control { visibility: hidden; pointer-events: none; }
+  .apple-platform.reader-mode.menu-open .main-content { margin-left: var(--reader-rail); }
+  .reader-mode .reading-workspace { margin-left: clamp(1rem, 5vw, 6rem); margin-right: auto; max-width: 800px; }
+  .reader-mode:not(:has(.path-open)):not(.menu-open) .reading-workspace { margin-inline: auto; }
+}
+@media (max-width: 760px) {
+  .reader-header-context { display: none; }
+  .reader-mode .apple-sidebar { top: 0; padding-top: 5.5rem; }
+  .reader-mode .apple-sidebar .apple-menu-close { display: grid !important; position: absolute; top: 16px; left: 16px; width: 36px; height: 36px; margin: 0; border: 0; background: transparent; }
+}
+.reader-contents { display: none; }
+.reader-mode .study-reading h2 { scroll-margin-top: 6rem; }
+@media (min-width: 1500px) {
+  .reader-mode:has(.path-open) .reader-contents { display: flex; flex-direction: column; position: fixed; top: 8rem; left: calc(264px + 2rem + min(5vw, 6rem) + 800px + 3rem); width: 180px; max-height: calc(100dvh - 10rem); overflow-y: auto; gap: .75rem; border-left: 1px solid var(--study-line); padding-left: 1.25rem; }
+  .reader-contents > span { font-size: .75rem; font-weight: 600; color: var(--neu-text-primary); }
+  .reader-contents a { font-size: .8rem; line-height: 1.5; text-decoration: none; color: var(--neu-text-secondary); }
+  .reader-contents a:hover { color: var(--neu-accent); }
+}
+.reader-sidebar-control > span { display: none; }
+@media (max-width: 760px) {
+  .reader-sidebar-control > span { display: inline; }
+  .reader-mode .reader-sidebar-control { display: flex; align-items: center; gap: .4rem; width: auto; padding: 0 .6rem; border: 1px solid var(--study-line); background: var(--neu-surface); font: inherit; font-size: .8rem; }
+}
