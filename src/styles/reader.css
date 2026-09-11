@@ -180,3 +180,15 @@
 .reader-lesson-results small { display: block; margin-top: .25rem; color: var(--neu-text-secondary); }
 .reader-lesson-picker footer { margin-top: .75rem; font-size: .75rem; color: var(--neu-text-secondary); }
 @media (max-width:600px) { .split-workspace-label { flex-basis: 100%; } .split-reader-tools label { flex: 0 1 auto; } }
+
+/* One compact navigation row instead of separate back-link and toggle rows. */
+.apple-platform .main-content:has(.reading-workspace) { padding-top: 1rem; }
+.reading-workspace { padding-top: 0; }
+.reader-navigation { position: sticky; top: 4.5rem; z-index: 20; justify-content: flex-start; gap: .75rem; margin-bottom: .75rem; width: fit-content; background: var(--neu-bg); border-radius: 8px; }
+.reader-navigation .reader-sidebar-control { position: static; margin: 0; transform: none; }
+@media (min-width: 1101px) { .reader-navigation { transform: translateX(calc(-1 * var(--reader-shift))); } }
+.split-reader-tools { margin-bottom: .75rem; padding-top: 0; padding-bottom: .5rem; }
+.reader-location h1 { margin-bottom: 1rem; }
+.reader-toolbar { padding: .65rem 0; }
+.reader-content { padding: 1.25rem 0; }
+@media (max-width: 1000px) { .reader-path.is-open { max-height: 40dvh; } }
