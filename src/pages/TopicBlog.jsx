@@ -1,3 +1,4 @@
+import { readerContent } from '../utils/readerContent'
 import { Navigate, useLocation } from 'react-router-dom'
 import { readerPath } from '../utils/readerPaths'
 import { useState, useEffect, useRef, useCallback } from 'react'
@@ -246,7 +247,7 @@ function TopicBlogContent({ topicName, sectionId, sectionTitle, sectionColor, se
           {(status === 'done' || status === 'streaming') && (
             <article className="study-reading">
               <BlogHighlighter storageKey={`topic_${sectionId}_${topicName}`} topicContext={`${topicName} (${sectionTitle})`}>
-                {renderMarkdown(blog.replace(/^\s*# [^\n]*\n?/, ''))}
+                {renderMarkdown(readerContent(blog, topicName))}
               </BlogHighlighter>
             </article>
           )}

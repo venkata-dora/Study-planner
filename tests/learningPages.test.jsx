@@ -102,3 +102,8 @@ assert.ok(!readerMarkup.includes('aria-modal="true"'))
 assert.ok(!readerMarkup.includes('modal-backdrop'))
 assert.ok(readerPath('chapter', 'Art & design?').includes('topic=Art+%26+design%3F'))
 console.log('Reading workspace navigation and nonmodal rendering checks passed')
+
+const { readerContent } = require('../src/utils/readerContent')
+assert.equal(readerContent("Granting write permission needed. Alternatively, here's the complete blog post formatted for your project:\n\n---\n\n# Writing: A Deep Dive\n\nUseful explanation.", 'Writing').trim(), 'Useful explanation.')
+assert.equal(readerContent('An important introduction.\n\n## An example\n\nKeep this.', 'Writing'), 'An important introduction.\n\n## An example\n\nKeep this.')
+console.log('Reader content preserves lesson text while removing duplicate opening chrome')

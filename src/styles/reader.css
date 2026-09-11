@@ -47,20 +47,45 @@
 .reader-chapter-select select { display: block; width: 100%; min-height: 44px; margin-top: .4rem; font: inherit; color: var(--neu-text-primary); background: var(--neu-surface); border: 1px solid var(--study-line); border-radius: 8px; padding: .6rem; }
 .reader-status { padding: 2rem 0; color: var(--neu-text-secondary); }
 
-/* Preserve the centered reader; recover only a small amount of left gutter. */
-@media (min-width: 1101px) {
-  .apple-platform .main-content:has(.reading-workspace) { padding-left: 2rem; }
-}
-
-.reader-sidebar-control { position: sticky; top: 5rem; z-index: 20; display: grid; place-items: center; width: 32px; height: 32px; margin: 0 0 .5rem; padding: 0; border: 1px solid var(--study-line); border-radius: 7px; background: var(--neu-surface); color: var(--neu-text-secondary); cursor: pointer; }
+/* Reader mode: site navigation above, one course sidebar on the left. */
+.reader-mode .apple-sidebar, .reader-mode .apple-menu-button { display: none !important; }
+.reader-mode .apple-workspace { margin-left: 0; }
+.reader-mode .apple-toolbar { padding-inline: 1.5rem; border-bottom: 1px solid var(--study-line); }
+.reader-global-navigation { display: flex; align-items: center; gap: 2rem; }
+.reader-global-brand { color: var(--neu-text-primary); font-size: 1.05rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.reader-global-navigation > nav { display: flex; gap: 1.5rem; }
+.reader-global-navigation a { text-decoration: none; color: var(--neu-text-primary); }
+.reader-global-menu { position: relative; }
+.reader-global-menu summary { cursor: pointer; padding: .75rem .3rem; }
+.reader-global-menu nav { position: absolute; top: 100%; left: 0; width: 210px; padding: .5rem; border: 1px solid var(--study-line); border-radius: 10px; background: var(--neu-surface); box-shadow: 0 8px 24px #00000012; }
+.reader-global-menu nav a { display: block; padding: .75rem; border-radius: 6px; }
+.reader-global-menu nav a:hover { background: var(--study-hover); }
+.apple-platform.reader-mode .main-content { max-width: none; padding: 2rem 2rem 4rem; }
+.reader-mode .reading-workspace { padding: 0; max-width: 840px; margin-inline: auto; }
+.reader-mode .reader-layout, .reader-mode .reader-layout.path-open { display: block; }
+.reader-mode .reader-main { max-width: none; }
+.reader-mode .reader-navigation { margin-bottom: 1.25rem; }
+.reader-mode .reader-path { position: fixed; top: 4.25rem; bottom: 0; left: 0; width: 280px; max-height: none; padding: 1.5rem 1.25rem; margin: 0; border: 0; border-right: 1px solid var(--study-line); border-radius: 0; background: var(--neu-surface); z-index: 30; transform: none; }
+.reader-mode .reader-path h2 { padding-right: 2rem; }
+.reader-sidebar-control { position: fixed; top: 5rem; left: 16px; z-index: 40; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid var(--study-line); border-radius: 7px; background: var(--neu-surface); color: var(--neu-text-secondary); cursor: pointer; transform: none; }
 .reader-sidebar-control:hover { background: var(--study-hover); color: var(--neu-accent); }
-@media (pointer: coarse) { .reader-sidebar-control { width: 44px; height: 44px; } }
-
+.reader-mode:has(.path-open) .reader-sidebar-control { left: 236px; }
+.reader-mode .reader-content .study-reading { max-width: none; margin: 0; }
+.reader-mode .reader-toolbar { padding: .75rem 0; border-top: 0; }
+.reader-mode .reader-toolbar > div:first-child { display: none; }
+.reader-mode .reader-toolbar > div:last-child { margin-left: auto; }
+.reader-mode .reader-content { padding-top: 1.25rem; }
+.reader-mode .reader-location h1 { margin-bottom: .75rem; }
 @media (min-width: 761px) {
-  .reader-path { top: 8rem; max-height: calc(100dvh - 9rem); }
+  .apple-platform.reader-mode:has(.path-open) .main-content { margin-left: 280px; }
 }
-
-@media (min-width: 1101px) {
-  .reader-path { transform: translateX(-64px); }
-  .reader-sidebar-control { transform: translateX(-64px); }
+@media (max-width: 1000px) { .reader-global-navigation > nav { display: none; } }
+@media (max-width: 760px) {
+  .reader-mode .apple-toolbar { padding-inline: 1rem; gap: .5rem; }
+  .reader-global-navigation { gap: .75rem; }
+  .reader-global-brand { font-size: .85rem; }
+  .reader-mode .appearance-actions { margin-right: 0; }
+  .apple-platform.reader-mode .main-content { padding: 1.25rem 1rem 3rem; }
+  .reader-mode .reader-path { position: static; width: 100%; max-height: 55dvh; border: 1px solid var(--study-line); border-radius: 10px; margin-bottom: 1.5rem; padding: 1rem; }
+  .reader-sidebar-control, .reader-mode:has(.path-open) .reader-sidebar-control { position: sticky; top: 4.75rem; left: auto; margin-bottom: .75rem; width: 44px; height: 44px; }
 }

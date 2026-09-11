@@ -1,3 +1,4 @@
+import { readerContent } from '../utils/readerContent'
 import { Navigate, useLocation } from 'react-router-dom'
 import { readerPath } from '../utils/readerPaths'
 import { useState, useEffect, useRef, useCallback } from 'react'
@@ -427,7 +428,7 @@ function GenAIBlogContent({ section, onClose }) {
           {(status === 'done' || status === 'streaming') && (
             <article className="study-reading">
               <BlogHighlighter storageKey={`genai_${section.title}`} topicContext={section.title}>
-                {renderMarkdown(blog.replace(/^\s*# [^\n]*\n?/, ''))}
+                {renderMarkdown(readerContent(blog, section.title))}
               </BlogHighlighter>
             </article>
           )}
