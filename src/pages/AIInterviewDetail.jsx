@@ -1,3 +1,4 @@
+import LearningLessonHeader from '../components/LearningLessonHeader'
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { SECTIONS, loadChecks, saveChecks, itemId, cycleState, normalizeState, isDone, STATE_COLORS } from '../data/aiInterviewData'
@@ -78,7 +79,6 @@ export default function AIInterviewDetail() {
   section.subsections.forEach(sub => sub.items.forEach((_, i) => {
     total++; if (isDone(checks[itemId(section.id, sub.label, i)])) done++
   }))
-  const pct = total ? Math.round(done / total * 100) : 0
 
   const q = search.toLowerCase()
 
@@ -93,50 +93,7 @@ export default function AIInterviewDetail() {
         ← All Rounds
       </button>
 
-      {/* Header */}
-      <div style={{
-        background: 'var(--neu-bg)',
-        borderRadius: 24,
-        padding: '28px 32px',
-        marginBottom: 24,
-        boxShadow: '8px 8px 16px var(--neu-shadow-dark), -8px -8px 16px var(--neu-shadow-light)',
-        borderLeft: `5px solid ${section.color}`,
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute', top: -30, right: -30,
-          width: 160, height: 160, borderRadius: '50%',
-          background: section.bg, filter: 'blur(40px)', pointerEvents: 'none'
-        }} />
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
-          <div style={{
-            width: 56, height: 56, borderRadius: '50%', flexShrink: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.7rem',
-            background: 'var(--neu-bg)',
-            boxShadow: 'inset 4px 4px 8px var(--neu-shadow-dark), inset -4px -4px 8px var(--neu-shadow-light)',
-          }}>
-            {section.icon}
-          </div>
-          <div>
-            <h1 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-.03em', color: section.color, margin: 0 }}>
-              {section.title}
-            </h1>
-            <div style={{ fontSize: '.8rem', color: 'var(--neu-text-secondary)', marginTop: 4, fontFamily: 'monospace' }}>
-              {section.subsections.length} sections · {total} questions
-            </div>
-          </div>
-        </div>
-
-        <div className="prep-progress-label" style={{ marginBottom: 6 }}>
-          <span style={{ color: 'var(--neu-text-secondary)', fontSize: '.8rem' }}>Progress</span>
-          <span style={{ color: section.color, fontFamily: 'monospace', fontWeight: 700 }}>{done} / {total} ({pct}%)</span>
-        </div>
-        <div className="prep-progress-track">
-          <div className="prep-progress-fill" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${section.color}90, ${section.color})` }} />
-        </div>
-
+      <LearningLessonHeader section={section} done={done} total={total} unit="questions">
         {/* Legend */}
         <div style={{ display: 'flex', gap: 16, marginTop: 14 }}>
           {[0, 1, 2].map(st => {
@@ -154,13 +111,13 @@ export default function AIInterviewDetail() {
             )
           })}
         </div>
-      </div>
+      </LearningLessonHeader>
 
       {/* Controls */}
       <div className="flex gap-sm items-center" style={{ marginBottom: 20, flexWrap: 'wrap' }}>
         <input
           type="text"
-          placeholder="🔍  Search questions…"
+          aria-label="Search questions" placeholder="Search questions"
           value={search}
           onChange={e => setSearch(e.target.value)}
           style={{ flex: 1, minWidth: 200 }}
@@ -171,6 +128,7 @@ export default function AIInterviewDetail() {
         <button className="btn btn-secondary btn-sm" onClick={() => markAllSection(0)}>↺ Reset all</button>
       </div>
 
+      <details className="study-other-sections"><summary>Browse other sections</summary>
       {/* Other sections quick nav */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
         {SECTIONS.filter(s => s.id !== section.id).map(s => {
@@ -208,6 +166,8 @@ export default function AIInterviewDetail() {
         })}
       </div>
 
+      </details>
+
       {/* Subsections */}
       {section.subsections.map(sub => {
         const filteredItems = q
@@ -228,7 +188,8 @@ export default function AIInterviewDetail() {
             className={`prep-day-card${allSubDone ? ' all-done' : ''}`}
             style={{ marginBottom: 14 }}
           >
-            <div className="prep-day-header" onClick={() => toggleSub(sub.label)}>
+            <div className="prep-day-header" role="button" tabIndex={0} aria-expanded={isOpen || !!q}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleSub(sub.label) } }} onClick={() => toggleSub(sub.label)}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span
                   className="prep-track-label"
@@ -270,7 +231,8 @@ export default function AIInterviewDetail() {
                       }}
                     >
                       {/* State badge */}
-                      <span
+                      <button className="study-status-button"
+                        aria-label={`${item}: ${sc.tip}. Change status`}
                         title={sc.tip}
                         onClick={() => toggle(id)}
                         style={{
@@ -282,7 +244,7 @@ export default function AIInterviewDetail() {
                         }}
                       >
                         {sc.label}
-                      </span>
+                      </button>
                       <span
                         onClick={() => toggle(id)}
                         style={{

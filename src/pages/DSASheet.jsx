@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { getLocalDate } from '../utils/dateUtils'
 import {
   STEPS, loadProgress, saveProgress, problemId,
@@ -59,37 +59,11 @@ export default function DSASheet() {
 
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-      {/* Header */}
-      <div className="prep-header">
-        <h1>🗂️ Striver's A2Z DSA Sheet</h1>
-        <p>FOLLOW THE EXACT ORDER · 10 PROBLEMS PER DAY · TRACK YOUR PROGRESS</p>
-      </div>
-
-      {/* Random Practice CTA */}
-      <div
-        onClick={() => navigate('/dsa/practice')}
-        style={{
-          background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
-          borderRadius: 20, padding: '18px 24px', marginBottom: 20,
-          cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14,
-          boxShadow: '6px 6px 16px rgba(245,158,11,0.3), -4px -4px 12px var(--neu-shadow-light)',
-          transition: 'transform .15s',
-        }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-      >
-        <div style={{ fontSize: '1.5rem' }}>🎲</div>
-        <div>
-          <div style={{ fontWeight: 700, fontSize: '1rem', color: '#fff' }}>Random Practice</div>
-          <div style={{ fontSize: '.75rem', color: 'rgba(255,255,255,0.75)', marginTop: 2 }}>
-            AI-generated interview-style DSA challenges based on topics you've completed
-          </div>
-        </div>
-        <div style={{ marginLeft: 'auto', color: '#fff', fontSize: '1.3rem' }}>→</div>
-      </div>
+      <div className="prep-header"><span className="learning-eyebrow">LEARNING ROADMAP</span><h1>Striver’s A2Z DSA</h1><p>Build your foundations through ordered topics and hands-on problem solving.</p></div>
+      <div className="apple-actions"><Link className="btn btn-primary" to="/dsa/practice">Practice DSA →</Link></div>
 
       {/* Overall Progress */}
-      <div style={{
+      <div className="apple-sheet-summary" style={{
         background: 'var(--neu-bg)', borderRadius: 20, padding: '20px 24px', marginBottom: 24,
         boxShadow: '6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light)',
       }}>
@@ -126,7 +100,7 @@ export default function DSASheet() {
             {showDashboard ? 'Hide Dashboard' : 'Show Dashboard'}
           </button>
           <span style={{ fontSize: '.72rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace' }}>
-            {overallPct}% complete · ~{Math.ceil((totalProblems - solved) / 10)} days remaining at 10/day
+            {overallPct}% complete
           </span>
         </div>
 
@@ -186,7 +160,7 @@ export default function DSASheet() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
                 {[
                   { label: 'Streak', value: `${streak}d`, icon: '🔥', color: '#ef4444', sub: streak > 0 ? 'Keep going!' : 'Start today' },
-                  { label: 'Today', value: todaySolved, icon: '📌', color: '#2563eb', sub: `${Math.max(0, 10 - todaySolved)} to target` },
+                  { label: 'Today', value: todaySolved, icon: '📌', color: '#2563eb', sub: 'Problems solved' },
                   { label: 'Active Days', value: activeDays, icon: '📅', color: '#7c3aed', sub: bestDay ? `Best: ${bestCount} on ${bestDay.slice(5)}` : 'No data' },
                   { label: 'Avg / Day', value: activeDays > 0 ? (solved / activeDays).toFixed(1) : '0', icon: '📊', color: '#0ea5e9', sub: `${solved} total solved` },
                 ].map((s, i) => (
@@ -268,7 +242,7 @@ export default function DSASheet() {
       {/* Controls */}
       <div className="flex gap-sm items-center" style={{ marginBottom: 20, flexWrap: 'wrap' }}>
         <input
-          type="text" placeholder="🔍  Search problems…"
+          type="search" aria-label="Search problems or topics" placeholder="Search problems or topics"
           value={search} onChange={e => setSearch(e.target.value)}
           style={{ flex: 1, minWidth: 200 }}
         />
@@ -300,6 +274,9 @@ export default function DSASheet() {
           <div key={step.id} style={{ marginBottom: 14 }}>
             {/* Step header */}
             <div
+              className="apple-sheet-step"
+              role="button" tabIndex={0} aria-expanded={isOpen || !!q}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleStep(step.id) } }}
               onClick={() => toggleStep(step.id)}
               style={{
                 background: 'var(--neu-bg)', borderRadius: 16, padding: '14px 18px',
@@ -380,6 +357,7 @@ export default function DSASheet() {
                         return (
                           <div
                             key={pId}
+                            className="apple-problem-row"
                             style={{
                               display: 'flex', alignItems: 'center', gap: 10,
                               padding: '7px 12px', marginBottom: 2,
@@ -393,6 +371,7 @@ export default function DSASheet() {
                             {/* Status toggle */}
                             <button
                               title={meta.tip}
+                              aria-label={`${p.title}: ${meta.tip}. Change status`}
                               onClick={e => { e.stopPropagation(); toggle(pId) }}
                               style={{
                                 width: 24, height: 24, borderRadius: '50%', border: `2px solid ${meta.color}`,
@@ -405,15 +384,15 @@ export default function DSASheet() {
                             >{meta.label}</button>
 
                             {/* Problem title */}
-                            <span
-                              onClick={() => navigate(`/dsa/${si}/${ti}/${pi}`)}
+                            <Link className="apple-problem-link"
+                              to={`/dsa/${si}/${ti}/${pi}`}
                               style={{
                                 flex: 1, fontSize: '.84rem',
                                 color: status === 2 ? 'var(--neu-text-secondary)' : 'var(--neu-text-primary)',
                                 textDecoration: status === 2 ? 'line-through' : 'none',
                                 cursor: 'pointer',
                               }}
-                            >{p.title}</span>
+                            >{p.title}</Link>
 
                             {/* Difficulty badge */}
                             <span style={{

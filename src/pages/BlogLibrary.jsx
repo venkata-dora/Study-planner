@@ -53,25 +53,13 @@ export default function BlogLibrary() {
         ← Back to Roadmap
       </button>
 
-      {/* Header */}
-      <div style={{
-        background: 'var(--neu-bg)', borderRadius: 24, padding: '28px 32px', marginBottom: 24,
-        boxShadow: '8px 8px 16px var(--neu-shadow-dark), -8px -8px 16px var(--neu-shadow-light)',
-        borderLeft: '5px solid var(--neu-accent)',
-      }}>
-        <h1 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-.03em', color: 'var(--neu-accent)', margin: '0 0 6px' }}>
-          📚 Blog Library
-        </h1>
-        <div style={{ fontSize: '.8rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace' }}>
-          {blogs.length} saved blog{blogs.length !== 1 ? 's' : ''} · click any to read
-        </div>
-      </div>
+      <div className="apple-page-heading"><div><span className="learning-eyebrow">READ & EXPLORE</span><h1>Reading library</h1><p>{blogs.length} saved {blogs.length === 1 ? 'article' : 'articles'}. Take a deeper look at what you’re learning.</p></div></div>
 
       {/* Filters */}
       <div className="flex gap-sm items-center" style={{ marginBottom: 20, flexWrap: 'wrap' }}>
         <input
           type="text"
-          placeholder="🔍  Search blogs…"
+          aria-label="Search saved articles" placeholder="Search saved articles"
           value={search}
           onChange={e => setSearch(e.target.value)}
           style={{ flex: 1, minWidth: 200 }}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   PHASES, loadProgress, saveProgress, problemId,
   cycleStatus, STATUS_META, DIFFICULTY_COLORS, getTotalProblems,
@@ -53,60 +53,11 @@ export default function PythonSheet() {
 
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-      {/* Header */}
-      <div className="prep-header">
-        <h1>🐍 Advanced Python Roadmap</h1>
-        <p>GOOGLE-LEVEL PRODUCTION MASTERY · 100 DAYS · TRACK YOUR PROGRESS</p>
-      </div>
-
-      {/* Blog CTA */}
-      <div
-        onClick={() => navigate('/python/blog')}
-        style={{
-          background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)',
-          borderRadius: 20, padding: '18px 24px', marginBottom: 20,
-          cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14,
-          boxShadow: '6px 6px 16px rgba(37,99,235,0.3), -4px -4px 12px var(--neu-shadow-light)',
-          transition: 'transform .15s',
-        }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-      >
-        <div style={{ fontSize: '1.5rem' }}>📝</div>
-        <div>
-          <div style={{ fontWeight: 700, fontSize: '1rem', color: '#fff' }}>Python Topic Blogs</div>
-          <div style={{ fontSize: '.75rem', color: 'rgba(255,255,255,0.75)', marginTop: 2 }}>
-            AI-generated deep-dive blogs for each topic · Interview-ready reference
-          </div>
-        </div>
-        <div style={{ marginLeft: 'auto', color: '#fff', fontSize: '1.3rem' }}>→</div>
-      </div>
-
-      {/* Random Practice CTA */}
-      <div
-        onClick={() => navigate('/python/practice')}
-        style={{
-          background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
-          borderRadius: 20, padding: '18px 24px', marginBottom: 20,
-          cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14,
-          boxShadow: '6px 6px 16px rgba(245,158,11,0.3), -4px -4px 12px var(--neu-shadow-light)',
-          transition: 'transform .15s',
-        }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-      >
-        <div style={{ fontSize: '1.5rem' }}>🎲</div>
-        <div>
-          <div style={{ fontWeight: 700, fontSize: '1rem', color: '#fff' }}>Random Practice</div>
-          <div style={{ fontSize: '.75rem', color: 'rgba(255,255,255,0.75)', marginTop: 2 }}>
-            AI-generated real-world challenges based on topics you've completed
-          </div>
-        </div>
-        <div style={{ marginLeft: 'auto', color: '#fff', fontSize: '1.3rem' }}>→</div>
-      </div>
+      <div className="prep-header"><span className="learning-eyebrow">LEARNING ROADMAP</span><h1>Python roadmap</h1><p>Develop Python fluency, from language fundamentals to production patterns.</p></div>
+      <div className="apple-actions"><Link className="btn btn-primary" to="/python/practice">Practice Python →</Link><Link className="btn btn-secondary" to="/python/blog">Read topic guides</Link></div>
 
       {/* Overall Progress */}
-      <div style={{
+      <div className="apple-sheet-summary" style={{
         background: 'var(--neu-bg)', borderRadius: 20, padding: '20px 24px', marginBottom: 24,
         boxShadow: '6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light)',
       }}>
@@ -134,7 +85,7 @@ export default function PythonSheet() {
       {/* Controls */}
       <div className="flex gap-sm items-center" style={{ marginBottom: 20, flexWrap: 'wrap' }}>
         <input
-          type="text" placeholder="🔍  Search problems…"
+          type="search" aria-label="Search problems or topics" placeholder="Search problems or topics"
           value={search} onChange={e => setSearch(e.target.value)}
           style={{ flex: 1, minWidth: 200 }}
         />
@@ -164,6 +115,9 @@ export default function PythonSheet() {
           <div key={phase.id} style={{ marginBottom: 14 }}>
             {/* Phase header */}
             <div
+              className="apple-sheet-step"
+              role="button" tabIndex={0} aria-expanded={isOpen || !!q}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePhase(phase.id) } }}
               onClick={() => togglePhase(phase.id)}
               style={{
                 background: 'var(--neu-bg)', borderRadius: 16, padding: '14px 18px',
@@ -242,6 +196,7 @@ export default function PythonSheet() {
                         return (
                           <div
                             key={pId}
+                            className="apple-problem-row"
                             style={{
                               display: 'flex', alignItems: 'center', gap: 10,
                               padding: '7px 12px', marginBottom: 2,
@@ -254,6 +209,7 @@ export default function PythonSheet() {
                           >
                             <button
                               title={meta.tip}
+                              aria-label={`${p.title}: ${meta.tip}. Change status`}
                               onClick={e => { e.stopPropagation(); toggle(pId) }}
                               style={{
                                 width: 24, height: 24, borderRadius: '50%', border: `2px solid ${meta.color}`,
@@ -265,15 +221,15 @@ export default function PythonSheet() {
                               }}
                             >{meta.label}</button>
 
-                            <span
-                              onClick={() => navigate(`/python/${si}/${ti}/${pi}`)}
+                            <Link className="apple-problem-link"
+                              to={`/python/${si}/${ti}/${pi}`}
                               style={{
                                 flex: 1, fontSize: '.84rem',
                                 color: status === 2 ? 'var(--neu-text-secondary)' : 'var(--neu-text-primary)',
                                 textDecoration: status === 2 ? 'line-through' : 'none',
                                 cursor: 'pointer',
                               }}
-                            >{p.title}</span>
+                            >{p.title}</Link>
 
                             <span style={{
                               fontSize: '.64rem', fontWeight: 700, padding: '2px 8px',

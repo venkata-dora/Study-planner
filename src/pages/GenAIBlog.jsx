@@ -488,7 +488,7 @@ export default function GenAIBlog({ section, onClose }) {
 
           {/* Blog content */}
           {(status === 'done' || status === 'streaming') && (
-            <article>
+            <article className="study-reading">
               {/* Origin badge */}
               <div style={{
                 display: 'inline-flex', alignItems: 'center', gap: 7,

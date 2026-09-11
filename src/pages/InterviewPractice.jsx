@@ -403,14 +403,16 @@ export default function InterviewPractice() {
   const scoreColor = (score) => score >= 80 ? '#22c55e' : score >= 60 ? '#f59e0b' : '#ef4444'
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)' }}>
+    <div className="study-practice" style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)' }}>
 
+      <div className="apple-page-heading"><div><span className="learning-eyebrow">PRACTICE & REVIEW</span><h1>Interview practice</h1><p>Work through a question, record your answer, and review your feedback.</p></div></div>
       {/* Top bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap', flexShrink: 0 }}>
         <button className="btn btn-secondary btn-sm" onClick={() => navigate('/interview')}>← Back</button>
         <button className="btn btn-secondary btn-sm" onClick={() => navigate('/practice/history')} style={{ gap: 4, display: 'inline-flex', alignItems: 'center' }}>📊 History</button>
 
         <select
+          aria-label="Interview question category"
           value={category}
           onChange={e => { setCategory(e.target.value); setTimeout(pickQuestion, 0) }}
           style={{
@@ -434,7 +436,7 @@ export default function InterviewPractice() {
       {cameraError && <div style={{ color: '#ef4444', fontSize: '.78rem', marginBottom: 8 }}>{cameraError}</div>}
 
       {/* Main layout */}
-      <div style={{ flex: 1, display: 'flex', gap: 12, minHeight: 0 }}>
+      <div className="study-practice-split" style={{ flex: 1, display: 'flex', gap: 12, minHeight: 0 }}>
 
         {/* Left column: Camera + Question */}
         <div style={{ width: '40%', minWidth: 320, display: 'flex', flexDirection: 'column', gap: 12 }}>

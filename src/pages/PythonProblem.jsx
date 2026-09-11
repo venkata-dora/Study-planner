@@ -435,11 +435,11 @@ export default function PythonProblem() {
   const next = getAdjacentProblem(1)
 
   return (
-    <div
+    <div className="study-editor"
       style={{
-        width: '100vw', maxWidth: '100vw',
-        marginLeft: 'calc(-50vw + 50%)', padding: '0 32px', boxSizing: 'border-box',
-        display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)',
+        width: '100%', maxWidth: '100%',
+        marginLeft: 0, padding: 0, boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'column', height: 'calc(100svh - 100px)', minHeight: 620,
       }}
       onKeyDown={handleKeyDown}
     >
@@ -530,7 +530,7 @@ export default function PythonProblem() {
       </div>
 
       {/* Main area: split view */}
-      <div style={{ flex: 1, display: 'flex', gap: 0, minHeight: 0 }}>
+      <div className="study-editor-split" style={{ flex: 1, display: 'flex', gap: 0, minHeight: 0 }}>
 
         {/* Notes panel — left side, resizable */}
         {showNotes && (
@@ -578,7 +578,7 @@ export default function PythonProblem() {
             </div>
             {/* Drag handle */}
             <div
-              onMouseDown={startNotesDrag}
+              className="study-panel-resizer" onMouseDown={startNotesDrag}
               style={{
                 width: 6, cursor: 'col-resize', flexShrink: 0,
                 background: 'transparent', position: 'relative', zIndex: 10,

@@ -1,4 +1,5 @@
 const paths = {
+  menu: 'M4 6h16 M4 12h16 M4 18h16',
   library: 'M4 5h6v15H4z M14 5h6v15h-6z M7 8v4 M17 8v4',
   dsa: 'M5 5h4v4H5z M15 15h4v4h-4z M5 15h4v4H5z M7 9v6 M9 7h8v8',
   python: 'M8 7 3 12l5 5 M16 7l5 5-5 5 M14 4l-4 16',

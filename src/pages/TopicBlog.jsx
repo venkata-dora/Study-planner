@@ -294,7 +294,7 @@ export default function TopicBlog({ topicName, sectionId, sectionTitle, sectionC
           )}
 
           {(status === 'done' || status === 'streaming') && (
-            <article>
+            <article className="study-reading">
               <div style={{
                 display: 'inline-flex', alignItems: 'center', gap: 7,
                 background: `${sectionColor}18`, borderRadius: 999,

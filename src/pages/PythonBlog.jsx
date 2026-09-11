@@ -215,9 +215,9 @@ export default function PythonBlog() {
           background: 'var(--neu-bg)', borderRadius: 20, padding: '28px 32px',
           boxShadow: '6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light)',
         }}>
-          <BlogHighlighter storageKey={`python_${viewBlog.phaseId}_${viewBlog.topicLabel}`} topicContext={viewBlog.topicLabel}>
+          <div className="study-reading"><BlogHighlighter storageKey={`python_${viewBlog.phaseId}_${viewBlog.topicLabel}`} topicContext={viewBlog.topicLabel}>
             {renderMarkdown(viewBlog.content)}
-          </BlogHighlighter>
+          </BlogHighlighter></div>
         </div>
       </div>
     )
