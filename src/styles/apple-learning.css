@@ -370,3 +370,55 @@ button,a,input,select { -webkit-tap-highlight-color: transparent; touch-action: 
 @media (max-width: 1000px) { .progress-main { grid-template-columns: minmax(0, 1.8fr) minmax(200px, 1fr); gap: 1rem; } .stats-roadmap-row, .progress-table-heading { grid-template-columns: minmax(0, 1fr) 80px 100px 14px; gap: 1rem; } .progress-activity, .progress-next { padding: 1.25rem; } }
 @media (max-width: 760px) { .progress-heading { align-items: start; flex-direction: column; gap: .5rem; margin-bottom: 1.75rem; } .progress-totals > div { padding: 0 .7rem; } .progress-totals strong { font-size: 2.2rem; } .progress-totals span, .progress-totals small { font-size: .7rem; } .progress-totals strong em { font-size: .75rem; margin-left: .2rem; } .progress-main { grid-template-columns: 1fr; } .progress-next { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: .75rem 1rem; } .progress-next > .learning-eyebrow { grid-column: 1 / -1; } .progress-next-icon { margin: 0; grid-column: 1; grid-row: 2 / 4; } .progress-next h2, .progress-next p, .progress-next progress, .progress-next > a { grid-column: 2; margin: 0; } .progress-panel-heading { flex-wrap: wrap; } .progress-chart-bars { gap: .35rem; } .progress-table-heading { display: none; } .stats-roadmap-row { grid-template-columns: minmax(0, 1fr) 70px; gap: .8rem; padding: 1.15rem 0; } .progress-track-bar { grid-column: 1 / -1; padding-left: 3.2rem; } .stats-roadmap-row > svg { display: none; } .progress-track-list { margin-top: 1rem; border-top: 1px solid var(--study-line); } .progress-track-identity strong { font-size: .85rem; } .progress-filters button, .progress-segments button { min-height: 44px; } }
 @media (prefers-reduced-motion: reduce) { .progress-chart-bar, .stats-roadmap-row { transition: none; } }
+
+/* Stats: a focused learning workspace with a strong continuation anchor. */
+.apple-platform .progress-page { max-width: 1160px; padding-top: 1.5rem; }
+.progress-heading { margin-bottom: 1.6rem; }
+.progress-heading h1 { font-size: clamp(2rem, 3vw, 2.6rem); }
+.progress-heading .learning-eyebrow { color: var(--neu-accent); }
+.progress-library-link { border: 1px solid var(--study-line); border-radius: 24px; padding: 0 1rem; background: var(--neu-surface); }
+.progress-totals { padding: 1.2rem 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--study-line); border-radius: 16px; background: var(--neu-surface); }
+.progress-totals strong { font-size: 2.5rem; }
+.progress-totals > div:first-child strong { color: var(--neu-accent); }
+.progress-main { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 1.25rem; margin-bottom: 2rem; align-items: stretch; }
+.progress-next { grid-column: 1; grid-row: 1; position: relative; display: block; padding: 1.75rem; border-radius: 20px; background: #254cd8; color: #fff; overflow: hidden; }
+.progress-next .learning-eyebrow { color: #d7e2ff; font-size: .65rem; }
+.progress-next h2 { max-width: 65%; margin: 1.5rem 0 .6rem; font-size: 1.55rem; line-height: 1.15; }
+.progress-next p { color: #e0e7ff; max-width: 65%; margin-bottom: 1.5rem; font-size: .8rem; }
+.progress-next > a { width: fit-content; background: #fff; color: #2348c7; border-radius: 10px; padding: .65rem 1rem; gap: 1.5rem; min-height: 44px; transition: transform 150ms ease, box-shadow 150ms ease; }
+.progress-next > a:hover { transform: translateY(-2px); box-shadow: 0 5px 15px #112b8c50; }
+.progress-next > a:active { transform: scale(.98); }
+.stats-focus-progress { position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); width: 112px; height: 112px; }
+.stats-focus-progress svg { width: 100%; height: 100%; transform: rotate(-90deg); fill: none; stroke: #ffffff29; stroke-width: 7; }
+.stats-focus-progress circle:last-child { stroke: #b9dcff; stroke-linecap: round; }
+.stats-focus-progress > span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+.stats-focus-progress strong { font-size: 2rem; font-weight: 600; letter-spacing: -.05em; }
+.stats-focus-progress small { font-size: .9rem; margin-left: 2px; }
+.stats-focus-progress em { font-size: .65rem; font-style: normal; color: #e0e7ff; }
+.progress-activity { grid-column: 2; padding: 1.5rem; border-radius: 20px; background: var(--neu-surface); }
+.progress-chart { height: 100px; }
+.progress-chart-summary { margin: 1rem 0; }
+.progress-chart-bar { opacity: .85; }
+.stats-activity-empty { display: flex; align-items: center; gap: 1rem; min-height: 195px; }
+.stats-practice-symbol { display: grid; place-items: center; flex-shrink: 0; width: 58px; height: 64px; border-radius: 16px; background: var(--neu-accent-soft); color: var(--neu-accent); font: 600 1.3rem monospace; transform: rotate(-6deg); }
+.stats-activity-empty h3 { font-size: 1.05rem; letter-spacing: -.025em; margin: 0 0 .5rem; }
+.stats-activity-empty p { color: var(--neu-text-secondary); font-size: .8rem; line-height: 1.6; margin: 0; max-width: 30ch; }
+.stats-activity-empty a { display: inline-flex; align-items: center; gap: .7rem; min-height: 44px; margin-top: .6rem; color: var(--neu-accent); font-size: .8rem; font-weight: 600; text-decoration: none; }
+.progress-table-heading { padding-top: 1rem; }
+.stats-roadmap-row { border-radius: 12px; padding: 1rem; transition: background 150ms ease, transform 150ms ease; --course-color: #2863cf; --course-bg: #eaf1ff; }
+.stats-roadmap-row[data-course="python"] { --course-color: #987016; --course-bg: #fff5d6; }
+.stats-roadmap-row[data-course="genai"] { --course-color: #7b51ba; --course-bg: #f1eafa; }
+.stats-roadmap-row[data-course="systemdesign"] { --course-color: #128273; --course-bg: #e3f5ef; }
+.stats-roadmap-row[data-course="ai-interview"] { --course-color: #b15164; --course-bg: #fcecf0; }
+.progress-track-icon { width: 44px; height: 44px; border: 0; background: var(--course-bg); color: var(--course-color); border-radius: 13px; }
+.stats-roadmap-row:hover { transform: translateX(3px); }
+.progress-track-bar progress { accent-color: var(--course-color); height: 6px; }
+.progress-track-bar progress::-webkit-progress-value { background: var(--course-color); }
+[data-theme="dark"] .stats-roadmap-row { --course-bg: #27334b; --course-color: #9abdff; }
+[data-theme="dark"] .stats-roadmap-row[data-course="python"] { --course-bg: #3c3423; --course-color: #e7c367; }
+[data-theme="dark"] .stats-roadmap-row[data-course="genai"] { --course-bg: #342945; --course-color: #c5a2f2; }
+[data-theme="dark"] .stats-roadmap-row[data-course="systemdesign"] { --course-bg: #203b35; --course-color: #80d6bf; }
+[data-theme="dark"] .stats-roadmap-row[data-course="ai-interview"] { --course-bg: #422b34; --course-color: #efa7b6; }
+@media (max-width: 1100px) and (min-width: 761px) { .stats-focus-progress { width: 85px; height: 85px; right: 1rem; } .progress-next h2, .progress-next p { max-width: 65%; } .stats-activity-empty { gap: .7rem; } .stats-practice-symbol { width: 42px; height: 50px; } }
+@media (max-width: 760px) { .apple-platform .progress-page { padding-top: .5rem; } .progress-heading { gap: .5rem; } .progress-heading p { font-size: .85rem; } .progress-library-link { font-size: .75rem; } .progress-totals { padding: 1rem; } .progress-totals strong { font-size: 2rem; } .progress-totals > div { padding: 0 .6rem; } .progress-main { grid-template-columns: 1fr; } .progress-next, .progress-activity { grid-column: 1; grid-row: auto; } .progress-next { grid-row: 1; padding: 1.5rem; } .progress-next h2 { font-size: 1.4rem; margin-top: 1.2rem; } .stats-focus-progress { right: 1rem; width: 88px; height: 88px; } .stats-focus-progress strong { font-size: 1.6rem; } .progress-next p { margin-bottom: 1.25rem; } .progress-next > a { margin-top: 1rem; } .stats-activity-empty { min-height: 155px; } .progress-track-bar { padding-left: 3.6rem; } .stats-roadmap-row { padding: 1rem .25rem; } }
+@media (prefers-reduced-motion: reduce) { .progress-next > a, .stats-roadmap-row { transition: none; transform: none !important; } }
