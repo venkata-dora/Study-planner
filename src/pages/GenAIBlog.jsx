@@ -1,3 +1,4 @@
+import useReadingDialog from '../utils/useReadingDialog'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import mermaid from 'mermaid'
 import BlogHighlighter from '../components/BlogHighlighter'
@@ -321,6 +322,7 @@ function inlineFormat(text) {
    Main GenAIBlog component
 ═══════════════════════════════════════════════ */
 export default function GenAIBlog({ section, onClose }) {
+  const dialogRef = useReadingDialog(onClose)
   const [status, setStatus] = useState('idle')
   const [blog, setBlog] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
@@ -382,7 +384,7 @@ export default function GenAIBlog({ section, onClose }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose} style={{ alignItems: 'flex-start', paddingTop: 48 }}>
-      <div className="reading-dialog"
+      <div className="reading-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-label={section.title} tabIndex={-1}
         onClick={e => e.stopPropagation()}
         style={{
           background: 'var(--neu-bg)',

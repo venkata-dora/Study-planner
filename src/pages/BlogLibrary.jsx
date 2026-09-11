@@ -53,7 +53,7 @@ export default function BlogLibrary() {
       {filterSection === 'all' && customFiltered.length > 0 && <section style={{ marginBottom: 28 }}><div className="learning-section-title"><h2>From your roadmaps</h2></div><div className="learning-tracks">{customFiltered.map(t => <Link className="learning-track" key={`${t.roadmapId}_${t.id}`} to={`/roadmaps/${t.roadmapId}?topic=${t.id}#custom-lesson`}><div className="learning-track-copy"><h3>{t.title}</h3><p>{t.roadmapTitle}</p></div><span>Read →</span></Link>)}</div></section>}
 
       {/* Filters */}
-      <div className="flex gap-sm items-center" style={{ marginBottom: 20, flexWrap: 'wrap' }}>
+      <div className="library-filters flex gap-sm items-center" style={{ marginBottom: 20, flexWrap: 'wrap' }}>
         <input
           type="text"
           aria-label="Search saved articles" placeholder="Search saved articles"
@@ -99,7 +99,7 @@ export default function BlogLibrary() {
       {Object.entries(grouped).map(([secId, secBlogs]) => {
         const sec = sectionMap[secId]
         return (
-          <div key={secId} style={{ marginBottom: 24 }}>
+          <div className="library-section" key={secId} style={{ marginBottom: 24 }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12,
               padding: '6px 0',

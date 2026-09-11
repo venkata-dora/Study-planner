@@ -556,3 +556,59 @@ button,a,input,select { -webkit-tap-highlight-color: transparent; touch-action: 
   .universal-library .saved-path-book > strong { min-height: 0; }
   .universal-library .universal-continue > span:last-child { margin-left: 0; }
 }
+
+/* Shared learning tools: readable controls and consistent page structure. */
+.library-filters select, .practice-history select { width: auto; max-width: 100%; min-width: 200px; border: 1px solid var(--study-line) !important; background: var(--neu-surface) !important; }
+.library-filters input { min-height: 46px; }
+.library-section > div:first-child { margin-top: 2rem; }
+.reading-article-open { padding-right: 2.25rem; }
+.reading-article-delete { width: 44px; height: 44px; }
+.python-lesson-section > div:first-child { background: var(--neu-accent-soft) !important; border-left-color: var(--neu-accent) !important; }
+.python-lesson-row { border-bottom: 1px solid var(--study-line); border-radius: 0 !important; min-height: 72px; }
+.python-lesson-row > span:first-child { line-height: 1.6; }
+.hub-empty-state, .practice-start { background: var(--neu-accent-soft) !important; border: 1px solid var(--study-line); padding: 2rem !important; }
+.hub-empty-state > div { margin-top: 1rem; }
+.practice-start h2 { margin: 1rem 0 .75rem !important; }
+.practice-start p { line-height: 1.7; }
+.practice-difficulty { min-width: 110px; min-height: 48px; background: var(--neu-surface) !important; color: var(--neu-accent) !important; border: 1px solid var(--study-line) !important; box-shadow: none !important; border-radius: 8px !important; }
+.practice-difficulty:hover { background: var(--neu-accent-soft) !important; }
+.study-practice-split { align-items: flex-start; }
+.study-practice-split > div:last-child { min-height: 360px; border: 1px solid var(--study-line); border-radius: 12px; background: var(--neu-surface); }
+.learning-notes .past-note-item { display: block; width: 100%; text-align: left; font: inherit; color: var(--neu-text-primary); border: 0; cursor: pointer; }
+.learning-notes .card { animation: none; }
+.resume-upload { background: var(--neu-surface) !important; border: 1px solid var(--study-line) !important; border-radius: 12px !important; }
+.resume-upload h3 { color: var(--neu-text-primary) !important; }
+.resume-upload :is(input,textarea) { border: 1px solid var(--study-line) !important; background: var(--neu-bg) !important; color: var(--neu-text-primary) !important; }
+.resume-upload input[type=file] { width: 100%; padding: .85rem; border-style: dashed !important; border-radius: 8px; }
+.resume-upload input::file-selector-button { margin-right: 1rem; padding: .65rem 1rem; border: 1px solid var(--study-line); border-radius: 6px; background: var(--neu-surface); color: var(--neu-text-primary); cursor: pointer; }
+.interview-preparation .btn-primary { background: var(--neu-accent) !important; color: var(--neu-surface) !important; }
+.hub-practice-link { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin: 1.5rem 0; padding: 1.75rem; background: var(--neu-accent-soft); border-radius: 12px; text-decoration: none; color: var(--neu-text-primary); }
+.hub-practice-link h2 { margin: .6rem 0; }
+.hub-practice-link p { margin: 0; line-height: 1.6; color: var(--neu-text-secondary); }
+.interview-guide { display: block; text-decoration: none; color: var(--neu-text-primary); }
+@media(max-width: 760px) {
+  .library-filters select, .practice-history select { width: 100%; }
+  .python-lesson-row { flex-wrap: wrap; padding: 1rem 0 !important; }
+  .python-lesson-row > span:first-child { flex-basis: 100% !important; }
+  .python-lesson-section > div:last-child { padding-left: 0 !important; }
+  .study-practice-split > div:first-child { min-height: 0; }
+  .resume-upload { padding: 1.25rem !important; }
+  .resume-upload .btn-primary { width: 100%; }
+  .learning-notes > .apple-page-heading { flex-wrap: wrap; }
+  .learning-notes .card { padding: 1.25rem; }
+}
+.roadmap-subject-field { display: grid; gap: .25rem; flex: 1; min-width: 0; font-size: .75rem; }
+.roadmap-create-fields label { margin: 0; }
+.roadmap-create-fields > .btn { min-height: 48px; }
+.reference-reader { height: calc(100dvh - 10rem) !important; min-height: 540px; }
+.reference-reader-body { min-height: 0; overscroll-behavior: contain; }
+@media(max-width:1100px) { .roadmap-subject-field { flex-basis: 100%; } }
+@media(max-width:760px) {
+  .roadmap-studio > .learning-section-title { flex-wrap: wrap; gap: .75rem; }
+  .roadmap-studio > .learning-section-title h2 { white-space: normal; }
+  .reference-reader { height: auto !important; }
+  .reference-reader-body { overflow-y: visible !important; }
+}
+.roadmap-subject-field input { font-size: 1rem; font-weight: 400; letter-spacing: normal; }
+.reading-dialog:focus { outline: none; }
+@media(max-width:760px) { .modal-backdrop:has(.reading-dialog) { padding: 1rem 0 !important; } }

@@ -1,3 +1,4 @@
+import useReadingDialog from '../utils/useReadingDialog'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import mermaid from 'mermaid'
 import BlogHighlighter from '../components/BlogHighlighter'
@@ -132,6 +133,7 @@ export function renderMarkdown(text) {
    TopicBlog — per-topic blog modal
 ═══════════════════════════════════════════════ */
 export default function TopicBlog({ topicName, sectionId, sectionTitle, sectionColor, sectionIcon, onClose }) {
+  const dialogRef = useReadingDialog(onClose)
   const [status, setStatus] = useState('loading')
   const [blog, setBlog] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
@@ -206,7 +208,7 @@ export default function TopicBlog({ topicName, sectionId, sectionTitle, sectionC
 
   return (
     <div className="modal-backdrop" onClick={onClose} style={{ alignItems: 'flex-start', paddingTop: 48 }}>
-      <div className="reading-dialog"
+      <div className="reading-dialog" ref={dialogRef} role="dialog" aria-modal="true" aria-label={topicName} tabIndex={-1}
         onClick={e => e.stopPropagation()}
         style={{
           background: 'var(--neu-bg)', borderRadius: 24,

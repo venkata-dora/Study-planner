@@ -224,16 +224,16 @@ export default function PythonBlog() {
   }
 
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+    <div className="python-lessons" style={{ maxWidth: 1000, margin: '0 auto' }}>
       <div className="prep-header">
-        <h1>🐍 Python Topic Blogs</h1>
-        <p>AI-GENERATED DEEP-DIVE BLOGS · INTERVIEW QUICK-FIRE REFERENCE</p>
+        <span className="learning-eyebrow">PYTHON · READ & UNDERSTAND</span><h1>Python lessons</h1>
+        <p>Explore each topic through focused explanations and examples.</p>
       </div>
 
       <button className="btn btn-secondary btn-sm" onClick={() => navigate('/python')} style={{ marginBottom: 20 }}>← Back to Roadmap</button>
 
       {PHASES.map(phase => (
-        <div key={phase.id} style={{ marginBottom: 20 }}>
+        <section className="python-lesson-section" key={phase.id} style={{ marginBottom: 20 }}>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10,
             padding: '10px 16px', borderRadius: 14,
@@ -254,7 +254,7 @@ export default function PythonBlog() {
               const isGenerating = generating === key
 
               return (
-                <div key={ti} style={{
+                <div className="python-lesson-row" key={ti} style={{
                   display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
                   borderRadius: 12, background: 'var(--neu-bg)',
                   boxShadow: '3px 3px 6px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light)',
@@ -271,7 +271,7 @@ export default function PythonBlog() {
                       className="btn btn-secondary btn-sm"
                       onClick={() => setViewBlog({ phaseId: phase.id, topicLabel: topic.label, content: blogs[key] })}
                       style={{ fontSize: '.7rem' }}
-                    >📖 Read</button>
+                    >Read lesson</button>
                   )}
 
                   <button
@@ -280,13 +280,13 @@ export default function PythonBlog() {
                     disabled={isGenerating}
                     style={{ fontSize: '.7rem' }}
                   >
-                    {isGenerating ? '⏳ Generating…' : hasBlog ? '🔄 Regenerate' : '📝 Generate Blog'}
+                    {isGenerating ? 'Writing…' : hasBlog ? 'Regenerate' : 'Generate lesson'}
                   </button>
                 </div>
               )
             })}
           </div>
-        </div>
+        </section>
       ))}
     </div>
   )

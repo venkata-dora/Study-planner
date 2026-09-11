@@ -267,6 +267,8 @@ function QuestionCard({ card, isOpen, onToggle, color, index }) {
     }}>
       {/* Header */}
       <div
+        role="button" tabIndex={0} aria-expanded={isOpen}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle() } }}
         onClick={onToggle}
         style={{
           display: 'flex', alignItems: 'center', gap: 10,
@@ -394,7 +396,7 @@ export default function DocReader() {
   const totalCards = parsed.sections.reduce((sum, sec) => sum + sec.cards.filter(c => c.title).length, 0)
 
   return (
-    <div style={{ maxWidth: 920, margin: '0 auto', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)' }}>
+    <div className="reference-reader" style={{ maxWidth: 1060, margin: '0 auto', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)' }}>
 
       {/* Top bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
@@ -433,7 +435,7 @@ export default function DocReader() {
       </div>
 
       {/* Header card */}
-      <div style={{
+      <div className="reference-heading" style={{
         background: 'var(--neu-bg)', borderRadius: 20, padding: '18px 24px', marginBottom: 14,
         boxShadow: '6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light)',
         borderLeft: `4px solid ${doc.color}`,
@@ -445,7 +447,7 @@ export default function DocReader() {
           background: doc.bg, boxShadow: `0 0 0 2px ${doc.color}33`,
         }}>{doc.icon}</div>
         <div>
-          <div style={{ fontWeight: 700, fontSize: '1.1rem', color: doc.color }}>{doc.title}</div>
+          <h1 style={{ fontWeight: 500, fontSize: '1.8rem', margin: 0, color: 'var(--neu-text-primary)' }}>{doc.title}</h1>
           <div style={{ fontSize: '.75rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace', marginTop: 2 }}>
             {totalCards} questions/topics · {parsed.sections.length} sections · {Math.round(scrollPct)}% read
           </div>
@@ -454,6 +456,7 @@ export default function DocReader() {
 
       {/* Content body */}
       <div
+        className="reference-reader-body"
         ref={bodyRef}
         style={{
           flex: 1, overflowY: 'auto',
@@ -468,7 +471,7 @@ export default function DocReader() {
             {parsed.sections.map((sec, si) => (
               <div key={si} style={{ marginBottom: 24 }}>
                 {/* Section header */}
-                <div style={{
+                <div className="reference-section-heading" style={{
                   display: 'flex', alignItems: 'center', gap: 10,
                   padding: '10px 16px', marginBottom: 12,
                   background: 'var(--neu-bg)', borderRadius: 14,

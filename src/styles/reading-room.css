@@ -113,3 +113,20 @@
 [data-learning-style="reading-room"] .reading-question > div:first-child { font-family: inherit !important; }
 [data-learning-style="reading-room"] .roadmap-empty { padding: 2rem; }
 [data-learning-style="reading-room"] .apple-brand-mark svg { color: inherit; }
+/* Older study tools share the same quiet paper surfaces. */
+[data-learning-style="reading-room"] :is(.practice-start,.hub-empty-state,.hub-practice-link) { background: var(--reading-cover) !important; border: 0; border-left: 4px solid var(--reading-spine); border-radius: 3px 14px 14px 3px; }
+[data-learning-style="reading-room"] :is(.practice-start h2,.hub-practice-link h2) { font: 400 1.8rem/1.3 Georgia, serif; }
+[data-learning-style="reading-room"] .library-section > div:first-child > span:nth-child(2) { color: var(--neu-text-primary) !important; font: 400 1.35rem/1.4 Georgia, serif !important; }
+[data-learning-style="reading-room"] .interview-guide { background: var(--reading-cover) !important; border-left-color: var(--reading-spine) !important; box-shadow: none !important; }
+[data-learning-style="reading-room"] .interview-guide > div:first-child { display: none; }
+[data-learning-style="reading-room"] .interview-guide > div:nth-child(2) > div:nth-child(2) > div:first-child { color: var(--neu-text-primary) !important; font: 400 1.4rem/1.4 Georgia, serif !important; }
+[data-learning-style="reading-room"] .interview-guide > div:last-child span { background: var(--neu-accent-soft) !important; color: var(--neu-accent) !important; }
+@media(prefers-reduced-motion: reduce) {
+  .apple-platform :is(.interview-guide,.practice-difficulty) { transform: none !important; transition: none !important; }
+}
+[data-learning-style="reading-room"] .reference-reader h1 { font-family: Georgia, serif; }
+[data-learning-style="reading-room"] .reference-reader-body :is(p,li) { font-size: 1rem !important; line-height: 1.8 !important; }
+[data-learning-style="reading-room"] .reference-reader-body [role=button] { border-bottom: 1px solid var(--study-line); }
+[data-learning-style="reading-room"] :is(.reference-heading,.reference-section-heading) { background: var(--reading-cover) !important; border-left-color: var(--reading-spine) !important; }
+[data-learning-style="reading-room"] .reference-section-heading > span:first-child { color: var(--neu-text-primary) !important; }
+[data-learning-style="reading-room"] .reference-reader-body [role=button] > span:first-child { color: var(--neu-accent) !important; background: var(--neu-accent-soft) !important; }

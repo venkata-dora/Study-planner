@@ -403,13 +403,13 @@ export default function InterviewPractice() {
   const scoreColor = (score) => score >= 80 ? '#22c55e' : score >= 60 ? '#f59e0b' : '#ef4444'
 
   return (
-    <div className="study-practice" style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 80px)' }}>
+    <div className="study-practice" style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', minHeight: 'calc(100svh - 12rem)' }}>
 
       <div className="apple-page-heading"><div><span className="learning-eyebrow">PRACTICE & REVIEW</span><h1>Interview practice</h1><p>Work through a question, record your answer, and review your feedback.</p></div></div>
       {/* Top bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap', flexShrink: 0 }}>
-        <button className="btn btn-secondary btn-sm" onClick={() => navigate('/interview')}>← Back</button>
-        <button className="btn btn-secondary btn-sm" onClick={() => navigate('/practice/history')} style={{ gap: 4, display: 'inline-flex', alignItems: 'center' }}>📊 History</button>
+        <button className="btn btn-secondary btn-sm" onClick={() => navigate('/interview')}>Interview preparation</button>
+        <button className="btn btn-secondary btn-sm" onClick={() => navigate('/practice/history')} style={{ gap: 4, display: 'inline-flex', alignItems: 'center' }}>Practice history</button>
 
         <select
           aria-label="Interview question category"
@@ -430,7 +430,7 @@ export default function InterviewPractice() {
         </button>
 
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-          <button className="btn btn-secondary btn-sm" onClick={nextQuestion}>⏭ Skip</button>
+          <button className="btn btn-secondary btn-sm" onClick={nextQuestion}>Next question →</button>
         </div>
       </div>
       {cameraError && <div style={{ color: '#ef4444', fontSize: '.78rem', marginBottom: 8 }}>{cameraError}</div>}
@@ -477,7 +477,7 @@ export default function InterviewPractice() {
             background: 'var(--neu-bg)', borderRadius: 16, padding: '20px 22px',
             boxShadow: '6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light)',
             borderLeft: '4px solid var(--neu-accent)',
-            flex: cameraOn ? 'none' : 1,
+            flex: 'none', minHeight: 220,
           }}>
             <div style={{
               fontSize: '.68rem', fontWeight: 700, color: 'var(--neu-accent)',

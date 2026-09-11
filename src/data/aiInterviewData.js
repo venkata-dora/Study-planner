@@ -32,7 +32,7 @@ export function normalizeState(val) {
 export function isDone(val) { return normalizeState(val) === 2 }
 
 export const STATE_COLORS = {
-  0: { bg: 'rgba(220,38,38,0.12)', border: '#dc2626', text: '#dc2626', label: '✕', tip: 'Not started' },
+  0: { bg: 'var(--neu-surface)', border: '#94a398', text: 'var(--neu-text-secondary)', label: '○', tip: 'Not started' },
   1: { bg: 'rgba(234,88,12,0.12)', border: '#ea580c', text: '#ea580c', label: '~', tip: 'In progress' },
   2: { bg: 'rgba(22,163,74,0.12)', border: '#16a34a', text: '#16a34a', label: '✓', tip: 'Done' },
 }

@@ -31,12 +31,13 @@ export default function InterviewHistory() {
   }
 
   return (
-    <div style={{ maxWidth: 960, margin: '0 auto' }}>
+    <div className="practice-history learning-overview" style={{ maxWidth: 1060, margin: '0 auto' }}>
 
+      <header className="apple-page-heading"><div><span className="learning-eyebrow">PRACTICE & REVIEW</span><h1>Practice history</h1><p>Revisit your answers and see how your practice develops.</p></div></header>
       {/* Top bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
         <button className="btn btn-secondary btn-sm" onClick={() => navigate('/practice')}>← Practice</button>
-        <select
+        <select aria-label="Filter sessions by category"
           value={filter}
           onChange={e => setFilter(e.target.value)}
           style={{
@@ -131,13 +132,13 @@ export default function InterviewHistory() {
 
       {/* Session list */}
       {filtered.length === 0 ? (
-        <div style={{
+        <div className="hub-empty-state" style={{
           background: 'var(--neu-bg)', borderRadius: 16, padding: '40px 20px',
           boxShadow: '6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light)',
           textAlign: 'center',
         }}>
-          <div style={{ fontSize: '2rem', marginBottom: 12 }}>🎙️</div>
-          <div style={{ color: 'var(--neu-text-secondary)', fontSize: '.9rem' }}>No practice sessions yet</div>
+          <span className="learning-eyebrow">YOUR PRACTICE JOURNAL</span>
+          <div style={{ color: 'var(--neu-text-secondary)', fontSize: '.9rem' }}>{filter === 'all' ? 'Your first session starts here.' : 'No sessions in this category.'}</div>
           <button className="btn btn-primary btn-sm" onClick={() => navigate('/practice')} style={{ marginTop: 16 }}>Start Practicing</button>
         </div>
       ) : (

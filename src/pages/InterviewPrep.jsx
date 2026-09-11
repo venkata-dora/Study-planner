@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const DOCS = [
   {
@@ -172,7 +172,7 @@ export default function InterviewPrep() {
   // ── Session Detail View ──
   if (view === 'detail' && activeSession) {
     return (
-      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+      <div className="interview-preparation" style={{ maxWidth: 1060, margin: '0 auto' }}>
         <button
           className="btn btn-secondary btn-sm"
           onClick={() => { setView('hub'); setActiveSession(null) }}
@@ -379,56 +379,26 @@ export default function InterviewPrep() {
 
   // ── Session Hub View ──
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto' }}>
+    <div className="interview-preparation" style={{ maxWidth: 1060, margin: '0 auto' }}>
       {/* Back */}
       <button
         className="btn btn-secondary btn-sm"
-        onClick={() => navigate('/genai')}
+        onClick={() => navigate('/practice')}
         style={{ marginBottom: 20, display: 'inline-flex', alignItems: 'center', gap: 6 }}
       >
-        ← Back to Roadmap
+        ← Interview practice
       </button>
 
-      {/* Header */}
-      <div style={{
-        background: 'var(--neu-bg)', borderRadius: 24, padding: '28px 32px', marginBottom: 28,
-        boxShadow: '8px 8px 16px var(--neu-shadow-dark), -8px -8px 16px var(--neu-shadow-light)',
-        borderLeft: '5px solid #7c3aed',
-        position: 'relative', overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute', top: -30, right: -30,
-          width: 160, height: 160, borderRadius: '50%',
-          background: 'rgba(124,58,237,0.08)', filter: 'blur(40px)', pointerEvents: 'none'
-        }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 8 }}>
-          <div style={{
-            width: 56, height: 56, borderRadius: '50%', flexShrink: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.7rem',
-            background: 'var(--neu-bg)',
-            boxShadow: 'inset 4px 4px 8px var(--neu-shadow-dark), inset -4px -4px 8px var(--neu-shadow-light)',
-          }}>
-            🎯
-          </div>
-          <div>
-            <h1 style={{ fontSize: '1.6rem', fontWeight: 800, letterSpacing: '-.03em', color: '#7c3aed', margin: 0 }}>
-              Interview Questions on Resume
-            </h1>
-            <div style={{ fontSize: '.8rem', color: 'var(--neu-text-secondary)', marginTop: 4, fontFamily: 'monospace' }}>
-              Upload resume · AI generates questions · Get AI answers
-            </div>
-          </div>
-        </div>
-      </div>
+      <header className="apple-page-heading"><div><span className="learning-eyebrow">PREPARE & PRACTICE</span><h1>Interview preparation</h1><p>Create questions from your resume, explore reference guides, and rehearse your answers.</p></div></header>
 
       {/* Upload Card */}
-      <div style={{
+      <div className="resume-upload" style={{
         background: 'var(--neu-bg)', borderRadius: 20, padding: '24px 28px', marginBottom: 24,
         boxShadow: '6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light)',
         borderLeft: '4px solid #2563eb',
       }}>
         <h3 style={{ margin: '0 0 16px', fontSize: '1.05rem', fontWeight: 700, color: '#2563eb' }}>
-          New Session — Upload Resume
+          Create a practice session
         </h3>
         <form onSubmit={handleUpload}>
           <div style={{ marginBottom: 12 }}>
@@ -436,6 +406,7 @@ export default function InterviewPrep() {
               Resume (.pdf or .txt) *
             </label>
             <input
+              aria-label="Resume PDF or text file"
               type="file"
               accept=".pdf,.txt"
               onChange={e => setUploadFile(e.target.files[0] || null)}
@@ -447,6 +418,7 @@ export default function InterviewPrep() {
               Session Title (optional)
             </label>
             <input
+              aria-label="Session title"
               type="text"
               value={title}
               onChange={e => setTitle(e.target.value)}
@@ -462,7 +434,7 @@ export default function InterviewPrep() {
             <label style={{ display: 'block', fontSize: '.78rem', fontWeight: 600, marginBottom: 4, color: 'var(--neu-text-secondary)' }}>
               Job Description (optional — improves question relevance)
             </label>
-            <textarea
+            <textarea aria-label="Job description"
               value={jdText}
               onChange={e => setJdText(e.target.value)}
               placeholder="Paste the job description here..."
@@ -549,35 +521,15 @@ export default function InterviewPrep() {
         </div>
       )}
 
-      {/* Practice Simulator CTA */}
-      <div
-        onClick={() => navigate('/practice')}
-        style={{
-          background: 'linear-gradient(135deg, #7c3aed 0%, #2563eb 100%)',
-          borderRadius: 20, padding: '22px 28px', marginBottom: 24,
-          cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16,
-          boxShadow: '6px 6px 16px rgba(124,58,237,0.3), -4px -4px 12px var(--neu-shadow-light)',
-          transition: 'transform .15s',
-        }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-      >
-        <div style={{ fontSize: '2rem' }}>🎙️</div>
-        <div>
-          <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff' }}>Interview Practice Simulator</div>
-          <div style={{ fontSize: '.78rem', color: 'rgba(255,255,255,0.75)', marginTop: 2 }}>
-            Practice with camera + mic · AI confidence analysis · Real-time feedback
-          </div>
-        </div>
-        <div style={{ marginLeft: 'auto', color: '#fff', fontSize: '1.4rem' }}>→</div>
-      </div>
+      <Link className="hub-practice-link" to="/practice"><div><span className="learning-eyebrow">PUT IT INTO WORDS</span><h2>Practice your answers</h2><p>Record a response, review your transcript, and reflect on your feedback.</p></div><span aria-hidden="true">→</span></Link>
+      <div className="learning-section-title"><h2>Interview reference guides</h2></div>
 
       {/* Doc cards */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {DOCS.map(doc => (
-          <div
+          <Link className="interview-guide"
             key={doc.id}
-            onClick={() => navigate(`/interview/${doc.id}`)}
+            to={`/interview/${doc.id}`}
             style={{
               background: 'var(--neu-bg)', borderRadius: 20, padding: '24px 28px',
               cursor: 'pointer', position: 'relative', overflow: 'hidden',
@@ -627,7 +579,7 @@ export default function InterviewPrep() {
                 </span>
               ))}
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

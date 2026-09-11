@@ -280,11 +280,11 @@ export default function DSAPractice() {
   }
 
   return (
-    <div style={{ maxWidth: '100%', margin: '0 auto' }}>
+    <div className="coding-practice" style={{ maxWidth: '100%', margin: '0 auto' }}>
       <div style={{ maxWidth: 1000, margin: '0 auto' }}>
         <div className="prep-header">
-          <h1>🎲 Random DSA Practice</h1>
-          <p>AI-GENERATED INTERVIEW-STYLE CHALLENGES · BASED ON YOUR PROGRESS</p>
+          <span className="learning-eyebrow">PRACTICE & APPLY</span><h1>DSA practice</h1>
+          <p>Build confidence with a challenge based on the topics you’ve studied.</p>
         </div>
 
         <div className="flex gap-sm items-center" style={{ marginBottom: 20, flexWrap: 'wrap' }}>
@@ -323,14 +323,14 @@ export default function DSAPractice() {
 
         {/* Generate Controls */}
         {!question && !loading && (
-          <div style={{
+          <div className="practice-start" style={{
             background: 'var(--neu-bg)', borderRadius: 20, padding: '28px 32px', marginBottom: 24,
             boxShadow: '6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light)',
             textAlign: 'center',
           }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🎯</div>
+            <span className="learning-eyebrow">ONE CHALLENGE AT A TIME</span>
             <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--neu-text-primary)', marginBottom: 6 }}>
-              Ready to Practice?
+              Choose your challenge
             </h2>
             <p style={{ fontSize: '.82rem', color: 'var(--neu-text-secondary)', marginBottom: 20, maxWidth: 500, margin: '0 auto 20px' }}>
               Get a random interview-style DSA challenge that combines topics you've already learned. Choose your difficulty:
@@ -341,6 +341,7 @@ export default function DSAPractice() {
                 return (
                   <button
                     key={d}
+                    className="practice-difficulty"
                     onClick={() => { setDifficulty(d); generateQuestion(d) }}
                     style={{
                       padding: '12px 28px', borderRadius: 14, border: 'none', cursor: 'pointer',
