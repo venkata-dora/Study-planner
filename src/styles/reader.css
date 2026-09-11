@@ -136,3 +136,25 @@
   .has-splits .layout-rows.panes-2, .has-splits :is(.panes-3,.panes-4) { grid-template-rows: none; }
   .split-reader-tools select { max-width: 100%; }
 }
+
+/* Keep layout actions aligned and provide a viewport-sized reading canvas. */
+.split-reader-tools { align-items: center; padding: .75rem 0; }
+.split-reader-tools label { display: flex; align-items: center; gap: .5rem; }
+.split-reader-tools :is(select,button) { height: 40px; min-height: 40px; }
+.split-layout-summary { font-size: .8rem; color: var(--neu-text-secondary); padding: .5rem; }
+.split-fullscreen { margin-left: auto; }
+.split-reader-hint { flex-basis: 100%; }
+.split-pane-heading span { flex: 1; }
+.split-pane-heading button { flex-shrink: 0; }
+.split-reader.is-expanded { position: fixed; inset: 0; z-index: 1000; background: var(--neu-bg); padding: 1rem; width: 100%; height: 100dvh; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; }
+.is-expanded .split-reader-tools { flex-shrink: 0; margin-bottom: .5rem; }
+.is-expanded .split-reader-grid { flex: 1; height: auto; min-height: 0; overflow: auto; }
+.is-expanded:not(.has-splits) .split-reader-pane { max-width: 850px; margin-inline: auto; padding: 1rem; }
+.is-expanded.focused-pane .split-reader-grid { display: block; }
+.is-expanded.focused-pane .split-reader-pane:not([hidden]) { height: 100%; max-width: 960px; margin-inline: auto; box-sizing: border-box; }
+.split-reader-pane[hidden] { display: none !important; }
+@media (max-width: 600px) {
+  .split-reader-tools label { flex: 1 1 100%; }
+  .split-reader-tools select { min-width: 0; flex: 1; }
+  .is-expanded .split-reader-grid { flex: 1; }
+}

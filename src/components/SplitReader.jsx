@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TopicBlog from '../pages/TopicBlog'
 import GenAIBlog from '../pages/GenAIBlog'
@@ -7,6 +7,36 @@ import { readerPath } from '../utils/readerPaths'
 export default function SplitReader({ current, sections, courses, children }) {
   const navigate = useNavigate()
   const grid = useRef(null)
+  const workspace = useRef(null)
+  const returnFocus = useRef(null)
+  const [expanded, setExpanded] = useState(null)
+  const exitFullscreen = async () => {
+    if (document.fullscreenElement === workspace.current) await document.exitFullscreen()
+    setExpanded(null)
+    returnFocus.current?.focus()
+  }
+  const expand = async (pane = 'all') => {
+    returnFocus.current = document.activeElement
+    setExpanded(pane)
+    try { await workspace.current.requestFullscreen?.() } catch { /* Use the viewport layout when native fullscreen is unavailable. */ }
+  }
+  useEffect(() => {
+    if (!expanded) return
+    const overflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const siblings = []
+    for (let node = workspace.current; node?.parentElement && node !== document.body; node = node.parentElement) {
+      for (const sibling of node.parentElement.children) {
+        if (sibling !== node) { siblings.push([sibling, sibling.inert]); sibling.inert = true }
+      }
+    }
+    workspace.current.querySelector('.split-fullscreen')?.focus()
+    const onChange = () => { if (!document.fullscreenElement) { setExpanded(null); returnFocus.current?.focus() } }
+    const onKey = e => { if (e.key === 'Escape' && !document.fullscreenElement) { e.preventDefault(); setExpanded(null); returnFocus.current?.focus() } }
+    document.addEventListener('fullscreenchange', onChange)
+    document.addEventListener('keydown', onKey)
+    return () => { siblings.forEach(([element, inert]) => { element.inert = inert }); document.body.style.overflow = overflow; document.removeEventListener('fullscreenchange', onChange); document.removeEventListener('keydown', onKey) }
+  }, [expanded])
   const [panes, setPanes] = useState([])
   const [layout, setLayout] = useState('columns')
   const [choice, setChoice] = useState('')
@@ -39,8 +69,8 @@ export default function SplitReader({ current, sections, courses, children }) {
     window.addEventListener('resize', update)
     window.addEventListener('scroll', update, { passive: true })
     return () => { window.removeEventListener('resize', update); window.removeEventListener('scroll', update) }
-  }, [active.length, message, layout])
-  return <div className={`split-reader${active.length ? ' has-splits' : ''}`} onDragOver={e => {
+  }, [active.length, message, layout, expanded])
+  return <div ref={workspace} className={`split-reader${active.length ? ' has-splits' : ''}${expanded ? ' is-expanded' : ''}${expanded && expanded !== 'all' ? ' focused-pane' : ''}`} onDragOver={e => {
     if ([...e.dataTransfer.types].some(t => t === 'text/uri-list' || t === 'text/plain')) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; setDragging(true) }
   }} onDragLeave={e => { if (!e.currentTarget.contains(e.relatedTarget)) setDragging(false) }} onDrop={e => {
     e.preventDefault(); setDragging(false)
@@ -54,14 +84,14 @@ export default function SplitReader({ current, sections, courses, children }) {
         return <option key={i} value={readerPath(s.id, topic)}>{topic}</option>
       })}</optgroup>)}</select></label>
       <button type="button" disabled={!choice} onClick={() => add(choice)}>Add blog</button>
-      {active.length > 0 && <><label>Layout<select aria-label="Split layout" value={layout} onChange={e => setLayout(e.target.value)} disabled={active.length >= 2}><option value="columns">Side by side</option><option value="rows">Top and bottom</option></select></label><button type="button" onClick={() => { setPanes([]); setMessage('Returned to one blog.') }}>Single blog</button></>}
-      <span className="split-reader-hint">{active.length >= 2 ? `${active.length + 1} blogs · grid view` : 'Drag a lesson here to split the view'}</span>
+      {active.length > 0 && <>{active.length === 1 ? <label>Layout<select aria-label="Split layout" value={layout} onChange={e => setLayout(e.target.value)} ><option value="columns">Side by side</option><option value="rows">Top and bottom</option></select></label> : <span className="split-layout-summary">{active.length === 2 ? '2 above · 1 below' : '2 × 2 grid'}</span>}<button type="button" onClick={() => { setPanes([]); if (expanded) setExpanded('all'); setMessage('Returned to one blog.') }}>Single blog</button></>}
+      <button type="button" className="split-fullscreen" onClick={() => expanded ? exitFullscreen() : expand()}>{expanded ? 'Exit fullscreen' : 'Fullscreen'}</button><span className="split-reader-hint">{expanded && expanded !== 'all' ? `Viewing one blog · ${active.length + 1} blogs remain open` : active.length >= 2 ? `${active.length + 1} blogs open` : 'Drag a lesson here to split the view'}</span>
     </div>
     <p className="split-reader-status" role="status">{message}</p>
     {dragging && <div className="split-drop-hint">Drop to open alongside · up to 4 blogs</div>}
     <div ref={grid} className={`split-reader-grid layout-${layout} panes-${active.length + 1}`}>
-      <section className="split-reader-pane" aria-label={current.topic || 'Current chapter guide'}>{active.length > 0 && <div className="split-pane-heading"><span>{current.topic || 'Current chapter guide'}</span><button type="button" aria-label="Close current lesson" onClick={() => { const next = active[0]; setPanes(active.slice(1)); navigate(next.url) }}>×</button></div>}{children}</section>
-      {active.map(p => <section key={p.url} className="split-reader-pane" aria-label={p.topic || p.section.title}><div className="split-pane-heading"><span>{p.topic || p.section.title}</span><button type="button" aria-label={`Close ${p.topic || p.section.title}`} onClick={() => setPanes(prev => prev.filter(item => item.url !== p.url))}>×</button></div><div className="reader-location"><span>{p.section.title}</span><h2>{p.topic || 'Chapter guide'}</h2></div>{p.topic ? <TopicBlog embedded topicName={p.topic} sectionId={p.sectionId} sectionTitle={p.section.title} /> : <GenAIBlog embedded section={p.section} />}</section>)}
+      <section hidden={!!expanded && expanded !== 'all' && expanded !== 'current'} className="split-reader-pane" aria-label={current.topic || 'Current chapter guide'}>{active.length > 0 && <div className="split-pane-heading"><span>{current.topic || 'Current chapter guide'}</span><button type="button" aria-label="Expand current blog" onClick={() => expand('current')}>⛶</button><button type="button" aria-label="Close current lesson" onClick={() => { const next = active[0]; if (expanded) setExpanded('all'); setPanes(active.slice(1)); navigate(next.url) }}>×</button></div>}{children}</section>
+      {active.map(p => <section key={p.url} hidden={!!expanded && expanded !== 'all' && expanded !== p.url} className="split-reader-pane" aria-label={p.topic || p.section.title}><div className="split-pane-heading"><span>{p.topic || p.section.title}</span><button type="button" aria-label={`Expand ${p.topic || p.section.title}`} onClick={() => expand(p.url)}>⛶</button><button type="button" aria-label={`Close ${p.topic || p.section.title}`} onClick={() => { if (expanded === p.url) setExpanded('all'); setPanes(prev => prev.filter(item => item.url !== p.url)) }}>×</button></div><div className="reader-location"><span>{p.section.title}</span><h2>{p.topic || 'Chapter guide'}</h2></div>{p.topic ? <TopicBlog embedded topicName={p.topic} sectionId={p.sectionId} sectionTitle={p.section.title} /> : <GenAIBlog embedded section={p.section} />}</section>)}
     </div>
   </div>
 }
