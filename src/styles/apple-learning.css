@@ -537,3 +537,22 @@ button,a,input,select { -webkit-tap-highlight-color: transparent; touch-action: 
 @media (max-width: 1100px) { .saved-path-shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 760px) { .saved-path-shelf { grid-template-columns: 1fr; } .saved-path-book { min-height: 260px; } .saved-path-book > strong { font-size: 1.8rem; } .saved-path-book p { max-width: 40ch; } .universal-library .personal-paths-empty { padding: 1.4rem; gap: 1.2rem; align-items: start; } .empty-path-mark { width: 100%; text-align: left; font-size: 3.5rem; } .empty-path-mark > span { display: inline; margin-left: 1rem; } .personal-paths-empty h3 { font-size: 1.5rem; } .personal-paths-empty a { margin-left: 0; } .universal-library .reading-library-callout { padding: 1.5rem; gap: 1.25rem; align-items: start; flex-direction: column; } .reading-library-emblem { width: 64px; height: 64px; } .reading-library-emblem svg { width: 30px; height: 30px; } .reading-library-callout h2 { font-size: 1.7rem; } }
 @media (prefers-reduced-motion: reduce) { .reading-library-action svg { transition: none; transform: none !important; } }
+
+/* Discover: keep personal learning together, then browse collections. */
+.universal-library .personal-paths-empty { padding: 1.25rem 1.5rem; gap: 1.25rem; }
+.universal-library .empty-path-mark { width: 44px; height: 44px; display: grid; place-items: center; }
+.universal-library .personal-paths-empty h3 { margin: 0 0 .4rem; font-size: 1.25rem; }
+.universal-library .personal-paths-empty p { margin: 0; font-size: .8rem; line-height: 1.6; }
+.universal-library .personal-paths-empty a { margin-top: .4rem; font-size: .8rem; }
+.universal-library .saved-path-book > strong { min-height: 2.24em; }
+.universal-library .subject-book-category { min-height: 1.5rem; }
+@media (max-width: 480px) {
+  .universal-library .subject-shelf { grid-template-columns: minmax(0, 1fr); }
+  .universal-library .subject-book { min-height: 220px; padding: 1.25rem; }
+  .universal-library .subject-book p { max-width: 36ch; font-size: .82rem; }
+  .universal-library .subject-book-category { font-size: .65rem; }
+  .universal-library .subject-book-action { min-height: 44px; font-size: .8rem; }
+  .universal-library .personal-paths-empty { flex-wrap: nowrap; align-items: flex-start; padding: 1.25rem; }
+  .universal-library .saved-path-book > strong { min-height: 0; }
+  .universal-library .universal-continue > span:last-child { margin-left: 0; }
+}
