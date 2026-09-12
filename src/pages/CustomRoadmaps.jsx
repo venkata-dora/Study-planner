@@ -91,6 +91,19 @@ export default function CustomRoadmaps() {
   </div>
 }
 
+function TopicButton({ topic, completed, selected, onSelect }) {
+  const open = selected?.id === topic.id
+  return <button className={`path-topic${open ? ' selected' : ''}`} aria-expanded={open} aria-pressed={open} onClick={onSelect}>
+    <span className="path-topic-status">{completed ? '✓' : '○'}</span>
+    <span className="path-topic-copy">
+      <strong>{topic.title}</strong>
+      <small>{topic.subtopics.length} subtopics</small>
+      {open && <span className="path-topic-subtopics">{topic.subtopics.map((subtopic, index) => <span key={index}>{subtopic}</span>)}</span>}
+    </span>
+    <span className="path-topic-arrow" aria-hidden="true">↗</span>
+  </button>
+}
+
 function CustomPath({ id }) {
   const [params] = useSearchParams()
   const topicId = params.get('topic')
@@ -133,16 +146,16 @@ function CustomPath({ id }) {
     } catch (e) { setError(e.message) }
     finally { setSaving(false) }
   }
-  if (!map) return <div className="learning-overview"><Link to="/roadmaps">← Your roadmaps</Link>{error ? <div role="alert"><p>{error}</p><button className="btn btn-secondary" onClick={() => setReload(n => n + 1)}>Retry</button></div> : <p role="status">Loading your path…</p>}</div>
+  if (!map) return <div className="learning-overview"><Link className="roadmap-back-link" to="/roadmaps">← Your roadmaps</Link>{error ? <div role="alert"><p>{error}</p><button className="btn btn-secondary" onClick={() => setReload(n => n + 1)}>Retry</button></div> : <p role="status">Loading your path…</p>}</div>
   const topics = map.stages.flatMap(s => s.topics)
   const done = topics.filter(t => map.lessons[t.id]?.completed).length
   const next = topics.find(t => !map.lessons[t.id]?.completed)
   const lesson = selected && map.lessons[selected.id]
   return <div className="learning-overview roadmap-studio">
-    <Link to="/roadmaps">← Your roadmaps</Link>
+    <Link className="roadmap-back-link" to="/roadmaps">← Your roadmaps</Link>
     <header className="path-heading"><span className="learning-eyebrow">{map.level} · PERSONAL ROADMAP</span><h1>{map.title}</h1><p>{map.description}</p><div className="path-heading-bottom"><span>{done} of {topics.length} lessons complete</span><progress aria-label="Roadmap completion" value={done} max={topics.length} />{next && <button className="btn btn-primary" onClick={() => choose(next)}>Continue learning →</button>}</div></header>
     {error && <p role="alert">{error}</p>}
-    <JourneyMap listView={<div className="path-timeline">{map.stages.map((s, i) => <section className="path-stage" key={s.id}><span className="path-marker">{String(i + 1).padStart(2, '0')}</span><div className="path-stage-content"><span className="learning-eyebrow">STAGE {i + 1}</span><h2>{s.title}</h2><p>{s.outcome}</p><div className="path-topics">{s.topics.map(t => <button className={`path-topic${selected?.id === t.id ? ' selected' : ''}`} aria-pressed={selected?.id === t.id} key={t.id} onClick={() => choose(t)}><span>{map.lessons[t.id]?.completed ? '✓' : '○'}</span><span>{t.title}<small>{t.subtopics.length} subtopics</small></span><span aria-hidden="true">↗</span></button>)}</div></div></section>)}</div>} title={map.title} stages={map.stages.map(s => ({ id: s.id, title: s.title, description: s.outcome, total: s.topics.length, done: s.topics.filter(t => map.lessons[t.id]?.completed).length, items: s.topics.map(t => ({ id: t.id, title: t.title, completed: map.lessons[t.id]?.completed, onSelect: () => choose(t) })) }))} />
+    <JourneyMap listView={<div className="path-timeline">{map.stages.map((s, i) => <section className="path-stage" key={s.id}><span className="path-marker">{String(i + 1).padStart(2, '0')}</span><div className="path-stage-content"><span className="learning-eyebrow">STAGE {i + 1}</span><h2>{s.title}</h2><p>{s.outcome}</p><div className="path-topics">{s.topics.map(t => <TopicButton key={t.id} topic={t} completed={map.lessons[t.id]?.completed} selected={selected} onSelect={() => choose(t)} />)}</div></div></section>)}</div>} title={map.title} stages={map.stages.map(s => ({ id: s.id, title: s.title, description: s.outcome, total: s.topics.length, done: s.topics.filter(t => map.lessons[t.id]?.completed).length, items: s.topics.map(t => ({ id: t.id, title: t.title, completed: map.lessons[t.id]?.completed, onSelect: () => choose(t) })) }))} />
     <div className="path-workspace">
       <aside ref={inspector} tabIndex={-1} className="path-inspector" aria-label="Selected lesson">{selected ? <><span className="learning-eyebrow">LESSON PREVIEW</span><h2>{selected.title}</h2><p>What you’ll learn</p><ul>{selected.subtopics.map((s, i) => <li key={i}>{s}</li>)}</ul><button className="btn btn-primary" disabled={busy || saving} onClick={() => lesson?.blog ? document.getElementById('custom-lesson')?.scrollIntoView({ block: 'start' }) : generate(selected)}>{busy ? 'Writing lesson…' : lesson?.blog ? 'Read lesson ↓' : 'Generate lesson blog'}</button><button className="btn btn-secondary" disabled={saving || busy} onClick={() => complete(selected)}>{saving ? 'Saving…' : lesson?.completed ? '✓ Completed · Undo' : 'Mark complete'}</button>{busy && <p role="status">Your lesson is being written and saved. You can explore the roadmap while you wait.</p>}{lesson?.blog && <a href="#custom-lesson">Read saved lesson ↓</a>}</> : <><span className="learning-eyebrow">EXPLORE YOUR PATH</span><h2>One topic at a time.</h2><p>Select a topic to see its subtopics, generate a lesson, and track your progress.</p></>}</aside>
     </div>

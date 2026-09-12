@@ -72,6 +72,56 @@ class RoadmapTests(unittest.TestCase):
         self.assertEqual(self.client.get('/api/roadmaps').json, [])
         self.assertEqual(self.client.delete(url).status_code, 404)
 
+    def test_beginner_ml_path_gets_python_and_numpy_foundations(self):
+        self.response = json.dumps({
+            'title': 'Machine Learning',
+            'description': 'Train a useful first model.',
+            'stages': [{
+                'title': 'Models',
+                'outcome': 'Fit and evaluate a regression model.',
+                'topics': [{
+                    'title': 'Linear regression',
+                    'subtopics': ['predictions', 'loss functions', 'gradient descent', 'evaluation metrics', 'residual analysis'],
+                }],
+            }],
+        })
+        response = self.client.post('/api/roadmaps', json={'subject': 'Machine learning', 'level': 'Beginner'})
+        self.assertEqual(response.status_code, 201)
+        data = response.json
+        text = json.dumps(data).lower()
+        self.assertEqual(data['stages'][0]['title'], 'Python Foundations for Machine Learning')
+        self.assertIn('variables', text)
+        self.assertIn('functions', text)
+        self.assertIn('loops', text)
+        self.assertGreaterEqual(sum(1 for stage in data['stages'] for topic in stage['topics'] if 'numpy' in topic['title'].lower()), 2)
+        self.assertIn('Python syntax/control flow', self.calls[0])
+
+    def test_existing_beginner_ml_paths_are_enriched_without_changing_old_topic_ids(self):
+        self.client.get('/api/roadmaps')
+        old = {
+            'id': 'saved',
+            'subject': 'ML',
+            'level': 'Beginner',
+            'title': 'ML',
+            'description': 'A compact ML path.',
+            'stages': [{
+                'id': 's0',
+                'title': 'Models',
+                'outcome': 'Train a model.',
+                'topics': [{'id': 's0t0', 'title': 'Regression', 'subtopics': ['loss', 'fit', 'predict']}],
+            }],
+        }
+        conn = sqlite3.connect(self.file.name)
+        try:
+            conn.execute('INSERT INTO learning_roadmaps (id, content) VALUES (?, ?)', ('saved', json.dumps(old)))
+            conn.commit()
+        finally:
+            conn.close()
+        data = self.client.get('/api/roadmaps/saved').json
+        topic_ids = [topic['id'] for stage in data['stages'] for topic in stage['topics']]
+        self.assertIn('s0t0', topic_ids)
+        self.assertIn('ml-python-foundations-syntax', topic_ids)
+
 
 if __name__ == '__main__':
     unittest.main()
