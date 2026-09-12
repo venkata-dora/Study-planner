@@ -80,10 +80,18 @@ def register_roadmaps(app, get_db, run_ai):
         result['lessons'] = {}
         return jsonify(result), 201
 
-    @app.route('/api/roadmaps/<roadmap_id>')
+    @app.route('/api/roadmaps/<roadmap_id>', methods=['GET', 'DELETE'])
     def roadmap(roadmap_id):
         conn = db()
         try:
+            if request.method == 'DELETE':
+                exists = conn.execute('SELECT 1 FROM learning_roadmaps WHERE id=?', (roadmap_id,)).fetchone()
+                if not exists:
+                    return jsonify(error='Roadmap not found.'), 404
+                conn.execute('DELETE FROM learning_roadmap_lessons WHERE roadmap_id=?', (roadmap_id,))
+                conn.execute('DELETE FROM learning_roadmaps WHERE id=?', (roadmap_id,))
+                conn.commit()
+                return '', 204
             result = load(conn, roadmap_id)
             return (jsonify(result), 200) if result else (jsonify(error='Roadmap not found.'), 404)
         finally:

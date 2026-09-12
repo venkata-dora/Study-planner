@@ -91,6 +91,14 @@ button,a,input,select { -webkit-tap-highlight-color: transparent; touch-action: 
 .apple-platform .learning-track p { font-size:.78rem; line-height:1.6; }
 .apple-platform .learning-track > svg { flex-shrink:0; color:var(--neu-text-secondary); }
 .apple-platform .learning-track-progress { width:9rem; font-size:.67rem; font-variant-numeric:tabular-nums; }
+.roadmap-saved-row { position:relative; border-bottom:1px solid var(--study-line); }
+.roadmap-saved-row:last-child { border-bottom:0; }
+.apple-platform .roadmap-saved-row .learning-track { border:0; padding-right:5.75rem; }
+.roadmap-delete { position:absolute; z-index:1; top:50%; right:1rem; translate:0 -50%; width:44px; height:44px; display:grid; place-items:center; border:0; border-radius:50%; background:transparent; color:var(--neu-text-secondary); cursor:pointer; transition:background 140ms ease,color 140ms ease,transform 140ms ease; }
+.roadmap-delete:hover { background:var(--neu-accent-soft); color:#b33a36; }
+.roadmap-delete:active { transform:scale(.94); }
+.roadmap-delete:focus-visible { outline:2px solid var(--neu-accent); outline-offset:2px; }
+.roadmap-delete:disabled { cursor:wait; opacity:.45; }
 .apple-platform progress { display:block; appearance:none; width:100%; height:4px; border:0; border-radius:99px; overflow:hidden; background:var(--study-line); accent-color:var(--neu-accent); margin-top:.6rem; }
 .apple-platform progress::-webkit-progress-bar { background:var(--study-line); }
 .apple-platform progress::-webkit-progress-value { background:var(--neu-accent); }

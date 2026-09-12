@@ -21,6 +21,7 @@ export default function CustomRoadmaps() {
   const [level, setLevel] = useState('Beginner')
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
+  const [deletingId, setDeletingId] = useState('')
   const [error, setError] = useState('')
   useEffect(() => {
     let active = true
@@ -35,6 +36,15 @@ export default function CustomRoadmaps() {
     } catch (e) { setError(e.message) }
     finally { setCreating(false) }
   }
+  async function remove(roadmap) {
+    if (!window.confirm(`Delete “${roadmap.title}”? Its generated lessons and progress will also be deleted. This can’t be undone.`)) return
+    setDeletingId(roadmap.id); setError('')
+    try {
+      await api(`/${roadmap.id}`, { method: 'DELETE' })
+      setMaps(previous => previous.filter(item => item.id !== roadmap.id))
+    } catch (e) { setError(e.message) }
+    finally { setDeletingId('') }
+  }
   if (roadmapId) return <CustomPath key={roadmapId} id={roadmapId} />
   return <div className="learning-overview roadmap-studio">
     <header className="apple-page-heading"><div><span className="learning-eyebrow">YOUR LEARNING PATHS</span><h1>What do you want to learn?</h1><p>Start with a subject. Get a path with topics, subtopics, and lessons you can read as you go.</p></div></header>
@@ -45,7 +55,7 @@ export default function CustomRoadmaps() {
     </form>
     {error && <p role="alert">{error}</p>}
     <div className="learning-section-title"><h2>Your roadmaps</h2><span>{maps.length} saved</span></div>
-    {loading ? <p role="status">Loading your roadmaps…</p> : maps.length ? <div className="learning-tracks">{maps.map(m => { const total = m.stages.reduce((n, s) => n + s.topics.length, 0); const done = Object.values(m.lessons).filter(l => l.completed).length; return <Link className="learning-track" key={m.id} to={`/roadmaps/${m.id}`}><div className="learning-track-copy"><h3>{m.title}</h3><p>{m.level} · {m.stages.length} stages · {done} / {total} lessons complete</p></div><span aria-hidden="true">↗</span></Link> })}</div> : <div className="roadmap-empty"><span aria-hidden="true">01 ─── 02 ─── 03</span><h3>Your next subject starts here.</h3><p>Create a roadmap above. Your path and lesson progress will be saved.</p></div>}
+    {loading ? <p role="status">Loading your roadmaps…</p> : maps.length ? <div className="learning-tracks">{maps.map(m => { const total = m.stages.reduce((n, s) => n + s.topics.length, 0); const done = Object.values(m.lessons).filter(l => l.completed).length; return <div className="roadmap-saved-row" key={m.id}><Link className="learning-track" to={`/roadmaps/${m.id}`}><div className="learning-track-copy"><h3>{m.title}</h3><p>{m.level} · {m.stages.length} stages · {done} / {total} lessons complete</p></div><span aria-hidden="true">↗</span></Link><button className="roadmap-delete" type="button" disabled={deletingId === m.id} onClick={() => remove(m)} aria-label={`Delete ${m.title}`} title="Delete learning path"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7m4-7v7"/></svg></button></div> })}</div> : <div className="roadmap-empty"><span aria-hidden="true">01 ─── 02 ─── 03</span><h3>Your next subject starts here.</h3><p>Create a roadmap above. Your path and lesson progress will be saved.</p></div>}
   </div>
 }
 
