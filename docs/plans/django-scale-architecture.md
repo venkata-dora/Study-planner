@@ -2,6 +2,10 @@
 
 Updated: 12 September 2026
 
+## Implementation status
+
+The opt-in Django course backend, staged background generation, legacy roadmap importer, Docker stack, HTTPS overlay, CI and image publication workflow are implemented. See [the operations guide](../production.md) for setup, validation and remaining launch gates. The existing Flask features are not all migrated; production must not expose their anonymous APIs.
+
 ## Recommendation
 
 Use Django for the production backend, but keep the current React/Vite frontend.

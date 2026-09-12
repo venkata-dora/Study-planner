@@ -5,3 +5,10 @@ dist/
 __pycache__/
 .env
 .claude/
+.venv-backend/
+*.sqlite3
+backend/staticfiles/
+.env.*
+!.env.example
+!deploy/.env.example
+backups/

@@ -4,15 +4,12 @@ import { renderMarkdown } from './TopicBlog'
 import JourneyMap from '../components/JourneyMap'
 import BlogHighlighter from '../components/BlogHighlighter'
 
-async function api(path, options) {
-  const response = await fetch(`/api/roadmaps${path}`, options)
-  const data = await response.json().catch(() => ({}))
-  if (!response.ok) throw new Error(data.error || 'Unable to reach your roadmaps. Please try again.')
-  return data
-}
+import { courseApi as api, accountApi, djangoCourses } from '../lib/courseApi'
+import CourseAccount from '../components/CourseAccount'
+
 const send = (method, body) => ({ method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 
-function PreparingPath({ subject, level }) {
+function PreparingPath({ subject, level, stage }) {
   const [message, setMessage] = useState(0)
   const [preview, setPreview] = useState(0)
   const steps = [
@@ -32,18 +29,21 @@ function PreparingPath({ subject, level }) {
     <span className="learning-eyebrow">BUILDING YOUR LEARNING PATH</span>
     <h1 id="preparing-title" ref={heading} tabIndex={-1}>Preparing your syllabus</h1>
     <p className="path-preparing-subject">{subject}<span>{level}</span></p>
-    <div className="path-preparing-status" role="status" aria-live="polite"><span className="path-preparing-spinner" aria-hidden="true" />{messages[message] || 'Still preparing your syllabus. Thanks for your patience.'}</div>
+    <div className="path-preparing-status" role="status" aria-live="polite"><span className="path-preparing-spinner" aria-hidden="true" />{stage || messages[message] || 'Still preparing your syllabus. Thanks for your patience.'}</div>
     <div className="path-preparing-preview">
       <span className="learning-eyebrow">EXPLORE HOW YOUR PATH WORKS</span>
       <p className="path-preview-intro">Select a step for a quick preview.</p>
       <div className="path-preview-steps" role="group" aria-label="Learning path preview">{steps.map((step, index) => <button type="button" key={step.title} aria-pressed={preview === index} onClick={() => setPreview(index)}><span>{String(index + 1).padStart(2, '0')}</span>{step.title}</button>)}</div>
       <div className="path-preview-detail" key={preview}><h2>{steps[preview].label}</h2><p>{steps[preview].text}</p><aside><span className="learning-eyebrow">TRY THIS WHEN YOU READ</span><p>{steps[preview].tip}</p></aside></div>
     </div>
-    <p className="path-preparing-note">This may take a few minutes. Your roadmap will open automatically when it’s ready. Keep this page open while we prepare it.</p>
+    <p className="path-preparing-note">This may take a few minutes. Your roadmap will open automatically when it’s ready. {djangoCourses ? 'You can return to this page later; your progress is saved.' : 'Keep this page open while we prepare it.'}</p>
   </section>
 }
 
 export default function CustomRoadmaps() {
+  return <CourseAccount><RoadmapContent /></CourseAccount>
+}
+function RoadmapContent() {
   const { roadmapId } = useParams()
   const navigate = useNavigate()
   const [maps, setMaps] = useState([])
@@ -52,6 +52,33 @@ export default function CustomRoadmaps() {
   const [level, setLevel] = useState('Beginner')
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
+  const [job, setJob] = useState(null)
+  const [stage, setStage] = useState('')
+  useEffect(() => {
+    if (!djangoCourses) return
+    const saved = localStorage.getItem('learning-generation-job')
+    if (saved) { setJob(saved); setCreating(true) }
+  }, [])
+  useEffect(() => {
+    if (!job) return
+    let active = true, timer
+    async function poll() {
+      try {
+        const status = await accountApi(`/generation/${job}`)
+        if (!active) return
+        setStage(status.stage)
+        setSubject(status.subject); setLevel(status.level)
+        if (status.status === 'completed') {
+          localStorage.removeItem('learning-generation-job'); setJob(null); setCreating(false)
+          navigate(`/roadmaps/${status.path_id}`); return
+        }
+        if (status.status === 'failed') { setError(status.error); setCreating(false); return }
+        timer = setTimeout(poll, 3000)
+      } catch (e) { if (active) { setError(e.message); setCreating(false) } }
+    }
+    poll()
+    return () => { active = false; clearTimeout(timer) }
+  }, [job, creating, navigate])
   const [deletingId, setDeletingId] = useState('')
   const [error, setError] = useState('')
   useEffect(() => {
@@ -63,10 +90,15 @@ export default function CustomRoadmaps() {
     if (creating) return
     e.preventDefault(); setCreating(true); setError('')
     try {
+      if (djangoCourses) {
+        const result = await accountApi('/generation', send('POST', { subject: subject.trim(), level }))
+        localStorage.setItem('learning-generation-job', result.id); setJob(result.id)
+        return
+      }
       const result = await api('', send('POST', { subject: subject.trim(), level }))
       setMaps(prev => [result, ...prev]); navigate(`/roadmaps/${result.id}`)
-    } catch (e) { setError(e.message) }
-    finally { setCreating(false) }
+    } catch (e) { setError(e.message); setCreating(false) }
+    finally { if (!djangoCourses) setCreating(false) }
   }
   async function remove(roadmap) {
     if (!window.confirm(`Delete “${roadmap.title}”? Its generated lessons and progress will also be deleted. This can’t be undone.`)) return
@@ -78,9 +110,10 @@ export default function CustomRoadmaps() {
     finally { setDeletingId('') }
   }
   if (roadmapId) return <CustomPath key={roadmapId} id={roadmapId} />
-  if (creating) return <PreparingPath subject={subject.trim()} level={level} />
+  if (creating) return <PreparingPath subject={subject.trim()} level={level} stage={stage} />
   return <div className="learning-overview roadmap-studio">
     <header className="apple-page-heading"><div><span className="learning-eyebrow">YOUR LEARNING PATHS</span><h1>What do you want to learn?</h1><p>Start with a subject. Get a path with topics, subtopics, and lessons you can read as you go.</p></div></header>
+    {job && !creating && <div><p role="alert">{error || 'Your previous course generation was interrupted.'}</p><button className="btn" onClick={async () => { try { const status = await accountApi(`/generation/${job}`); if (status.status === 'failed') await accountApi(`/generation/${job}/retry`, { method: 'POST' }); setError(''); setCreating(true) } catch (e) { setError(e.message) } }}>Resume generation</button><button className="btn" onClick={() => { localStorage.removeItem('learning-generation-job'); setJob(null); setError('') }}>Dismiss</button></div>}
     <form className="roadmap-create" onSubmit={create} aria-busy={creating}>
       <div className="roadmap-create-fields"><label className="roadmap-subject-field" htmlFor="roadmap-subject">Subject or concept<input id="roadmap-subject" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Psychology, world history, creative writing" required minLength={2} maxLength={160} disabled={creating} /></label><label className="roadmap-level">Starting level<select aria-label="Starting level" value={level} onChange={e => setLevel(e.target.value)} disabled={creating}>{['Beginner', 'Intermediate', 'Advanced'].map(l => <option key={l}>{l}</option>)}</select></label><button className="btn btn-primary" disabled={creating || subject.trim().length < 2}>{creating ? 'Building your path…' : 'Create roadmap →'}</button></div>
       <div className="roadmap-suggestions"><span>Try a subject</span>{['Psychology', 'World history', 'Creative writing', 'Artificial intelligence'].map(s => <button type="button" key={s} disabled={creating} onClick={() => setSubject(s)}>{s}</button>)}</div>

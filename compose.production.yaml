@@ -1,0 +1,30 @@
+# Requires Docker Compose 2.24.4+ for !reset. TLS terminates at Caddy.
+services:
+  api:
+    environment:
+      DJANGO_DEBUG: 'false'
+      TRUST_PROXY: 'true'
+  worker:
+    environment:
+      DJANGO_DEBUG: 'false'
+  migrate:
+    environment:
+      DJANGO_DEBUG: 'false'
+  web:
+    ports: !reset []
+    volumes:
+      - ./deploy/nginx.production.conf:/etc/nginx/conf.d/default.conf:ro
+  tls:
+    image: caddy:2-alpine
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?Set APP_DOMAIN}
+    ports: ['80:80', '443:443']
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+    depends_on: [web]
+volumes:
+  caddy_data:
+  caddy_config:

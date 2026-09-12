@@ -147,3 +147,7 @@ src/
 ## License
 
 MIT
+
+## Django backend and production migration
+
+The new course backend, background workers, Docker setup, CI and image release workflow are documented in [docs/production.md](docs/production.md). It is an opt-in migration: `VITE_DJANGO_API=true` enables authenticated Django course APIs; the default local app continues to use Flask. Read the remaining launch gates before deploying publicly.

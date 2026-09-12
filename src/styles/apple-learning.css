@@ -734,3 +734,11 @@ button,a,input,select { -webkit-tap-highlight-color: transparent; touch-action: 
 .path-preview-detail aside p { margin-top:6px; color:var(--neu-text-primary); }
 @keyframes path-preview-reveal { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
 @media (prefers-reduced-motion:reduce) { .path-preview-detail { animation:none; } .path-preview-steps button { transition:none; } }
+
+/* Account access uses the existing learning surface and controls. */
+.course-account { max-width: 440px; margin: 48px auto; }
+.course-account form, .course-account label { display: grid; gap: 12px; }
+.course-account form { gap: 24px; margin-top: 28px; }
+.course-account input { width: 100%; min-height: 44px; padding: 10px 12px; box-sizing: border-box; border: 1px solid var(--study-line); border-radius: 10px; background: var(--neu-bg); color: var(--neu-text-primary); font: inherit; }
+.course-account input:focus-visible { outline: 2px solid var(--neu-accent); outline-offset: 3px; }
+.course-account-bar { display: flex; justify-content: flex-end; align-items: center; gap: 16px; margin-bottom: 16px; }

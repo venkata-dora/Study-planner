@@ -1,0 +1,69 @@
+name: learning-lab
+x-backend: &backend
+  build:
+    context: .
+    dockerfile: backend/Dockerfile
+  env_file: deploy/.env
+  environment:
+    DATABASE_URL: postgresql://learning:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in deploy/.env}@db:5432/learning
+    REDIS_URL: redis://redis:6379/0
+  init: true
+  restart: unless-stopped
+  security_opt: [no-new-privileges:true]
+  depends_on:
+    db: {condition: service_healthy}
+    redis: {condition: service_healthy}
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: learning
+      POSTGRES_USER: learning
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in deploy/.env}
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U learning -d learning']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  redis:
+    image: redis:7.4-alpine
+    command: [redis-server, --appendonly, 'yes', --maxmemory-policy, noeviction]
+    volumes: [redis_data:/data]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  migrate:
+    <<: *backend
+    command: [python, manage.py, migrate, --noinput]
+    restart: 'no'
+  api:
+    <<: *backend
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, python, -c, "import os, urllib.request; urllib.request.urlopen(urllib.request.Request('http://localhost:8000/health/live', headers={'Host': os.environ.get('DJANGO_ALLOWED_HOSTS','localhost').split(',')[0]}))"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+  worker:
+    <<: *backend
+    command: [celery, -A, config, worker, --loglevel=info, --concurrency=2]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+  web:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.web
+    ports: ['127.0.0.1:8080:8080']
+    depends_on:
+      api: {condition: service_healthy}
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+volumes:
+  postgres_data:
+  redis_data:
