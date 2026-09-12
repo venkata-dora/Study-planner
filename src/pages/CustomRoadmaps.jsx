@@ -14,6 +14,12 @@ const send = (method, body) => ({ method, headers: { 'Content-Type': 'applicatio
 
 function PreparingPath({ subject, level }) {
   const [message, setMessage] = useState(0)
+  const [preview, setPreview] = useState(0)
+  const steps = [
+    { title: 'Chapter', label: 'See the bigger picture', text: 'Chapters group related ideas into a clear sequence. Start with the foundations, then build on what you know.', tip: 'Before reading, ask: what do I already know about this subject?' },
+    { title: 'Lesson', label: 'Explore one idea at a time', text: 'Each lesson turns a topic into an explanation with examples. Open it from your path whenever you’re ready.', tip: 'After a section, look away and explain the idea in your own words.' },
+    { title: 'Subtopics', label: 'Know exactly what to cover', text: 'Specific subtopics give each lesson its scope, so you can see what you’ll learn before opening the blog.', tip: 'Pick one concept and think of an example from your own experience.' },
+  ]
   const heading = useRef(null)
   const messages = ['Preparing your syllabus', 'Organizing a course structure for your level', 'Connecting chapters and their subtopics', 'Building a path from foundations to practice']
   useEffect(() => {
@@ -23,11 +29,16 @@ function PreparingPath({ subject, level }) {
     return () => clearInterval(timer)
   }, [])
   return <section className="path-preparing" aria-labelledby="preparing-title">
-    <div className="path-preparing-art" aria-hidden="true"><span>01</span><i /><span>02</span><i /><span>03</span></div>
-    <span className="learning-eyebrow">YOUR NEXT LEARNING JOURNEY</span>
-    <h1 id="preparing-title" ref={heading} tabIndex={-1}>A little planning.<br />A clearer path ahead.</h1>
+    <span className="learning-eyebrow">BUILDING YOUR LEARNING PATH</span>
+    <h1 id="preparing-title" ref={heading} tabIndex={-1}>Preparing your syllabus</h1>
     <p className="path-preparing-subject">{subject}<span>{level}</span></p>
     <div className="path-preparing-status" role="status" aria-live="polite"><span className="path-preparing-spinner" aria-hidden="true" />{messages[message] || 'Still preparing your syllabus. Thanks for your patience.'}</div>
+    <div className="path-preparing-preview">
+      <span className="learning-eyebrow">EXPLORE HOW YOUR PATH WORKS</span>
+      <p className="path-preview-intro">Select a step for a quick preview.</p>
+      <div className="path-preview-steps" role="group" aria-label="Learning path preview">{steps.map((step, index) => <button type="button" key={step.title} aria-pressed={preview === index} onClick={() => setPreview(index)}><span>{String(index + 1).padStart(2, '0')}</span>{step.title}</button>)}</div>
+      <div className="path-preview-detail" key={preview}><h2>{steps[preview].label}</h2><p>{steps[preview].text}</p><aside><span className="learning-eyebrow">TRY THIS WHEN YOU READ</span><p>{steps[preview].tip}</p></aside></div>
+    </div>
     <p className="path-preparing-note">This may take a few minutes. Your roadmap will open automatically when it’s ready. Keep this page open while we prepare it.</p>
   </section>
 }

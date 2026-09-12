@@ -1,31 +1,15 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
-import mermaid from 'mermaid'
+import MermaidDiagram from '../components/MermaidDiagram'
 import {
   PHASES, loadProgress, saveProgress, loadSolutions, saveSolution,
   problemId, cycleStatus, STATUS_META, DIFFICULTY_COLORS,
 } from '../data/pythonData'
 import BlogHighlighter from '../components/BlogHighlighter'
 
-mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' })
 
 /* ═══ Mermaid component ═══ */
-function MermaidDiagram({ code }) {
-  const ref = useRef(null)
-  const render = useCallback(async () => {
-    if (!ref.current) return
-    try {
-      const id = `mermaid-${Math.random().toString(36).slice(2, 9)}`
-      const { svg } = await mermaid.render(id, code)
-      ref.current.innerHTML = svg
-    } catch {
-      ref.current.innerHTML = `<pre style="color:#ef4444;font-size:.75rem">${code}</pre>`
-    }
-  }, [code])
-  useEffect(() => { render() }, [render])
-  return <div ref={ref} style={{ margin: '12px 0', padding: '12px', background: 'var(--neu-bg)', borderRadius: 12, textAlign: 'center', boxShadow: 'inset 2px 2px 4px var(--neu-shadow-dark), inset -2px -2px 4px var(--neu-shadow-light)', overflow: 'auto' }} />
-}
 
 /* ═══ Markdown → JSX renderer ═══ */
 function renderMarkdown(text) {

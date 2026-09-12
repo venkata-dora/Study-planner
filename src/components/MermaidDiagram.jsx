@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import mermaid from 'mermaid'
 
+mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'strict', suppressErrorRendering: true })
+
 export default function MermaidDiagram({ code }) {
   const ref = useRef(null)
   const [failed, setFailed] = useState(false)
