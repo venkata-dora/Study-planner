@@ -12,6 +12,26 @@ async function api(path, options) {
 }
 const send = (method, body) => ({ method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 
+function PreparingPath({ subject, level }) {
+  const [message, setMessage] = useState(0)
+  const heading = useRef(null)
+  const messages = ['Preparing your syllabus', 'Organizing a course structure for your level', 'Connecting chapters and their subtopics', 'Building a path from foundations to practice']
+  useEffect(() => {
+    heading.current?.focus({ preventScroll: true })
+    window.scrollTo(0, 0)
+    const timer = setInterval(() => setMessage(value => Math.min(value + 1, 4)), 9000)
+    return () => clearInterval(timer)
+  }, [])
+  return <section className="path-preparing" aria-labelledby="preparing-title">
+    <div className="path-preparing-art" aria-hidden="true"><span>01</span><i /><span>02</span><i /><span>03</span></div>
+    <span className="learning-eyebrow">YOUR NEXT LEARNING JOURNEY</span>
+    <h1 id="preparing-title" ref={heading} tabIndex={-1}>A little planning.<br />A clearer path ahead.</h1>
+    <p className="path-preparing-subject">{subject}<span>{level}</span></p>
+    <div className="path-preparing-status" role="status" aria-live="polite"><span className="path-preparing-spinner" aria-hidden="true" />{messages[message] || 'Still preparing your syllabus. Thanks for your patience.'}</div>
+    <p className="path-preparing-note">This may take a few minutes. Your roadmap will open automatically when it’s ready. Keep this page open while we prepare it.</p>
+  </section>
+}
+
 export default function CustomRoadmaps() {
   const { roadmapId } = useParams()
   const navigate = useNavigate()
@@ -29,6 +49,7 @@ export default function CustomRoadmaps() {
     return () => { active = false }
   }, [roadmapId])
   async function create(e) {
+    if (creating) return
     e.preventDefault(); setCreating(true); setError('')
     try {
       const result = await api('', send('POST', { subject: subject.trim(), level }))
@@ -46,12 +67,12 @@ export default function CustomRoadmaps() {
     finally { setDeletingId('') }
   }
   if (roadmapId) return <CustomPath key={roadmapId} id={roadmapId} />
+  if (creating) return <PreparingPath subject={subject.trim()} level={level} />
   return <div className="learning-overview roadmap-studio">
     <header className="apple-page-heading"><div><span className="learning-eyebrow">YOUR LEARNING PATHS</span><h1>What do you want to learn?</h1><p>Start with a subject. Get a path with topics, subtopics, and lessons you can read as you go.</p></div></header>
     <form className="roadmap-create" onSubmit={create} aria-busy={creating}>
       <div className="roadmap-create-fields"><label className="roadmap-subject-field" htmlFor="roadmap-subject">Subject or concept<input id="roadmap-subject" value={subject} onChange={e => setSubject(e.target.value)} placeholder="e.g. Psychology, world history, creative writing" required minLength={2} maxLength={160} disabled={creating} /></label><label className="roadmap-level">Starting level<select aria-label="Starting level" value={level} onChange={e => setLevel(e.target.value)} disabled={creating}>{['Beginner', 'Intermediate', 'Advanced'].map(l => <option key={l}>{l}</option>)}</select></label><button className="btn btn-primary" disabled={creating || subject.trim().length < 2}>{creating ? 'Building your path…' : 'Create roadmap →'}</button></div>
       <div className="roadmap-suggestions"><span>Try a subject</span>{['Psychology', 'World history', 'Creative writing', 'Artificial intelligence'].map(s => <button type="button" key={s} disabled={creating} onClick={() => setSubject(s)}>{s}</button>)}</div>
-      {creating && <p role="status">Organizing foundations, topics, and reading lessons. This can take a few minutes.</p>}
     </form>
     {error && <p role="alert">{error}</p>}
     <div className="learning-section-title"><h2>Your roadmaps</h2><span>{maps.length} saved</span></div>
