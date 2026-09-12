@@ -1,34 +1,10 @@
 import { readerContent } from '../utils/readerContent'
 import { Navigate, useLocation } from 'react-router-dom'
 import { readerPath } from '../utils/readerPaths'
-import { useState, useEffect, useRef, useCallback } from 'react'
-import mermaid from 'mermaid'
+import { useState, useEffect, useRef } from 'react'
+import MermaidDiagram from '../components/MermaidDiagram'
 import BlogHighlighter from '../components/BlogHighlighter'
 
-mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'strict' })
-
-function MermaidDiagram({ code }) {
-  const ref = useRef(null)
-  const render = useCallback(async () => {
-    if (!ref.current) return
-    try {
-      const id = `mermaid-${Math.random().toString(36).slice(2, 9)}`
-      const { svg } = await mermaid.render(id, code)
-      ref.current.innerHTML = svg
-    } catch {
-      ref.current.textContent = code
-    }
-  }, [code])
-  useEffect(() => { render() }, [render])
-
-  return (
-    <div ref={ref} style={{
-      margin: '16px 0', padding: '16px', background: 'var(--neu-bg)', borderRadius: 16, textAlign: 'center',
-      boxShadow: '4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light)',
-      overflow: 'auto',
-    }} />
-  )
-}
 
 /* ═══════════════════════════════════════════════
    Markdown → JSX renderer (same as GenAIBlog)
@@ -145,12 +121,16 @@ function TopicBlogContent({ topicName, sectionId, sectionTitle, sectionColor, se
   const [blog, setBlog] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [copied, setCopied] = useState(false)
+  const [loadAttempt, setLoadAttempt] = useState(0)
+  const [loadFailed, setLoadFailed] = useState(false)
   const request = useRef(null)
   useEffect(() => () => request.current?.abort(), [])
 
   useEffect(() => {
     const controller = new AbortController()
     request.current = controller
+    setStatus('loading')
+    setLoadFailed(false)
     // Try loading saved blog first
     fetch(`/api/genai/topic-blog/${encodeURIComponent(topicName)}/${encodeURIComponent(sectionId)}`, { signal: controller.signal })
       .then(r => { if (!r.ok) throw new Error('Load failed'); return r.json() })
@@ -162,9 +142,9 @@ function TopicBlogContent({ topicName, sectionId, sectionTitle, sectionColor, se
           setStatus('idle')
         }
       })
-      .catch(error => { if (error.name === 'AbortError') return; setErrorMsg('Unable to load this lesson. Please try again.'); setStatus('error') })
+      .catch(error => { if (error.name === 'AbortError') return; setLoadFailed(true); setErrorMsg('Unable to load this lesson. Please try again.'); setStatus('error') })
     return () => controller.abort()
-  }, []) // eslint-disable-line
+  }, [topicName, sectionId, loadAttempt])
 
   const generate = async () => {
     request.current?.abort()
@@ -172,6 +152,7 @@ function TopicBlogContent({ topicName, sectionId, sectionTitle, sectionColor, se
     request.current = controller
     setStatus('loading')
     setBlog('')
+    setLoadFailed(false)
     setErrorMsg('')
     try {
       const res = await fetch('/api/genai/topic-blog/stream', {
@@ -240,7 +221,7 @@ function TopicBlogContent({ topicName, sectionId, sectionTitle, sectionColor, se
             <div style={{ background: 'rgba(220,38,38,0.07)', borderRadius: 16, padding: 22, border: '1px solid rgba(220,38,38,0.18)' }}>
               <div style={{ fontWeight: 700, color: '#dc2626', marginBottom: 10, fontSize: '.95rem' }}>⚠️ Error</div>
               <pre style={{ fontSize: '.8rem', color: 'var(--neu-text-secondary)', fontFamily: 'monospace', lineHeight: 1.6, whiteSpace: 'pre-wrap', margin: 0 }}>{errorMsg}</pre>
-              <button className="btn btn-secondary btn-sm" style={{ marginTop: 16 }} onClick={generate}>Try again</button>
+              <button className="btn btn-secondary btn-sm" style={{ marginTop: 16 }} onClick={loadFailed ? () => setLoadAttempt(n => n + 1) : generate}>Try again</button>
             </div>
           )}
 

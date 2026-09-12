@@ -1159,7 +1159,7 @@ def api_genai_topic_blogs_list():
     conn.close()
     return jsonify(rows)
 
-@app.route("/api/genai/topic-blog/<topic_name>/<section_id>")
+@app.route("/api/genai/topic-blog/<path:topic_name>/<section_id>")
 def api_genai_topic_blog_get(topic_name, section_id):
     conn = get_db()
     row = conn.execute(

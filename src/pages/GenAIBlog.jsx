@@ -1,35 +1,11 @@
 import { readerContent } from '../utils/readerContent'
 import { Navigate, useLocation } from 'react-router-dom'
 import { readerPath } from '../utils/readerPaths'
-import { useState, useEffect, useRef, useCallback } from 'react'
-import mermaid from 'mermaid'
+import { useState, useEffect, useRef } from 'react'
+import MermaidDiagram from '../components/MermaidDiagram'
 import BlogHighlighter from '../components/BlogHighlighter'
 import { itemText } from '../data/genAIData'
 
-mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' })
-
-function MermaidDiagram({ code }) {
-  const ref = useRef(null)
-  const render = useCallback(async () => {
-    if (!ref.current) return
-    try {
-      const id = `mermaid-${Math.random().toString(36).slice(2, 9)}`
-      const { svg } = await mermaid.render(id, code)
-      ref.current.innerHTML = svg
-    } catch {
-      ref.current.innerHTML = `<pre style="color:#ef4444;font-size:.8rem">${code}</pre>`
-    }
-  }, [code])
-  useEffect(() => { render() }, [render])
-
-  return (
-    <div ref={ref} style={{
-      margin: '16px 0', padding: '16px', background: 'var(--neu-bg)', borderRadius: 16, textAlign: 'center',
-      boxShadow: '4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light)',
-      overflow: 'auto',
-    }} />
-  )
-}
 
 /* ═══════════════════════════════════════════════
    Full-featured Markdown → JSX renderer
